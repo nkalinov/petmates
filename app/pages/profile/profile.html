@@ -1,0 +1,29 @@
+<ion-toolbar>
+    <ion-buttons start>
+        <button menuToggle>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+    </ion-buttons>
+    <ion-title>Profile</ion-title>
+    <ion-buttons end>
+        <button right [hidden]="edit" (click)="openDangerSheet()">
+            <ion-icon name="settings"></ion-icon>
+        </button>
+    </ion-buttons>
+</ion-toolbar>
+
+<ion-content padding *ngIf="auth.user">
+    <ion-card>
+        <ion-item>
+            <ion-avatar item-left>
+                <img *ngIf="auth.user.pic" src="{{ auth.user.pic }}">
+                <img *ngIf="!auth.user.pic" src="build/img/default_user.gif">
+            </ion-avatar>
+            <h2>{{ auth.user.name }}</h2>
+            <p>{{ auth.user.email }}</p>
+        </ion-item>
+        <ion-item>
+            <button primary clear item-left (click)="editModal()">Edit</button>
+        </ion-item>
+    </ion-card>
+</ion-content>

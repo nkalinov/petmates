@@ -1,0 +1,41 @@
+<ion-navbar *navbar>
+    <ion-title>
+        {{mate.friend.name}}
+    </ion-title>
+    <ion-buttons end>
+        <button secondary>
+            <ion-icon name="text"></ion-icon>
+            Chat
+        </button>
+    </ion-buttons>
+</ion-navbar>
+
+<ion-content>
+    <ion-row no-padding wrap center>
+        <ion-col no-padding width-100 class="profile-picture">
+            <mate-image [image]="mate.friend.pic"></mate-image>
+        </ion-col>
+    </ion-row>
+    <div *ngIf="mate.friend.pets.length===0">
+        <p text-center>{{mate.friend.name}} haven't added his pets.</p>
+    </div>
+    <ion-list *ngIf="mate.friend.pets.length > 0">
+        <ion-list-header>
+            {{mate.friend.name}}'s pets
+        </ion-list-header>
+        <ion-item *ngFor="#d of mate.friend.pets">
+            <ion-thumbnail item-left>
+                <pet-image [image]="d.pic"></pet-image>
+            </ion-thumbnail>
+            <h2>{{d.name}}</h2>
+            <h3>{{d.breed.name}}</h3>
+            <p><span [gender]="d.sex"></span>, <span [age]="d.birthday"></span></p>
+        </ion-item>
+    </ion-list>
+
+    <div padding>
+        <button small block danger outline (click)="removeMate()">
+            Remove from my mates
+        </button>
+    </div>
+</ion-content>

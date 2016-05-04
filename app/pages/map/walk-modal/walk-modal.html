@@ -1,0 +1,39 @@
+<ion-toolbar>
+    <ion-buttons start>
+        <button (click)="viewCtrl.dismiss()">
+            Cancel
+        </button>
+    </ion-buttons>
+    <ion-title>Go for a walk</ion-title>
+    <ion-buttons end *ngIf="selectedPet">
+        <button secondary type="button" (click)="start($event)">
+            Start
+            <ion-icon name="paw"></ion-icon>
+        </button>
+    </ion-buttons>
+</ion-toolbar>
+
+<ion-content>
+    <div *ngIf="auth.user.pets.length===0">
+        <p text-center>To go out for a walk, you must first add your pet.</p>
+        <button [navPush]="PetsPage">My pets</button>
+    </div>
+    <div *ngIf="auth.user.pets.length > 0">
+        <ion-list radio-group [(ngModel)]="selectedPet">
+            <ion-list-header>Choose the pet which is going out</ion-list-header>
+
+            <ion-item *ngFor="#d of auth.user.pets">
+                <ion-thumbnail item-left>
+                    <img *ngIf="d.pic" src="{{d.pic}}">
+                    <img *ngIf="!d.pic" src="build/img/default_pet.jpg">
+                </ion-thumbnail>
+                <ion-label>
+                    <h2>{{d.name}}</h2>
+                    <h3 *ngIf="d.breed">{{d.breed.name}}</h3>
+                    <p><span [gender]="d.sex"></span>, <span [age]="d.birthday"></span></p>
+                </ion-label>
+                <ion-radio value="{{d._id}}"></ion-radio>
+            </ion-item>
+        </ion-list>
+    </div>
+</ion-content>

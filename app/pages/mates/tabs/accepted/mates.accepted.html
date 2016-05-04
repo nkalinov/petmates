@@ -1,0 +1,30 @@
+<ion-content>
+    <div *ngIf="mates.mates.accepted.length===0" padding-horizontal>
+        <p>You have no mates.</p>
+        <h6>Add your mates to:</h6>
+        <ul>
+            <li>
+                Chat with them
+            </li>
+            <li>
+                Be notified instantly when they are going out for a walk
+            </li>
+        </ul>
+    </div>
+    <ion-list *ngIf="mates.mates.accepted.length > 0">
+        <ion-item-sliding *ngFor="#mate of mates.mates.accepted" (click)="viewMate(mate)">
+            <button ion-item>
+                <ion-avatar item-left>
+                    <mate-image [image]="mate.friend.pic"></mate-image>
+                </ion-avatar>
+                <h2>{{mate.friend.name}}</h2>
+            </button>
+            <ion-item-options>
+                <button primary>
+                    <ion-icon name="text"></ion-icon>
+                    Chat
+                </button>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>

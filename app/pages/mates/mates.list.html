@@ -1,0 +1,39 @@
+<ion-navbar *navbar>
+    <button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>My mates</ion-title>
+    <ion-buttons end>
+        <button right type="button" (click)="searchMateModal()">
+            <ion-icon name="add"></ion-icon>
+        </button>
+    </ion-buttons>
+</ion-navbar>
+
+<ion-content *ngIf="auth.user">
+    <div *ngIf="auth.user.mates.length===0">
+        <p text-center>You have no mates.</p>
+        <p text-center>Adding a mate will instantly notify you when he/she is going out for a walk.</p>
+    </div>
+    <ion-list *ngIf="auth.user.mates.length > 0">
+        <ion-item-sliding *ngFor="#mate of auth.user.mates">
+            <ion-item>
+                <ion-avatar item-left>
+                    <img *ngIf="mate.picture" src="{{mate.picture}}">
+                    <img *ngIf="!mate.picture" src="build/img/default_user.gif">
+                </ion-avatar>
+                <h2>{{mate.name}}</h2>
+            </ion-item>
+            <ion-item-options>
+                <!--<button primary>-->
+                <!--<ion-icon name="text"></ion-icon>-->
+                <!--Text-->
+                <!--</button>-->
+                <button danger (click)="mates.remove(mate)">
+                    <ion-icon name="trash"></ion-icon>
+                    Remove
+                </button>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>

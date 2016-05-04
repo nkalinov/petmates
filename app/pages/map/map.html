@@ -1,0 +1,34 @@
+<ion-navbar *navbar>
+    <button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Mates around me</ion-title>
+    <ion-buttons end>
+        <!--<button>-->
+        <!--<ion-icon name="funnel"></ion-icon>-->
+        <!--</button>-->
+        <button (click)="map.setView(marker.getLatLng(), 16);">
+            <ion-icon name="locate"></ion-icon>
+        </button>
+    </ion-buttons>
+</ion-navbar>
+
+<div id="map"></div>
+
+<ion-toolbar position="bottom">
+    <p *ngIf="walk.currentWalk.pet">
+        Out with {{walk.currentWalk.pet.name}}
+    </p>
+    <ion-buttons end *ngIf="!walk.currentWalk.pet">
+        <button secondary (click)="openWalkModal()">
+            Go for a walk
+            <ion-icon name="paw"></ion-icon>
+        </button>
+    </ion-buttons>
+    <ion-buttons end *ngIf="walk.currentWalk.pet">
+        <button (click)="stopWalk()">
+            Stop walk
+            <ion-icon name="close"></ion-icon>
+        </button>
+    </ion-buttons>
+</ion-toolbar>

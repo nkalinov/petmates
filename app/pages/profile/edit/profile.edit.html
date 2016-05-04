@@ -1,0 +1,42 @@
+<ion-toolbar>
+    <ion-buttons start>
+        <button (click)="cancel()">
+            Cancel
+        </button>
+    </ion-buttons>
+    <ion-title>Edit profile</ion-title>
+    <ion-buttons end>
+        <button (click)="save()">
+            Save
+        </button>
+    </ion-buttons>
+</ion-toolbar>
+
+<ion-content>
+    <ion-row no-padding wrap center>
+        <ion-col no-padding width-100 class="profile-picture">
+            <img *ngIf="user.pic" src="{{ user.pic }}" (click)="changePicture()">
+            <img *ngIf="!user.pic" src="build/img/default_user.gif" (click)="changePicture()">
+            <p class="change-text">Change picture</p>
+        </ion-col>
+    </ion-row>
+    <form (submit)="save()">
+        <ion-list>
+            <ion-item>
+                <ion-label>Username</ion-label>
+                <ion-input required type="text" [(ngModel)]="user.name"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Email</ion-label>
+                <ion-input required type="text" [(ngModel)]="user.email"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>New password</ion-label>
+                <ion-input type="password" [(ngModel)]="user.password"></ion-input>
+            </ion-item>
+        </ion-list>
+    </form>
+
+    Test upload
+    <input type="file" (change)="fileChangeEvent($event)"/>
+</ion-content>

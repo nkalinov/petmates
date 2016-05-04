@@ -1,0 +1,53 @@
+<ion-toolbar>
+    <ion-title>Welcome to PetMates</ion-title>
+</ion-toolbar>
+
+<div padding>
+    <ion-segment [(ngModel)]="mode">
+        <ion-segment-button value="login">
+            Login
+        </ion-segment-button>
+        <ion-segment-button value="sign-up">
+            Sign-up
+        </ion-segment-button>
+    </ion-segment>
+</div>
+<ion-content [ngSwitch]="mode">
+    <form (ngSubmit)="login()" *ngSwitchWhen="'login'">
+        <ion-list>
+            <ion-item>
+                <ion-label floating>Username / Email</ion-label>
+                <ion-input required type="text" [(ngModel)]="name"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Password</ion-label>
+                <ion-input required type="password" [(ngModel)]="password"></ion-input>
+            </ion-item>
+        </ion-list>
+        <div padding-horizontal>
+            <button secondary type="submit" block>Sign In</button>
+        </div>
+        <div padding>
+            <button type="button" (click)="openForgotForm()" small light block>Forgot password</button>
+        </div>
+    </form>
+    <form (ngSubmit)="signup()" *ngSwitchWhen="'sign-up'">
+        <ion-list>
+            <ion-item>
+                <ion-label floating>Username</ion-label>
+                <ion-input required type="text" [(ngModel)]="name"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Email</ion-label>
+                <ion-input required type="text" [(ngModel)]="email"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Password</ion-label>
+                <ion-input required type="password" [(ngModel)]="password"></ion-input>
+            </ion-item>
+        </ion-list>
+        <div padding-horizontal>
+            <button block type="submit">Create account</button>
+        </div>
+    </form>
+</ion-content>

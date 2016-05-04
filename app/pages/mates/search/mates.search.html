@@ -1,0 +1,31 @@
+<ion-navbar *navbar>
+    <ion-buttons start>
+        <button dark type="button" (click)="close()">
+            Close
+        </button>
+    </ion-buttons>
+    <ion-title>Find your mates</ion-title>
+</ion-navbar>
+
+<ion-content>
+    <ion-searchbar [(ngModel)]="searchQuery" (input)="mates.search($event.value.trim())"></ion-searchbar>
+    <div *ngIf="mates.search$.length === 0 && searchQuery !== ''">
+        <p text-center>No results.</p>
+    </div>
+    <ion-list>
+        <ion-item-sliding *ngFor="#item of mates.search$ | async">
+            <ion-item>
+                <ion-avatar item-left>
+                    <mate-image [image]="item.pic"></mate-image>
+                </ion-avatar>
+                <h2>{{item.name}}</h2>
+            </ion-item>
+            <ion-item-options>
+                <button primary (click)="addMate(item)">
+                    <ion-icon name="add"></ion-icon>
+                    Add mate
+                </button>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>

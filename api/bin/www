@@ -1,0 +1,155 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+const app = require('../app');
+const http = require('http');
+const walk = require('./walk');
+const config = require('../config/database');
+const SocketIoJwt = require('socketio-jwt');
+const helpers = require('../helpers');
+
+/**
+ * Get port from environment and store in Express.
+ */
+const port = normalizePort(process.env.PORT || '3001');
+app.set('port', port);
+
+/**
+ * Create HTTP server and socket.io listener
+ */
+var server = http.createServer(app);
+var io = require('socket.io')(server, {serveClient: false});
+var connections = {};
+
+// set authorization for socket.io
+io.sockets.on('connection', SocketIoJwt.authorize({
+    secret: config.secret,
+    timeout: 15000 // 15 seconds to send the authentication message
+})).on('authenticated', function (socket) {
+    //this socket is authenticated, we are good to handle more events from it.
+    const token = socket.decoded_token;
+    const uid = token._id;
+
+    // add to online users
+    connections[uid] = socket;
+
+    // todo populate ???
+    // User.findById(jwt_payload._id, function (err, user) {
+    //     if (err) {
+    //         return done(err);
+    //     }
+    //     if (user) {
+    //         user.populate(helpers.populateUser, () => {
+    //             user.populate({
+    //                 path: 'mates.pets.breed',
+    //                 model: 'Breed',
+    //                 select: 'name'
+    //             }, () => done(null, user));
+    //         });
+    //     } else {
+    //         return done(null, false);
+    //     }
+    // });
+
+    // get current walks
+    socket.on('walks', () => {
+        socket.emit('walks', walk.walks);
+    });
+
+    var currentWalk;
+    socket.on('walk:start', function (walkStartData) {
+
+        // Create new walk and announce it
+        currentWalk = walk.start(walkStartData, socket.id);
+        socket.broadcast.emit('walk:start', currentWalk.export());
+
+        /**
+         * Subscribe to next events only after started walk
+         */
+        socket.on('walk:move', function (data) {
+            currentWalk.coords = data.coords;
+            socket.broadcast.emit('walk:move', currentWalk.export());
+        });
+
+        socket.on('walk:stop', function () {
+            currentWalk.stop(socket.id);
+            socket.broadcast.emit('walk:stop', currentWalk.export());
+            currentWalk = null;
+        });
+    });
+
+    socket.on('disconnect', function () {
+        if (walk.stop(currentWalk)) {
+            socket.broadcast.emit('walk:stop', currentWalk.export());
+        }
+        currentWalk = null;
+        delete connections[uid];
+    });
+});
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+function normalizePort(val) {
+    var port = parseInt(val, 10);
+
+    if (isNaN(port)) {
+        // named pipe
+        return val;
+    }
+
+    if (port >= 0) {
+        // port number
+        return port;
+    }
+
+    return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+function onError(error) {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+
+    var bind = typeof port === 'string'
+        ? 'Pipe ' + port
+        : 'Port ' + port
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+function onListening() {
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+    console.log('Listening on ' + bind);
+}

@@ -1,0 +1,65 @@
+<ion-navbar *navbar>
+    <ion-buttons start *ngIf="isNew">
+        <button type="button" (click)="cancel()">
+            Cancel
+        </button>
+    </ion-buttons>
+    <ion-title>
+        <span *ngIf="!isNew">Edit</span>
+        <span *ngIf="isNew">New</span>
+        pet
+    </ion-title>
+    <ion-buttons end>
+        <button right [attr.danger]="!petForm.valid" (click)="save()" type="button"
+                [disabled]="!petForm.valid">
+            Save
+        </button>
+    </ion-buttons>
+</ion-navbar>
+
+<ion-content>
+    <ion-row no-padding wrap center *ngIf="!isNew">
+        <ion-col no-padding width-100 class="profile-picture">
+            <img *ngIf="pet.picture" src="{{ pet.picture }}" (click)="changePicture()">
+            <img *ngIf="!pet.picture" src="build/img/default_pet.jpg" (click)="changePicture()">
+            <p class="change-text">Change picture</p>
+        </ion-col>
+    </ion-row>
+
+    <form (submit)="save()" [ngFormModel]="petForm">
+        <ion-list>
+            <ion-item>
+                <ion-label>Name</ion-label>
+                <ion-input required type="text" ngControl="name" [(ngModel)]="pet.name"></ion-input>
+            </ion-item>
+            <ion-item (click)="onSelectBirthday()">
+                <ion-label>Birthday</ion-label>
+                <ion-note item-right>
+                    {{pet.birthday | date:'mediumDate'}}
+                </ion-note>
+            </ion-item>
+            <ion-item>
+                <ion-label>Gender</ion-label>
+                <ion-select [(ngModel)]="pet.sex">
+                    <ion-option value="m">Male</ion-option>
+                    <ion-option value="f">Female</ion-option>
+                </ion-select>
+            </ion-item>
+            <ion-item>
+                <ion-label>Breed</ion-label>
+                <ion-select [(ngModel)]="pet.breed._id" (change)="onSelectBreed($event)">
+                    <ion-option *ngFor="#b of breeds" value="{{b._id}}">
+                        {{b.name}}
+                    </ion-option>
+                </ion-select>
+            </ion-item>
+        </ion-list>
+    </form>
+    <div padding *ngIf="!isNew">
+        <button small block danger outline (click)="deletePet()">
+            Delete pet
+        </button>
+    </div>
+    Test upload
+    <input type="file" (change)="fileChangeEvent($event)"/>
+</ion-content>

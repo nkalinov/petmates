@@ -1,0 +1,11 @@
+# Specifies files to intentionally ignore when using Git
+# http://git-scm.com/docs/gitignore
+
+.idea/
+node_modules/
+bower_components/
+www/build/
+platforms/
+plugins/
+*.log
+typings/

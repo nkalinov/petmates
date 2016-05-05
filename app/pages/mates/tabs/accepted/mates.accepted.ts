@@ -18,7 +18,7 @@ export class MatesAcceptedPage {
 
     viewMate(friendship:Friendship) {
         this.nav.push(MateViewPage, {
-            mate: friendship.friend
+            mate: friendship
         });
     }
 }

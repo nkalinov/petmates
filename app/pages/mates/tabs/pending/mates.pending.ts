@@ -6,14 +6,20 @@ import {Friendship} from '../../../../models/friendship.interface';
 
 @Page({
     directives: [forwardRef(() => MateImage)],
-    templateUrl: 'build/pages/mates/tabs/requested/mates.requested.html'
+    templateUrl: 'build/pages/mates/tabs/pending/mates.pending.html'
 })
 
-export class MatesRequestedPage {
+export class MatesPendingPage {
     constructor(public mates:MatesService) {
     }
 
+    acceptRequest(mate:Friendship) {
+        this.mates.add(mate.friend).subscribe(() => {
+        });
+    }
+
     cancelRequest(mate:Friendship) {
-        this.mates.remove(mate).subscribe(() => {});
+        this.mates.remove(mate).subscribe(() => {
+        });
     }
 }

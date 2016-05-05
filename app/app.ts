@@ -21,6 +21,7 @@ import {WalkService} from './services/walk.service.ts';
 import {CommonService} from './services/common.service';
 import {MatesPage} from "./pages/mates/mates";
 import {SocketService} from "./services/socket.service";
+import {MatesService} from "./services/mates.service";
 
 enableProdMode();
 
@@ -33,7 +34,7 @@ enableProdMode();
         defaultPetImage: 'build/img/default_pet.jpg',
         defaultMateImage: 'build/img/default_user.gif',
     },
-    providers: [AuthService, BreedService, WalkService, SocketService]
+    providers: [AuthService, BreedService, WalkService, SocketService, MatesService]
 })
 class MyApp {
     pages:Array<any> = [];

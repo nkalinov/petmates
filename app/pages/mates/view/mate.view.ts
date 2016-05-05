@@ -5,12 +5,10 @@ import {GenderInfo} from '../../../common/gender';
 import {PetImage} from '../../../common/pet-image';
 import {MateImage} from '../../../common/mate-image';
 import {MatesService} from '../../../services/mates.service';
-import {User} from '../../../models/user.model';
 import {Friendship} from "../../../models/friendship.interface";
 
 @Page({
     templateUrl: 'build/pages/mates/view/mate.view.html',
-    providers: [MatesService],
     directives: [
         forwardRef(() => GenderInfo),
         forwardRef(() => AgeInfo),

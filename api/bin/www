@@ -3,7 +3,6 @@
 /**
  * Module dependencies.
  */
-
 const app = require('../app');
 const http = require('http');
 const walk = require('./walk');
@@ -53,6 +52,28 @@ io.sockets.on('connection', SocketIoJwt.authorize({
     //         return done(null, false);
     //     }
     // });
+
+    // socket is sending new friend request
+    socket.on('mate:requested', (data) => {
+        if (connections[data.myRequest.friend._id]) {
+            // notify my future mate
+            connections[data.myRequest.friend._id].emit('mate:pending', data);
+        }
+    });
+    // socket accepted friend request
+    socket.on('mate:accepted', (data) => {
+        if (connections[data.myRequest.friend._id]) {
+            // notify my future mate
+            connections[data.myRequest.friend._id].emit('mate:accepted', data);
+        }
+    });
+    // socket removed friend request
+    socket.on('mate:remove', (data) => {
+        if (connections[data.myRequest.friend._id]) {
+            // notify my future mate
+            connections[data.myRequest.friend._id].emit('mate:remove', data);
+        }
+    });
 
     // get current walks
     socket.on('walks', () => {

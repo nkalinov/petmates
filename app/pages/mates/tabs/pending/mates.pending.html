@@ -1,0 +1,25 @@
+<ion-content>
+    <div *ngIf="mates.mates.pending.length===0" padding-horizontal>
+        <p>No new requests.</p>
+    </div>
+    <ion-list *ngIf="mates.mates.pending.length > 0">
+        <ion-item-sliding *ngFor="#mate of mates.mates.pending">
+            <button ion-item>
+                <ion-avatar item-left>
+                    <mate-image [image]="mate.friend.pic"></mate-image>
+                </ion-avatar>
+                <h2>{{mate.friend.name}}</h2>
+            </button>
+            <ion-item-options>
+                <button secondary (click)="acceptRequest(mate)">
+                    <ion-icon name="check"></ion-icon>
+                    Accept
+                </button>
+                <button danger (click)="cancelRequest(mate)">
+                    <ion-icon name="close"></ion-icon>
+                    Cancel
+                </button>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>

@@ -40,11 +40,10 @@ router.post('/', passport.authenticate('jwt', {session: false}), function (req, 
 
 // (remove || reject) mate
 router.delete('/:id', passport.authenticate('jwt', {session: false}), function (req, res) {
-    req.user.removeFriend(req.params.id, (err, data) => {
-        if (err) {
-            return res.json({success: false, msg: err});
-        }
+    req.user.removeFriend(req.params.id).then((data) => {
         res.json({success: true, data: data});
+    }, (err) => {
+        return res.json({success: false, msg: err});
     });
 });
 

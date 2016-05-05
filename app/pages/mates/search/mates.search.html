@@ -1,6 +1,6 @@
 <ion-navbar *navbar>
     <ion-buttons start>
-        <button dark type="button" (click)="close()">
+        <button dark type="button" (click)="viewCtrl.dismiss()">
             Close
         </button>
     </ion-buttons>
@@ -9,11 +9,11 @@
 
 <ion-content>
     <ion-searchbar [(ngModel)]="searchQuery" (input)="mates.search($event.value.trim())"></ion-searchbar>
-    <div *ngIf="mates.search$.length === 0 && searchQuery !== ''">
+    <div *ngIf="search.length === 0 && searchQuery !== ''">
         <p text-center>No results.</p>
     </div>
     <ion-list>
-        <ion-item-sliding *ngFor="#item of mates.search$ | async">
+        <ion-item-sliding *ngFor="#item of search">
             <ion-item>
                 <ion-avatar item-left>
                     <mate-image [image]="item.pic"></mate-image>
@@ -23,7 +23,7 @@
             <ion-item-options>
                 <button primary (click)="addMate(item)">
                     <ion-icon name="add"></ion-icon>
-                    Add mate
+                    Send request
                 </button>
             </ion-item-options>
         </ion-item-sliding>

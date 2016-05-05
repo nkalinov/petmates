@@ -12,13 +12,18 @@ export class SocketService {
     }
 
     socketAuth() {
-        if (!this.socket) {
-            let socket = io.connect(`${this.config.get('API')}`);
-            socket.on('connect', () => {
-                socket.on('authenticated', () => {
-                    this.socket = socket;
-                }).emit('authenticate', {token: this.auth.token.split(' ')[1]}); //send the jwt
-            });
-        }
+        return new Promise((resolve, reject) => {
+            if (!this.socket) {
+                let socket = io.connect(`${this.config.get('API')}`);
+                socket.on('connect', () => {
+                    socket.on('authenticated', () => {
+                        this.socket = socket;
+                        resolve(this.socket);
+                    }).emit('authenticate', {token: this.auth.token.split(' ')[1]}); //send the jwt
+                });
+            } else {
+                resolve(this.socket);
+            }
+        });
     }
 }

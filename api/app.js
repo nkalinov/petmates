@@ -7,6 +7,7 @@ const routes = require('./routes/index');
 const users = require('./routes/users');
 const auth = require('./routes/auth');
 const mates = require('./routes/mates');
+const messages = require('./routes/messages');
 const pets = require('./routes/pets');
 const breeds = require('./routes/breeds');
 const cors = require('cors');
@@ -30,11 +31,12 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(passport.initialize());
 
 app.use('/', routes);
-app.use('/pets', pets);
 app.use('/breeds', breeds);
 app.use('/auth', auth);
 app.use('/user', users);
+app.use('/pets', pets);
 app.use('/mates', mates);
+app.use('/messages', messages);
 
 db.init();
 

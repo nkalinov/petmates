@@ -12,15 +12,18 @@
         </ul>
     </div>
     <ion-list *ngIf="mates.mates.accepted.length > 0">
-        <ion-item-sliding *ngFor="#mate of mates.mates.accepted" (click)="viewMate(mate)">
-            <button ion-item>
+        <ion-item-sliding *ngFor="#mate of mates.mates.accepted">
+            <button ion-item (click)="viewMate(mate)">
                 <ion-avatar item-left>
                     <mate-image [image]="mate.friend.pic"></mate-image>
                 </ion-avatar>
                 <h2>{{mate.friend.name}}</h2>
+                <!--<ion-badge item-right *ngIf="mate.newMessages && mate.newMessages > 0">-->
+                    <!--{{mate.newMessages}}-->
+                <!--</ion-badge>-->
             </button>
             <ion-item-options>
-                <button primary>
+                <button primary (click)="chatWith(mate.friend)">
                     <ion-icon name="text"></ion-icon>
                     Chat
                 </button>

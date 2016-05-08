@@ -12,8 +12,6 @@ import {
 } from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
 import {enableProdMode} from 'angular2/core';
-
-import {MapPage} from './pages/map/map';
 import {AuthModal} from './pages/auth/auth';
 import {AuthService} from './services/auth.service';
 import {BreedService} from './services/breed.service';
@@ -22,19 +20,28 @@ import {CommonService} from './services/common.service';
 import {MatesPage} from "./pages/mates/mates";
 import {SocketService} from "./services/socket.service";
 import {MatesService} from "./services/mates.service";
+import {ChatService} from "./services/chat.service";
+import {Subscription} from "rxjs/Subscription";
 
 enableProdMode();
 
 @App({
     templateUrl: 'build/app.html',
     config: {
-        API: 'http://localhost:3001',
+        API: 'http://192.168.0.104:3001',
         emitCoordsIntervalMs: 10000,
         deleteInactiveIntervalMs: 20000,
-        defaultPetImage: 'build/img/default_pet.jpg',
-        defaultMateImage: 'build/img/default_user.gif',
+        defaultPetImage: '/build/img/default_pet.jpg',
+        defaultMateImage: '/build/img/default_user.gif',
     },
-    providers: [AuthService, BreedService, WalkService, SocketService, MatesService]
+    providers: [
+        AuthService,
+        BreedService,
+        WalkService,
+        SocketService,
+        MatesService,
+        ChatService
+    ]
 })
 class MyApp {
     pages:Array<any> = [];
@@ -42,32 +49,22 @@ class MyApp {
     pages:Array<{title:string, component:any}>;
     local:Storage = new Storage(LocalStorage);
 
+    private defaultRootPage:MatesPage = MatesPage;
     private authModal:ViewController;
-
-    constructor(private app:IonicApp,
-                private platform:Platform,
-                public auth:AuthService,
-                private events:Events,
+    
+    constructor(public auth:AuthService,
                 public walk:WalkService,
-                private sockets:SocketService) {
-        this.initializeApp();
-    }
-
-    initializeApp() {
+                private app:IonicApp,
+                private platform:Platform,
+                private events:Events,
+                private sockets:SocketService,
+                private mates:MatesService,
+                private chat:ChatService) {
         this.platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.
             StatusBar.styleDefault();
-            this.checkFeatures();
-            this.subscribeToEvents();
-
-            this.auth.init().then(() => {
-                this.rootPage = MatesPage;
-                this.pages = CommonService.getMenu(true);
-                this.sockets.socketAuth();
-            }, () => {
-                this.pages = CommonService.getMenu();
-            });
+            this.initializeApp();
         });
     }
 
@@ -82,18 +79,24 @@ class MyApp {
         }
     }
 
-    ///////////////////
+    private initializeApp() {
+        this.subscribeToEvents();
+
+        this.auth.init().then(() => {
+            this.rootPage = this.defaultRootPage;
+            this.pages = CommonService.getMenu(true);
+            this.loggedIn();
+        }, () => {
+            this.pages = CommonService.getMenu();
+        });
+    }
 
     private subscribeToEvents() {
         this.events.subscribe('user:login', () => {
-            this.rootPage = MapPage;
-            this.pages = CommonService.getMenu(true);
-            this.openPage(this.rootPage);
-            this.sockets.socketAuth();
-            this.authModal.dismiss();
+            this.loggedIn();
         });
         this.events.subscribe('user:logout', () => {
-            this.showAuthModal();
+            this.loggedOut();
         });
         this.events.subscribe('alert:error', (msg) => {
             this.showAlert(msg);
@@ -103,21 +106,13 @@ class MyApp {
         });
     }
 
-    /**
-     * Show auth modal (login, sign-up)
-     */
     private showAuthModal() {
         this.authModal = Modal.create(AuthModal);
         let nav:NavController = this.app.getComponent('nav');
         nav.present(this.authModal);
     }
 
-    /**
-     * Show alert
-     * @param msg
-     * @param title
-     */
-    private showAlert(msg, title?:string = 'Error!') {
+    private showAlert(msg, title:string = 'Error!') {
         let alert = Alert.create({
             title: title,
             subTitle: msg,
@@ -127,12 +122,26 @@ class MyApp {
         nav.present(alert);
     }
 
-    private checkFeatures() {
-        if ((<any>navigator).camera) {
-            this.showAlert('Camera OK', 'Feature');
-        }
-        if (typeof FileTransfer !== 'undefined') {
-            this.showAlert('FileTransfer OK', 'Feature');
-        }
+    private loggedIn() {
+        this.pages = CommonService.getMenu(true);
+        this.rootPage = this.defaultRootPage;
+        this.mates.sortMatesByStatus();
+        
+        // register socket events handlers
+        this.sockets.init().then((socket) => {
+            this.mates.registerSocketEvents(socket);
+            this.chat.registerChatEvents(socket);
+            // socket.on('users', (data) => {
+            // });
+            if (this.authModal) {
+                this.authModal.dismiss();
+            }
+        });
+    }
+
+    private loggedOut() {
+        this.sockets.disconnect();
+        // todo unsubscribe
+        this.showAuthModal();
     }
 }

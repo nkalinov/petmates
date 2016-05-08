@@ -14,7 +14,7 @@ var Message = new Schema({
         type: String,
         required: true
     },
-    createDate: {
+    added: {
         type: Date,
         default: Date.now
     }

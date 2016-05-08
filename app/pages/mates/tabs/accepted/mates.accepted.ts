@@ -1,9 +1,11 @@
-import {Page, NavController} from 'ionic-angular';
+import {Page, NavController, Modal} from 'ionic-angular';
 import {forwardRef} from 'angular2/core';
 import {MateImage} from '../../../../common/mate-image';
 import {MateViewPage} from "../../view/mate.view";
 import {Friendship} from "../../../../models/friendship.interface";
 import {MatesService} from "../../../../services/mates.service";
+import {User} from "../../../../models/user.model";
+import {ChatPage} from "../../../chat/chat";
 
 @Page({
     directives: [forwardRef(() => MateImage)],
@@ -11,7 +13,6 @@ import {MatesService} from "../../../../services/mates.service";
 })
 
 export class MatesAcceptedPage {
-
     constructor(public mates:MatesService,
                 private nav:NavController) {
     }
@@ -20,5 +21,11 @@ export class MatesAcceptedPage {
         this.nav.push(MateViewPage, {
             mate: friendship
         });
+    }
+
+    chatWith(mate:User) {
+        this.nav.present(Modal.create(ChatPage, {
+            mate: mate
+        }));
     }
 }

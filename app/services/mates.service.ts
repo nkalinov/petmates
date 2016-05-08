@@ -6,9 +6,8 @@ import {User} from '../models/user.model.ts';
 import {AuthService} from './auth.service';
 import {Observable} from 'rxjs/Observable';
 import {Friendship, STATUS_REQUESTED, STATUS_ACCEPTED, STATUS_PENDING} from '../models/friendship.interface';
-import {SocketService} from "./socket.service";
-import {Socket} from "net";
-import {BehaviorSubject} from "rxjs/Rx";
+import {SocketService} from './socket.service';
+import {BehaviorSubject} from 'rxjs/Rx';
 
 @Injectable()
 export class MatesService {
@@ -25,10 +24,6 @@ export class MatesService {
                 private config:Config,
                 private auth:AuthService,
                 private sockets:SocketService) {
-        this.sortMatesByStatus();
-        this.sockets.socketAuth().then((socket) => {
-            this.registerMatesEvents(socket);
-        });
     }
 
     search(q):void {
@@ -49,12 +44,7 @@ export class MatesService {
         }
     }
 
-    /**
-     * Add mate
-     * @param friend
-     * @returns {Observable}
-     */
-    add(friend:User) {
+    add(friend:User):Observable {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', this.auth.token);
@@ -102,7 +92,7 @@ export class MatesService {
         });
     }
 
-    remove(friendship:Friendship) {
+    remove(friendship:Friendship):Observable {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', this.auth.token);
@@ -135,38 +125,7 @@ export class MatesService {
         });
     }
 
-    private registerMatesEvents(socket:Socket) {
-        // someone sent me friend request
-        socket.on('mate:pending', (data:any) => {
-            console.info('mate:pending', data);
-            this.auth.user.mates.push(data.fRequest);
-            this.sortMatesByStatus();
-        });
-        // accepted my request
-        socket.on('mate:accepted', (data:any) => {
-            console.info('mate:accepted', data);
-            let index = this.auth.user.mates.findIndex((f:Friendship) => {
-                return f._id === data.fRequest._id;
-            });
-            if (index > -1) {
-                this.auth.user.mates[index] = data.fRequest;
-            }
-            this.sortMatesByStatus();
-        });
-        // removed my request
-        socket.on('mate:remove', (data:any) => {
-            console.info('mate:remove', data);
-            let index = this.auth.user.mates.findIndex((f:Friendship) => {
-                return f._id === data.fRequest._id;
-            });
-            if (index > -1) {
-                this.auth.user.mates.splice(index, 1);
-            }
-            this.sortMatesByStatus();
-        });
-    }
-
-    private sortMatesByStatus() {
+    sortMatesByStatus() {
         setTimeout(() => {
             this.mates.accepted = this.auth.user.mates.filter((f:Friendship) => {
                 return f.status === STATUS_ACCEPTED;
@@ -180,5 +139,38 @@ export class MatesService {
             this.pending$.next(this.mates.pending.length);
             console.debug('sortMatesByStatus', this.mates);
         }, 0);
+    }
+
+    registerSocketEvents(socket) {
+        // someone sent me friend request
+        socket.on('mate:pending', (data:any) => {
+            console.info('mate:pending', data);
+            this.auth.user.mates.push(data.fRequest);
+            this.sortMatesByStatus();
+        });
+
+        // accepted my request
+        socket.on('mate:accepted', (data:any) => {
+            console.info('mate:accepted', data);
+            let index = this.auth.user.mates.findIndex((f) => {
+                return f._id === data.fRequest._id;
+            });
+            if (index > -1) {
+                this.auth.user.mates[index] = data.fRequest;
+            }
+            this.sortMatesByStatus();
+        });
+
+        // removed my request
+        socket.on('mate:remove', (data:any) => {
+            console.info('mate:remove', data);
+            let index = this.auth.user.mates.findIndex((f) => {
+                return f._id === data.fRequest._id;
+            });
+            if (index > -1) {
+                this.auth.user.mates.splice(index, 1);
+            }
+            this.sortMatesByStatus();
+        });
     }
 }

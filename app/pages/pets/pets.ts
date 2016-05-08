@@ -1,4 +1,4 @@
-import {Page, Modal, IonicApp, NavController} from 'ionic-angular';
+import {Page, Modal, NavController} from 'ionic-angular';
 import {forwardRef} from 'angular2/core';
 import {AuthService} from '../../services/auth.service';
 import {PetEditPage} from './edit/pet.edit';
@@ -15,11 +15,8 @@ import {PetImage} from '../../common/pet-image';
     ]
 })
 export class PetsPage {
-    private nav:NavController;
-
-    constructor(private app:IonicApp,
+    constructor(private nav:NavController,
                 public auth:AuthService) {
-        this.nav = this.app.getActiveNav();
     }
 
     public petEdit(pet) {

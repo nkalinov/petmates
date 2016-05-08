@@ -9,4 +9,6 @@ export interface Friendship {
     status:string;
     added:Date;
     friend:User;
+
+    newMessages?:number; // contain new msgs count for badge
 }

@@ -1,118 +1,115 @@
-import {Events} from 'ionic-angular';
+import {Events, Config} from 'ionic-angular';
 import {Injectable} from 'angular2/core';
-import * as Rx from 'rxjs/Rx';
+import {Http, Headers} from 'angular2/http';
+import {SocketService} from './socket.service';
+import {AuthService} from "./auth.service";
 import {Message} from '../models/message.model';
+import {Observable} from 'rxjs/Observable';
 import {User} from "../models/user.model";
-
-declare var io;
+import {MatesService} from "./mates.service";
+import {Friendship} from "../models/friendship.interface";
 
 @Injectable()
 export class ChatService {
-    socket:any;
-    me:User;
-    usersStream:Rx.Observable<User[]> = Rx.Observable<User[]>();
-    usersResponseStream:any;
-    messagesStream:Rx.Observable<Message[]> = Rx.Observable<Message[]>();
-    messagesResponseStream:any;
-    messages:Rx.Subject<Message> = new Rx.Subject<Message>(null);
-    currentMessages:Rx.Subject<Message[]> = new Rx.Subject<Message[]>(null);
-    createMessage:Rx.Subject<Message> = new Rx.Subject<Message>();
-    friends:Rx.Subject<User[]> = new Rx.Subject<User[]>(null);
-    currentFriend:Rx.Subject<User> = new Rx.BehaviorSubject<User>(null);
+    messages = {};
 
-    constructor(public e:Events) {
+    constructor(private http:Http,
+                private sockets:SocketService,
+                private events:Events,
+                private config:Config,
+                private mates:MatesService,
+                private auth:AuthService) {
+        this.messages = {}; // reload cache on app init
     }
 
-    private initUsersStreams():void {
-        this.usersStream = Rx.Observable.fromEvent(this.socket, 'onlineUsers');
+    getMessages(user:User) {
+        let headers = new Headers();
+        headers.append('Authorization', this.auth.token);
 
-        this.usersStream.subscribe((users) => {
-            this.usersResponseStream = Rx.Observable.create((observer) => {
-                observer.next(users);
-            });
-
-            this.usersResponseStream.subscribe((users:User[]) => {
-                this.friends.next(users);
-            });
-        });
-    }
-
-    private initMessagesStreams():void {
-        this.messagesStream = Rx.Observable.fromEvent(this.socket, 'onMessage');
-
-        this.messagesStream.subscribe((message:Message) => {
-            this.messagesResponseStream = Rx.Observable.create((observer) => {
-                observer.next(message);
-            });
-
-            this.messagesResponseStream.subscribe((message:Message) => {
-                this.createMessage.next(message);
-            });
-        });
-
-        this.createMessage.map((message:Message) => {
-            return message;
-        }).subscribe((message:Message) => {
-            this.e.publish('newMessage', true);
-            this.messages.next(message);
-        });
-    }
-
-    public setCurrentFriend(user:User):void {
-        this.currentFriend.next(new User(user));
-    }
-
-    public getCurrentMessages(user:User) {
-        let msgs:Message[] = [];
-        return this.messages.map((message:Message) => {
-            if ((message.to._id === user._id &&
-                message.from._id === this.me._id) ||
-                (message.to._id === this.me._id &&
-                message.from._id === user._id)) {
-                msgs.push(new Message(message));
-            }
-            return msgs;
-        });
-    }
-
-    public sendMessage(msg:Message):Promise {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('sendMessage', msg, (resp) => {
-                if (resp.status) {
-                    this.addOwnMessage(msg);
-                    resolve();
-                } else {
-                    reject();
+        return new Observable((observer) => {
+            this.http.get(`${this.config.get('API')}/messages/${user._id}`, {headers: headers}).subscribe(
+                (res:any) => {
+                    res = res.json();
+                    if (res.success) {
+                        if (!this.messages[user._id] || this.messages[user._id].length < res.data.length) {
+                            this.messages[user._id] = res.data.map((msg) => {
+                                let parsed = new Message(msg);
+                                if (<string>parsed.from === user._id) {
+                                    parsed.from = user;
+                                } else {
+                                    parsed.from = this.auth.user;
+                                }
+                                return parsed;
+                            });
+                        }
+                        observer.next(this.messages[user._id]);
+                    } else {
+                        observer.error(res.msg);
+                        this.events.publish('alert:error', res.msg);
+                    }
+                    observer.complete();
+                },
+                (err) => {
+                    this.events.publish('alert:error', err.text());
+                    observer.error(err);
+                    observer.complete();
                 }
-            });
+            );
         });
     }
 
-    private addOwnMessage(msg:Message):void {
-        this.createMessage.next(msg);
+    send(message:Message) {
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', this.auth.token);
+
+        return new Observable((observer) => {
+            this.http.post(`${this.config.get('API')}/messages`, JSON.stringify({
+                to: message.to._id,
+                msg: message.msg
+            }), {headers: headers}).subscribe(
+                (res:any) => {
+                    res = res.json();
+                    if (res.success) {
+                        message.added = new Date();
+                        this.addMessage(message);
+                        this.sockets.socket.emit('chat:send', message);
+                    } else {
+                        this.events.publish('alert:error', res.msg);
+                    }
+                    observer.next(res);
+                    observer.complete();
+                },
+                (err) => {
+                    this.events.publish('alert:error', err.text());
+                    observer.error(err);
+                    observer.complete();
+                }
+            );
+        });
     }
 
-    private initLoggedInUser():void {
-        let profileData = JSON.parse(localStorage.getItem('profile'));
-        if (!profileData) {
-            return;
+    registerChatEvents(socket) {
+        socket.on('chat:receive', (data:Message) => {
+            // let find = this.mates.mates.accepted.find((f:Friendship) => {
+            //     if (data.from._id === f.friend._id) {
+            //         if (f.newMessages) {
+            //             f.newMessages += 1;
+            //         } else {
+            //             f.newMessages = 1;
+            //         }
+            //     }
+            // });
+            // to === me
+            console.info('chat:receive', data);
+            this.addMessage(data, 'from'); // from:User
+        });
+    }
+
+    private addMessage(message:Message, fromto = 'to') {
+        if (!this.messages[message[fromto]._id]) {
+            this.messages[message[fromto]._id] = [];
         }
-        this.me = new User({
-            id: profileData._id,
-            name: profileData.name,
-            avatar: profileData.avatar
-        });
+        this.messages[message[fromto]._id].push(message);
     }
-
-    public socketAuth():void {
-        let token = localStorage.getItem('id_token');
-        this.socket = io.connect('http://localhost:3357');
-        this.socket.on('connect', () => {
-            this.socket.emit('authenticate', {token: token});
-            this.initUsersStreams();
-            this.initMessagesStreams();
-            this.initLoggedInUser();
-        });
-    }
-
 }

@@ -34,24 +34,13 @@ io.sockets.on('connection', SocketIoJwt.authorize({
 
     // add to online users
     connections[uid] = socket;
+    // io.sockets.emit('users', Object.keys(connections));
 
-    // todo populate ???
-    // User.findById(jwt_payload._id, function (err, user) {
-    //     if (err) {
-    //         return done(err);
-    //     }
-    //     if (user) {
-    //         user.populate(helpers.populateUser, () => {
-    //             user.populate({
-    //                 path: 'mates.pets.breed',
-    //                 model: 'Breed',
-    //                 select: 'name'
-    //             }, () => done(null, user));
-    //         });
-    //     } else {
-    //         return done(null, false);
-    //     }
-    // });
+    socket.on('chat:send', (data) => {
+        if (connections[data.to]) {
+            connections[data.to].emit('chat:receive', data);
+        }
+    });
 
     // socket is sending new friend request
     socket.on('mate:requested', (data) => {
@@ -108,6 +97,7 @@ io.sockets.on('connection', SocketIoJwt.authorize({
         }
         currentWalk = null;
         delete connections[uid];
+        // io.sockets.emit('users', Object.keys(connections));
     });
 });
 

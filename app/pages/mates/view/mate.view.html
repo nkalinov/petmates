@@ -3,7 +3,7 @@
         {{mate.friend.name}}
     </ion-title>
     <ion-buttons end>
-        <button secondary>
+        <button primary (click)="chatWith(mate.friend)">
             <ion-icon name="text"></ion-icon>
             Chat
         </button>

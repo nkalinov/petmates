@@ -11,8 +11,16 @@ export class SocketService {
                 private auth:AuthService) {
     }
 
-    socketAuth() {
+    disconnect() {
+        if(this.socket) {
+            this.socket.disconnect();
+            this.socket = null;
+        }
+    }
+
+    init() {
         return new Promise((resolve, reject) => {
+            this.disconnect();
             if (!this.socket) {
                 let socket = io.connect(`${this.config.get('API')}`);
                 socket.on('connect', () => {

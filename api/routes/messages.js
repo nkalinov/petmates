@@ -6,12 +6,12 @@ var passport = require('passport');
 // send new message
 router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
     var msg = req.body.msg;
-    var from = req.user._id;
-    var to = req.body.to;
+    var fromId = req.user._id;
+    var toId = req.body.to;
 
     var messageModel = new Message();
-    messageModel.from = from;
-    messageModel.to = to;
+    messageModel.from = fromId;
+    messageModel.to = toId;
     messageModel.msg = msg;
 
     messageModel.save((err, data) => {

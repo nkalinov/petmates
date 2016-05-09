@@ -15,7 +15,7 @@ button[disabled] {
 ion-item {
   &.invalid {
     ion-label {
-      color: map-get($colors, 'danger');
+      color: color($colors, danger);
     }
   }
 }
@@ -47,4 +47,16 @@ pet-picture {
     font-size: 11px;
     letter-spacing: 1px;
   }
+}
+
+#main-menu {
+  .item {
+    &.active {
+
+    }
+  }
+}
+
+[text-small] {
+  font-size: 10px;
 }

@@ -12,7 +12,7 @@ export class SocketService {
     }
 
     disconnect() {
-        if(this.socket) {
+        if (this.socket) {
             this.socket.disconnect();
             this.socket = null;
         }
@@ -26,6 +26,7 @@ export class SocketService {
                 socket.on('connect', () => {
                     socket.on('authenticated', () => {
                         this.socket = socket;
+                        // global socket event handlers
                         resolve(this.socket);
                     }).emit('authenticate', {token: this.auth.token.split(' ')[1]}); //send the jwt
                 });

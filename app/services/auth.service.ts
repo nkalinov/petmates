@@ -19,41 +19,30 @@ export class AuthService {
     }
 
     init() {
-        return new Promise((resolve, reject) => {
-            this.local.get('id_token').then((token) => {
-                if (token) {
-                    // check token validity and that user still exists in db
-                    let headers = new Headers();
-                    headers.append('Authorization', token);
-                    this.http.post(`${this.config.get('API')}/user/check`, null, {headers: headers}).subscribe(
-                        (res:any) => {
-                            res = res.json();
-                            if (res.success) {
-                                this.isAuthenticated = true;
-                                this.user = this.parseUser(res.data);
-                                this.token = token;
-                                resolve();
-                            } else {
-                                // user not found
-                                this.logout();
-                                reject();
-                            }
-                        },
-                        (err) => {
-                            // token not valid
-                            this.logout();
-                            reject();
-                        }
-                    );
-                } else {
-                    this.logout();
-                    reject();
+        let myToken:string = null;
+
+        return this.local.get('id_token').then((token) => {
+            if (token) {
+                myToken = token;
+                // check token validity and that user still exists in db
+                let headers = new Headers();
+                headers.append('Authorization', token);
+                return this.http.post(`${this.config.get('API')}/user/check`, null, {headers: headers}).toPromise();
+            }
+            return new Error('Token missing');
+        }).then(
+            (res:any) => {
+                res = res.json();
+                if (res.success) {
+                    this.isAuthenticated = true;
+                    this.user = this.parseUser(res.data);
+                    this.token = myToken;
+                    return this.user;
                 }
-            }, () => {
-                this.logout();
-                reject();
-            });
-        });
+                this.cleanUser();
+                return new Error('User not found');
+            }
+        );
     }
 
     authenticated() {
@@ -94,24 +83,22 @@ export class AuthService {
     signup(data) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
-        this.http
-            .post(`${this.config.get('API')}/auth/signup`,
-                JSON.stringify(data),
-                {headers: headers}
-            )
-            .subscribe(
-                (res:any) => {
-                    res = res.json();
-                    if (res.success) {
-                        this.login(data.name, data.password);
-                    } else {
-                        this.events.publish('alert:error', res.msg);
-                    }
-                },
-                (err) => {
-                    this.events.publish('alert:error', err);
+        this.http.post(`${this.config.get('API')}/auth/signup`,
+            JSON.stringify(data),
+            {headers: headers}
+        ).subscribe(
+            (res:any) => {
+                res = res.json();
+                if (res.success) {
+                    this.login(data.name, data.password);
+                } else {
+                    this.events.publish('alert:error', 'Username or email already registered');
                 }
-            );
+            },
+            (err) => {
+                this.events.publish('alert:error', err);
+            }
+        );
     }
 
     update(user) {
@@ -167,10 +154,7 @@ export class AuthService {
     }
 
     logout() {
-        this.local.remove('id_token');
-        this.user = null;
-        this.token = null;
-        this.isAuthenticated = false;
+        this.cleanUser();
         this.events.publish('user:logout');
     }
 
@@ -251,7 +235,12 @@ export class AuthService {
         });
     }
 
-    //////////////////////
+    private cleanUser() {
+        this.local.remove('id_token');
+        this.user = null;
+        this.token = null;
+        this.isAuthenticated = false;
+    }
 
     private parseUser(user) {
         if (user) {

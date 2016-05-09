@@ -4,7 +4,7 @@
             Close
         </button>
     </ion-buttons>
-    <ion-title>{{mate.name}}</ion-title>
+    <ion-title>{{mate.friend.name}}</ion-title>
 </ion-toolbar>
 
 <ion-content id="chat" class="chat">
@@ -14,7 +14,7 @@
                 <mate-image [image]="m.from.pic"></mate-image>
             </ion-avatar>
             <p>{{ m.msg }}</p>
-            <span class="date">{{ m.added | date:'medium' }}</span>
+            <span class="date">{{ m.added | messageTime }}</span>
         </div>
     </div>
     <div class="msg">

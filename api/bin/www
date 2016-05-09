@@ -9,6 +9,7 @@ const walk = require('./walk');
 const config = require('../config/database');
 const SocketIoJwt = require('socketio-jwt');
 const helpers = require('../helpers');
+const Message = require('../models/message');
 
 /**
  * Get port from environment and store in Express.
@@ -21,46 +22,66 @@ app.set('port', port);
  */
 var server = http.createServer(app);
 var io = require('socket.io')(server, {serveClient: false});
-var connections = {};
+
+var connections = {
+    updated: false,
+    export: function () {
+        var exported = {};
+        for (var key in connections) {
+            if (connections.hasOwnProperty(key) && key !== 'export' && key !== 'updated') {
+                exported[key] = connections[key].lastActive;
+            }
+        }
+        return exported;
+    }
+};
 
 // set authorization for socket.io
 io.sockets.on('connection', SocketIoJwt.authorize({
     secret: config.secret,
     timeout: 15000 // 15 seconds to send the authentication message
 })).on('authenticated', function (socket) {
-    //this socket is authenticated, we are good to handle more events from it.
+    // this socket is authenticated, we are good to handle more events from it.
     const token = socket.decoded_token;
     const uid = token._id;
 
     // add to online users
-    connections[uid] = socket;
-    // io.sockets.emit('users', Object.keys(connections));
+    connections[uid] = {
+        socket: socket,
+        lastActive: Date.now()
+    };
+    connections.updated = true;
+    setTimeout(() => {
+        socket.emit('users', connections.export()); // send online users immediately
+    }, 1000);
 
     socket.on('chat:send', (data) => {
-        if (connections[data.to]) {
-            connections[data.to].emit('chat:receive', data);
+        // update user last activity
+        connections.updated = true;
+        connections[uid].lastActive = Date.now();
+        io.sockets.emit('users', connections.export()); // update last activity
+
+        if (connections[data.to._id]) {
+            connections[data.to._id].socket.emit('chat:receive', data);
         }
     });
 
-    // socket is sending new friend request
     socket.on('mate:requested', (data) => {
         if (connections[data.myRequest.friend._id]) {
             // notify my future mate
-            connections[data.myRequest.friend._id].emit('mate:pending', data);
+            connections[data.myRequest.friend._id].socket.emit('mate:pending', data);
         }
     });
-    // socket accepted friend request
     socket.on('mate:accepted', (data) => {
         if (connections[data.myRequest.friend._id]) {
             // notify my future mate
-            connections[data.myRequest.friend._id].emit('mate:accepted', data);
+            connections[data.myRequest.friend._id].socket.emit('mate:accepted', data);
         }
     });
-    // socket removed friend request
     socket.on('mate:remove', (data) => {
         if (connections[data.myRequest.friend._id]) {
             // notify my future mate
-            connections[data.myRequest.friend._id].emit('mate:remove', data);
+            connections[data.myRequest.friend._id].socket.emit('mate:remove', data);
         }
     });
 
@@ -71,14 +92,10 @@ io.sockets.on('connection', SocketIoJwt.authorize({
 
     var currentWalk;
     socket.on('walk:start', function (walkStartData) {
-
         // Create new walk and announce it
         currentWalk = walk.start(walkStartData, socket.id);
         socket.broadcast.emit('walk:start', currentWalk.export());
 
-        /**
-         * Subscribe to next events only after started walk
-         */
         socket.on('walk:move', function (data) {
             currentWalk.coords = data.coords;
             socket.broadcast.emit('walk:move', currentWalk.export());
@@ -96,10 +113,31 @@ io.sockets.on('connection', SocketIoJwt.authorize({
             socket.broadcast.emit('walk:stop', currentWalk.export());
         }
         currentWalk = null;
-        delete connections[uid];
-        // io.sockets.emit('users', Object.keys(connections));
+        // delete connections[uid];
+        // io.sockets.emit('users', connections.export());
     });
 });
+
+// send last activity (if one) every minute
+setInterval(() => {
+    if (connections.updated) {
+        io.sockets.emit('users', connections.export());
+        connections.updated = false;
+    }
+}, 60 * 1000);
+
+// delete messages added > 48h
+setInterval(() => {
+    var d = new Date();
+    d.setDate(d.getDate() - 2);
+
+    Message.remove({added: {$lt: d}}, (err, res) => {
+        if (err) {
+            console.err(err);
+        }
+        console.log(res);
+    });
+}, 86400); // check every 24h
 
 /**
  * Listen on provided port, on all network interfaces.

@@ -10,6 +10,8 @@ export class User {
     pets:Array<Pet>;
     mates:Array<Friendship>;
 
+    lastActive:Date = null;
+
     constructor(data?) {
         if (data) {
             Object.assign(this, data);

@@ -1,5 +1,5 @@
 <ion-content>
-    <div *ngIf="mates.mates.accepted.length===0" padding-horizontal>
+    <div *ngIf="(auth.user.mates | friendshipStatus: 'accepted').length === 0" padding-horizontal>
         <p>You have no mates.</p>
         <h6>Add your mates to:</h6>
         <ul>
@@ -11,23 +11,33 @@
             </li>
         </ul>
     </div>
-    <ion-list *ngIf="mates.mates.accepted.length > 0">
-        <ion-item-sliding *ngFor="#mate of mates.mates.accepted">
+    <ion-list *ngIf="(auth.user.mates | friendshipStatus: 'accepted').length > 0">
+        <ion-item-sliding *ngFor="#mate of auth.user.mates | friendshipStatus: 'accepted'">
             <button ion-item (click)="viewMate(mate)">
                 <ion-avatar item-left>
                     <mate-image [image]="mate.friend.pic"></mate-image>
                 </ion-avatar>
                 <h2>{{mate.friend.name}}</h2>
-                <!--<ion-badge item-right *ngIf="mate.newMessages && mate.newMessages > 0">-->
-                    <!--{{mate.newMessages}}-->
-                <!--</ion-badge>-->
+                <p *ngIf="mate.friend.lastActive && mate.friend.lastActive > fourthyEightHours">
+                    Active {{mate.friend.lastActive | messageTime}}
+                </p>
+                <!--<p *ngIf="!mate.friend.lastActive || mate.friend.lastActive <= fourthyEightHours">-->
+                    <!--Inactive-->
+                <!--</p>-->
+                <ion-badge item-right *ngIf="mate.newMessages && mate.newMessages > 0">
+                    {{mate.newMessages}}
+                </ion-badge>
             </button>
             <ion-item-options>
-                <button primary (click)="chatWith(mate.friend)">
+                <button primary (click)="chatWith(mate)">
                     <ion-icon name="text"></ion-icon>
                     Chat
                 </button>
             </ion-item-options>
         </ion-item-sliding>
     </ion-list>
+
+    <p text-center text-small>
+        Chat messages are kept for the last 48h.
+    </p>
 </ion-content>

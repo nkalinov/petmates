@@ -29,5 +29,6 @@ var single = multer({
 module.exports = {
     single: single,
     dest: paths.public + paths.uploads,
-    uploads: 'http://192.168.0.104:3001/' + paths.uploads // API public link
+    uploads: 'http://127.0.0.1:3001/' + paths.uploads // API public link
+    // uploads: 'http://192.168.0.104:3001/' + paths.uploads // API public link
 };

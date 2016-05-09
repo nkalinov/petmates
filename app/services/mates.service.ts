@@ -1,6 +1,7 @@
+import {LocalNotifications} from 'ionic-native';
+import {Events, Config} from 'ionic-angular';
 import {Injectable} from 'angular2/core';
 import {Http, Headers} from 'angular2/http';
-import {Events, Config} from 'ionic-angular';
 import {Subject} from 'rxjs/Subject';
 import {User} from '../models/user.model.ts';
 import {AuthService} from './auth.service';
@@ -18,6 +19,7 @@ export class MatesService {
         requested: [],
         pending: []
     };
+    onlineUsers:Object;
 
     constructor(private http:Http,
                 private events:Events,
@@ -76,6 +78,7 @@ export class MatesService {
                                 this.sockets.socket.emit('mate:requested', res.data);
                             }
                             this.sortMatesByStatus();
+                            this.updateLastActivity();
                         }
                     } else {
                         this.events.publish('alert:error', res.msg);
@@ -125,28 +128,40 @@ export class MatesService {
         });
     }
 
-    sortMatesByStatus() {
+    sortMatesByStatus(sortOnly = 'all') {
         setTimeout(() => {
-            this.mates.accepted = this.auth.user.mates.filter((f:Friendship) => {
-                return f.status === STATUS_ACCEPTED;
-            });
-            this.mates.requested = this.auth.user.mates.filter((f:Friendship) => {
-                return f.status === STATUS_REQUESTED;
-            });
-            this.mates.pending = this.auth.user.mates.filter((f:Friendship) => {
-                return f.status === STATUS_PENDING;
-            });
-            this.pending$.next(this.mates.pending.length);
-            console.debug('sortMatesByStatus', this.mates);
+            if (sortOnly === 'accepted' || sortOnly === 'all') {
+                this.mates.accepted = this.auth.user.mates.filter((f:Friendship) => {
+                    return f.status === STATUS_ACCEPTED;
+                });
+            }
+            if (sortOnly === 'requested' || sortOnly === 'all') {
+                this.mates.requested = this.auth.user.mates.filter((f:Friendship) => {
+                    return f.status === STATUS_REQUESTED;
+                });
+            }
+            if (sortOnly === 'pending' || sortOnly === 'all') {
+                this.mates.pending = this.auth.user.mates.filter((f:Friendship) => {
+                    return f.status === STATUS_PENDING;
+                });
+                this.pending$.next(this.mates.pending.length);
+            }
+            // console.debug('sortMatesByStatus', this.mates);
         }, 0);
     }
 
     registerSocketEvents(socket) {
+        // online users
+        socket.on('users', (data) => {
+            this.onlineUsers = data;
+            this.updateLastActivity();
+        });
+
         // someone sent me friend request
         socket.on('mate:pending', (data:any) => {
             console.info('mate:pending', data);
             this.auth.user.mates.push(data.fRequest);
-            this.sortMatesByStatus();
+            this.sortMatesByStatus('pending');
         });
 
         // accepted my request
@@ -159,6 +174,7 @@ export class MatesService {
                 this.auth.user.mates[index] = data.fRequest;
             }
             this.sortMatesByStatus();
+            this.updateLastActivity();
         });
 
         // removed my request
@@ -172,5 +188,16 @@ export class MatesService {
             }
             this.sortMatesByStatus();
         });
+    }
+
+    private updateLastActivity() {
+        console.info('updateLastActivity()');
+        if (this.onlineUsers) {
+            this.mates.accepted.forEach((f:Friendship) => {
+                if (this.onlineUsers[f.friend._id]) {
+                    f.friend.lastActive = new Date(this.onlineUsers[f.friend._id]);
+                }
+            });
+        }
     }
 }

@@ -21,14 +21,14 @@ import {MatesPage} from "./pages/mates/mates";
 import {SocketService} from "./services/socket.service";
 import {MatesService} from "./services/mates.service";
 import {ChatService} from "./services/chat.service";
-import {Subscription} from "rxjs/Subscription";
 
 enableProdMode();
 
 @App({
     templateUrl: 'build/app.html',
     config: {
-        API: 'http://192.168.0.104:3001',
+        API: 'http://127.0.0.1:3001',
+        // API: 'http://192.168.0.104:3001',
         emitCoordsIntervalMs: 10000,
         deleteInactiveIntervalMs: 20000,
         defaultPetImage: '/build/img/default_pet.jpg',
@@ -46,12 +46,12 @@ enableProdMode();
 class MyApp {
     pages:Array<any> = [];
     rootPage:any;
-    pages:Array<{title:string, component:any}>;
+    pages:Array<{title:string, component:any, active:boolean}>;
     local:Storage = new Storage(LocalStorage);
 
     private defaultRootPage:MatesPage = MatesPage;
     private authModal:ViewController;
-    
+
     constructor(public auth:AuthService,
                 public walk:WalkService,
                 private app:IonicApp,
@@ -69,25 +69,29 @@ class MyApp {
     }
 
     openPage(page) {
-        if (page.component === AuthModal) {
-            this.showAuthModal();
-        } else {
-            // Reset the content nav to have just this page
-            // we wouldn't want the back button to show in this scenario
-            let nav = this.app.getRootNav();
-            nav.setRoot(page.component);
+        if (!page.active) {
+            if (page.component === AuthModal) {
+                this.showAuthModal();
+            } else {
+                // reset active state
+                this.pages.forEach((page) => page.active = false);
+
+                // Reset the content nav to have just this page
+                // we wouldn't want the back button to show in this scenario
+                let nav = this.app.getRootNav();
+                nav.setRoot(page.component);
+                page.active = true;
+            }
         }
     }
 
     private initializeApp() {
         this.subscribeToEvents();
 
-        this.auth.init().then(() => {
-            this.rootPage = this.defaultRootPage;
-            this.pages = CommonService.getMenu(true);
+        this.auth.init().then((user) => {
             this.loggedIn();
-        }, () => {
-            this.pages = CommonService.getMenu();
+        }, (err) => {
+            this.loggedOut();
         });
     }
 
@@ -110,6 +114,11 @@ class MyApp {
         this.authModal = Modal.create(AuthModal);
         let nav:NavController = this.app.getComponent('nav');
         nav.present(this.authModal);
+        // set as active
+        let find = this.pages.find((page) => page.component === AuthModal);
+        if (find) {
+            find.active = true;
+        }
     }
 
     private showAlert(msg, title:string = 'Error!') {
@@ -123,25 +132,33 @@ class MyApp {
     }
 
     private loggedIn() {
-        this.pages = CommonService.getMenu(true);
         this.rootPage = this.defaultRootPage;
+        this.pages = CommonService.getMenu(true);
+
+        // set as active
+        let find = this.pages.find((page) => page.component === this.rootPage);
+        if (find) {
+            find.active = true;
+        }
+
         this.mates.sortMatesByStatus();
-        
+
         // register socket events handlers
         this.sockets.init().then((socket) => {
             this.mates.registerSocketEvents(socket);
             this.chat.registerChatEvents(socket);
-            // socket.on('users', (data) => {
-            // });
+
             if (this.authModal) {
-                this.authModal.dismiss();
+                setTimeout(() => {
+                    this.authModal.dismiss();
+                }, 500);
             }
         });
     }
 
     private loggedOut() {
+        this.pages = CommonService.getMenu();
         this.sockets.disconnect();
-        // todo unsubscribe
         this.showAuthModal();
     }
 }

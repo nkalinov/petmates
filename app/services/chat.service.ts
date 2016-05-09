@@ -90,19 +90,18 @@ export class ChatService {
     }
 
     registerChatEvents(socket) {
-        socket.on('chat:receive', (data:Message) => {
-            // let find = this.mates.mates.accepted.find((f:Friendship) => {
-            //     if (data.from._id === f.friend._id) {
-            //         if (f.newMessages) {
-            //             f.newMessages += 1;
-            //         } else {
-            //             f.newMessages = 1;
-            //         }
-            //     }
-            // });
-            // to === me
+        socket.on('chat:receive', (data:any) => {
+            let find = this.mates.mates.accepted.find((f:Friendship) => {
+                if (data.from._id === f.friend._id) {
+                    if (f.newMessages) {
+                        f.newMessages += 1;
+                    } else {
+                        f.newMessages = 1;
+                    }
+                }
+            });
             console.info('chat:receive', data);
-            this.addMessage(data, 'from'); // from:User
+            this.addMessage(new Message(data), 'from'); // from:User
         });
     }
 
@@ -110,6 +109,6 @@ export class ChatService {
         if (!this.messages[message[fromto]._id]) {
             this.messages[message[fromto]._id] = [];
         }
-        this.messages[message[fromto]._id].push(message);
+        this.messages[message[fromto]._id].unshift(message);
     }
 }

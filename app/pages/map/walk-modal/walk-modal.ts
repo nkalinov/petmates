@@ -4,9 +4,10 @@ import {WalkService} from '../../../services/walk.service.ts';
 import {PetsPage} from '../../pets/pets';
 import {AgeInfo} from '../../../common/age';
 import {GenderInfo} from '../../../common/gender';
+import {PetImage} from '../../../common/pet-image';
 
 @Page({
-    directives: [GenderInfo, AgeInfo],
+    directives: [GenderInfo, AgeInfo, PetImage],
     templateUrl: 'build/pages/map/walk-modal/walk-modal.html'
 })
 
@@ -19,9 +20,8 @@ export class WalkModal {
                 public viewCtrl:ViewController) {
     }
 
-    start(e) {
+    start() {
         this.walk.start(this.selectedPet);
         this.viewCtrl.dismiss();
-        return false;
     }
 }

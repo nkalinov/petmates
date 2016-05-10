@@ -1,6 +1,9 @@
 <ion-content>
     <div *ngIf="mates.mates.requested.length===0" padding-horizontal>
-        <p>No pending requests.</p>
+        <p text-center>
+            <ion-icon name="information-circle"></ion-icon>
+            No requests without response.
+        </p>
     </div>
     <ion-list *ngIf="mates.mates.requested.length > 0">
         <ion-item-sliding *ngFor="#mate of mates.mates.requested">

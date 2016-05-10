@@ -100,7 +100,6 @@ export class ChatService {
                     }
                 }
             });
-            console.info('chat:receive', data);
             this.addMessage(new Message(data), 'from'); // from:User
         });
     }

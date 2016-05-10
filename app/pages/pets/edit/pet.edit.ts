@@ -1,5 +1,5 @@
 import {Page, ViewController, NavParams, Alert, NavController, Config, IonicApp} from 'ionic-angular';
-import {DatePicker, Camera} from 'ionic-native';
+import {DatePicker, Camera, ImagePicker} from 'ionic-native';
 import {FormBuilder, ControlGroup, Validators} from 'angular2/common';
 import {forwardRef} from 'angular2/core';
 import {BreedService} from '../../../services/breed.service';
@@ -112,43 +112,50 @@ export class PetEditPage {
     }
 
     changePicture() {
-        if ((<any>navigator).camera && FileTransfer) {
-            Camera.getPicture({
-                destinationType: 1, // 0=DATA_URL 1=FILE_URI
-                cameraDirection: 1, // FRONT
-                // targetWidth: 600,
-                // targetHeight: 300,
-            }).then((imageData) => {
-                    var options = new FileUploadOptions();
-                    options.fileKey = 'picture';
-                    options.headers = {
-                        'Authorization': this.pets.auth.token
-                    };
+        ImagePicker.getPictures({
+            // max images to be selected, defaults to 15. If this is set to 1, upon
+            // selection of a single image, the plugin will return it.
+            maximumImagesCount: 1,
 
-                    var ft = new FileTransfer();
-                    ft.upload(imageData, encodeURI(`${this.config.get('API')}/user/upload`),
-                        (res) => {
-                            res.response = JSON.parse(res.response);
+            // max width and height to allow the images to be.  Will keep aspect
+            // ratio no matter what.  So if both are 800, the returned image
+            // will be at most 800 pixels wide and 800 pixels tall.  If the width is
+            // 800 and height 0 the image will be 800 pixels wide if the source
+            // is at least that wide.
+            width: 200,
+            height: 200,
 
-                            if (res.response.success) {
-                                this.pet.pic = res.response.file.url;
-                                // replace
-                                let index = this.pets.auth.getPetIndexById(this.pet._id);
-                                if (index > -1) {
-                                    this.pets.auth.user.pets[index] = this.pet;
-                                }
-                            } else {
-                                this.pets.events.publish('alert:error', res.response.msg);
+            // quality of resized image, defaults to 100
+            quality: 60
+        }).then((image) => {
+                var options = new FileUploadOptions();
+                options.fileKey = 'picture';
+                options.headers = {
+                    'Authorization': this.pets.auth.token
+                };
+                var ft = new FileTransfer();
+                ft.upload(image, encodeURI(`${this.config.get('API')}/user/upload`),
+                    (res) => {
+                        res.response = JSON.parse(res.response);
+
+                        if (res.response.success) {
+                            this.pet.pic = res.response.file.url;
+                            // replace
+                            let index = this.pets.auth.getPetIndexById(this.pet._id);
+                            if (index > -1) {
+                                this.pets.auth.user.pets[index] = this.pet;
                             }
-                        },
-                        (err) => {
-                            this.pets.events.publish('alert:error', err.text());
-                        }, options);
-                },
-                (err) => {
-                    this.pets.events.publish('alert:error', err.text());
-                });
-        }
+                        } else {
+                            this.pets.events.publish('alert:error', res.response.msg);
+                        }
+                    },
+                    (err) => {
+                        this.pets.events.publish('alert:error', err.text());
+                    }, options);
+            },
+            (err) => {
+                this.pets.events.publish('alert:error', err.text());
+            });
     }
 
     // dev

@@ -17,10 +17,10 @@ import {AuthService} from './services/auth.service';
 import {BreedService} from './services/breed.service';
 import {WalkService} from './services/walk.service.ts';
 import {CommonService} from './services/common.service';
-import {MatesPage} from "./pages/mates/mates";
-import {SocketService} from "./services/socket.service";
-import {MatesService} from "./services/mates.service";
-import {ChatService} from "./services/chat.service";
+import {SocketService} from './services/socket.service';
+import {MatesService} from './services/mates.service';
+import {ChatService} from './services/chat.service';
+import {MapPage} from './pages/map/map';
 
 enableProdMode();
 
@@ -29,8 +29,8 @@ enableProdMode();
     config: {
         API: 'http://127.0.0.1:3001',
         // API: 'http://192.168.0.104:3001',
-        emitCoordsIntervalMs: 10000,
-        deleteInactiveIntervalMs: 20000,
+        emitCoordsIntervalMs: 15 * 1000,
+        deleteInactiveIntervalMs: 30 * 1000,
         defaultPetImage: '/build/img/default_pet.jpg',
         defaultMateImage: '/build/img/default_user.gif',
     },
@@ -43,13 +43,13 @@ enableProdMode();
         ChatService
     ]
 })
-class MyApp {
+class PetMatesApp {
     pages:Array<any> = [];
     rootPage:any;
     pages:Array<{title:string, component:any, active:boolean}>;
     local:Storage = new Storage(LocalStorage);
 
-    private defaultRootPage:MatesPage = MatesPage;
+    private defaultRootPage:any = MapPage;
     private authModal:ViewController;
 
     constructor(public auth:AuthService,
@@ -147,6 +147,7 @@ class MyApp {
         this.sockets.init().then((socket) => {
             this.mates.registerSocketEvents(socket);
             this.chat.registerChatEvents(socket);
+            this.walk.registerSocketEvents(socket);
 
             if (this.authModal) {
                 setTimeout(() => {

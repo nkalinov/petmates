@@ -1,5 +1,5 @@
 <ion-content>
-    <div *ngIf="(auth.user.mates | friendshipStatus: 'accepted').length === 0" padding-horizontal>
+    <div *ngIf="mates.mates.accepted.length === 0" padding-horizontal>
         <p>You have no mates.</p>
         <h6>Add your mates to:</h6>
         <ul>
@@ -11,9 +11,9 @@
             </li>
         </ul>
     </div>
-    <ion-list *ngIf="(auth.user.mates | friendshipStatus: 'accepted').length > 0">
-        <ion-item-sliding *ngFor="#mate of auth.user.mates | friendshipStatus: 'accepted'">
-            <button ion-item (click)="viewMate(mate)">
+    <ion-list>
+        <ion-item-sliding *ngFor="#mate of mates.mates.accepted">
+            <button ion-item (click)="chatWith(mate)">
                 <ion-avatar item-left>
                     <mate-image [image]="mate.friend.pic"></mate-image>
                 </ion-avatar>
@@ -21,17 +21,18 @@
                 <p *ngIf="mate.friend.lastActive && mate.friend.lastActive > fourthyEightHours">
                     Active {{mate.friend.lastActive | messageTime}}
                 </p>
-                <!--<p *ngIf="!mate.friend.lastActive || mate.friend.lastActive <= fourthyEightHours">-->
-                    <!--Inactive-->
-                <!--</p>-->
                 <ion-badge item-right *ngIf="mate.newMessages && mate.newMessages > 0">
                     {{mate.newMessages}}
                 </ion-badge>
             </button>
             <ion-item-options>
-                <button primary (click)="chatWith(mate)">
-                    <ion-icon name="text"></ion-icon>
-                    Chat
+                <button primary (click)="viewMate(mate)">
+                    <ion-icon name="eye"></ion-icon>
+                    View
+                </button>
+                <button danger (click)="removeMate(mate)">
+                    <ion-icon name="remove-circle"></ion-icon>
+                    Remove
                 </button>
             </ion-item-options>
         </ion-item-sliding>

@@ -1,8 +1,11 @@
 <ion-content>
     <div *ngIf="mates.mates.pending.length===0" padding-horizontal>
-        <p>No new requests.</p>
+        <p text-center>
+            <ion-icon name="information-circle"></ion-icon>
+            No new requests.
+        </p>
     </div>
-    <ion-list *ngIf="mates.mates.pending.length > 0">
+    <ion-list>
         <ion-item-sliding *ngFor="#mate of mates.mates.pending">
             <button ion-item>
                 <ion-avatar item-left>
@@ -12,10 +15,12 @@
             </button>
             <ion-item-options>
                 <button secondary (click)="acceptRequest(mate)">
+                    <ion-icon name="checkmark-circle"></ion-icon>
                     Accept
                 </button>
                 <button danger (click)="cancelRequest(mate)">
-                    Cancel
+                    <ion-icon name="remove-circle"></ion-icon>
+                    Remove
                 </button>
             </ion-item-options>
         </ion-item-sliding>

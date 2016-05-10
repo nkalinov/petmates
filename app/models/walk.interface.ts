@@ -1,11 +1,10 @@
 import LatLngExpression = L.LatLngExpression;
-import {Pet} from './pet.model';
-import {User} from "./user.model";
 import Marker = L.Marker;
 
 export interface Walk {
-    id:string;
+    id?:string;
     user?:{
+        _id:string,
         name:string
     };
     coords?:LatLngExpression;

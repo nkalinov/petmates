@@ -14,9 +14,8 @@
 
 <ion-content>
     <ion-row no-padding wrap center>
-        <ion-col no-padding width-100 class="profile-picture">
-            <img *ngIf="user.pic" src="{{ user.pic }}" (click)="changePicture()">
-            <img *ngIf="!user.pic" src="build/img/default_user.gif" (click)="changePicture()">
+        <ion-col no-padding width-100 class="profile-picture" (click)="changePicture()">
+            <mate-image [image]="user.pic"></mate-image>
             <p class="change-text">Change picture</p>
         </ion-col>
     </ion-row>

@@ -26,7 +26,6 @@
     "cordova-plugin-file-transfer",
     "cordova-plugin-image-picker",
     "cordova-plugin-datepicker",
-    "cordova-plugin-camera",
     {
       "locator": "https://github.com/apache/cordova-plugin-whitelist.git",
       "id": "cordova-plugin-whitelist"

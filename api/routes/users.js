@@ -6,21 +6,44 @@ var upload = require('../config/upload');
 var helpers = require('../helpers');
 var fs = require('fs');
 var Jimp = require('jimp');
+var User = require('../models/user');
 
 // check token validity and that user exists
 router.post('/check', passport.authenticate('jwt', {session: false}), function (req, res) {
-    // TODO updates user's last activity timestamp
     return res.json({success: true, data: helpers.parseUser(req.user)});
 });
 
 // delete
-// TODO remove picture files (profile and pets)
 router.delete('/', passport.authenticate('jwt', {session: false}), function (req, res) {
-    req.user.remove(function (err, user) {
-        if (err) {
-            throw err;
+    var user = req.user;
+
+    req.user.remove(function (err) {
+        if (err)
+            return res.json({success: false, msg: err});
+
+        // deletion OK, continue in the background...
+        res.json({success: true});
+
+        // delete profile picture
+        if (user.picture) {
+            fs.unlink(upload.dest + user.picture);
         }
-        return res.json({success: true});
+        // delete pets pictures
+        if (user.pets && user.pets.length) {
+            user.pets.forEach((pet) => {
+                if (pet.picture) {
+                    fs.unlink(upload.dest + pet.picture);
+                }
+            });
+        }
+        // remove user from other's mates
+        if (user.mates && user.mates.length) {
+            User.update({_id: {$in: user.mates.map((m) => m.friend._id)}}, {
+                $pull: {
+                    mates: {friend: user._id}
+                }
+            }, {multi: true}).exec();
+        }
     });
 });
 
@@ -92,8 +115,9 @@ router.post('/upload', passport.authenticate('jwt', {session: false}), function 
                                 Jimp.read(upload.dest + file.finalname, function (err, picture) {
                                     if (err) throw err;
                                     if (!err) {
-                                        picture.resize(Jimp.AUTO, 200)            // resize
-                                            .quality(60)                 // set JPEG quality
+                                        picture
+                                        // .resize(Jimp.AUTO, 200)            // resize
+                                            .quality(100)                 // set JPEG quality
                                             .write(upload.dest + file.finalname, function () {
                                                 // return with src URL
                                                 file.url = upload.uploads + file.finalname;

@@ -1,4 +1,4 @@
-import {Page, IonicApp, NavParams, NavController, Alert} from 'ionic-angular';
+import {Page, IonicApp, NavParams, NavController, Alert, Modal} from 'ionic-angular';
 import {forwardRef} from 'angular2/core';
 import {AgeInfo} from '../../../common/age';
 import {GenderInfo} from '../../../common/gender';
@@ -6,6 +6,7 @@ import {PetImage} from '../../../common/pet-image';
 import {MateImage} from '../../../common/mate-image';
 import {MatesService} from '../../../services/mates.service';
 import {Friendship} from "../../../models/friendship.interface";
+import {ChatPage} from "../../chat/chat";
 
 @Page({
     templateUrl: 'build/pages/mates/view/mate.view.html',
@@ -28,6 +29,12 @@ export class MateViewPage {
         this.mate = navParams.get('mate');
     }
 
+    chatWith(mate:Friendship) {
+        this.nav.present(Modal.create(ChatPage, {
+            mate: mate
+        }));
+    }
+    
     removeMate() {
         let alert = Alert.create({
             title: 'Remove mate',

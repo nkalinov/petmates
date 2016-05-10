@@ -1,12 +1,13 @@
-import {Page, ViewController, Events, Config} from 'ionic-angular/index';
+import {ImagePicker} from 'ionic-native';
+import {Page, ViewController, Events, Config} from 'ionic-angular';
 import {AuthService} from '../../../services/auth.service';
 import {User} from '../../../models/user.model.ts';
-import {Camera} from 'ionic-native';
-import {Http} from 'angular2/http';
-import {CommonService} from "../../../services/common.service";
+import {CommonService} from '../../../services/common.service';
+import {MateImage} from '../../../common/mate-image';
 
 @Page({
-    templateUrl: 'build/pages/profile/edit/profile.edit.html'
+    templateUrl: 'build/pages/profile/edit/profile.edit.html',
+    directives: [MateImage]
 })
 
 export class ProfileEdit {
@@ -17,7 +18,7 @@ export class ProfileEdit {
                 private auth:AuthService,
                 private config:Config,
                 private events:Events) {
-        this.user = (JSON.parse(JSON.stringify(this.auth.user))); // clone
+        this.user = JSON.parse(JSON.stringify(this.auth.user)); // clone
     }
 
     public cancel() {
@@ -25,47 +26,57 @@ export class ProfileEdit {
     }
 
     public save() {
-        this.auth.update(this.user)
-            .subscribe(() => {
-                this.viewCtrl.dismiss();
-            })
+        this.auth.update(this.user).subscribe(() => {
+            this.viewCtrl.dismiss();
+        })
     }
 
     public changePicture() {
-        if ((<any>navigator).camera && FileTransfer) {
-            Camera.getPicture({
-                destinationType: 1, // 0=DATA_URL 1=FILE_URI
-                cameraDirection: 1, // FRONT
-                // targetWidth: 600,
-                // targetHeight: 300,
-            }).then((imageData) => {
-                    var options = new FileUploadOptions();
-                    options.fileKey = 'picture';
-                    options.headers = {
-                        'Authorization': this.auth.token
-                    };
-                    var ft = new FileTransfer();
-                    ft.upload(imageData, encodeURI(`${this.config.get('API')}/user/upload`),
-                        (res) => {
-                            console.log(res);
-                            res.response = JSON.parse(res.response);
+        ImagePicker.getPictures({
+            // max images to be selected, defaults to 15. If this is set to 1, upon
+            // selection of a single image, the plugin will return it.
+            maximumImagesCount: 1,
 
-                            if (res.response.success) {
-                                // change img src and update token
-                                this.user.pic = res.response.file.url;
-                                this.auth.user.pic = this.user.pic;
-                            } else {
-                                this.events.publish('alert:error', res.response.msg);
-                            }
-                        },
-                        (err) => {
-                            this.events.publish('alert:error', err.text());
-                        }, options);
-                },
-                (err) => {
-                    this.events.publish('alert:error', err.text());
-                });
-        }
+            // max width and height to allow the images to be.  Will keep aspect
+            // ratio no matter what.  So if both are 800, the returned image
+            // will be at most 800 pixels wide and 800 pixels tall.  If the width is
+            // 800 and height 0 the image will be 800 pixels wide if the source
+            // is at least that wide.
+            width: 200,
+            height: 200,
+
+            // quality of resized image, defaults to 100
+            quality: 60
+        }).then((image) => {
+            for (var i = 0; i < image.length; i++) {
+                console.log('Image URI: ' + image[i]);
+            }
+            if (image) {
+                var options = new FileUploadOptions();
+                options.fileKey = 'picture';
+                options.headers = {
+                    'Authorization': this.auth.token
+                };
+                var ft = new FileTransfer();
+                ft.upload(image, encodeURI(`${this.config.get('API')}/user/upload`),
+                    (res) => {
+                        res.response = JSON.parse(res.response);
+
+                        if (res.response.success) {
+                            // change img src
+                            this.user.pic = res.response.file.url;
+                            this.auth.user.pic = this.user.pic;
+                        } else {
+                            this.events.publish('alert:error', res.response.msg);
+                        }
+                    },
+                    (err) => {
+                        this.events.publish('alert:error', err.text());
+                    }, options);
+            }
+        }, (err) => {
+            this.events.publish('alert:error', err);
+        });
     }
 
     // dev
@@ -73,7 +84,6 @@ export class ProfileEdit {
         this.picture = <Array<File>> fileInput.target.files[0];
         this.upload();
     }
-
     // dev
     private upload() {
         CommonService.makeFileRequest(`${this.config.get('API')}/user/upload`, this.picture, this.auth.token).then(

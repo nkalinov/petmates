@@ -19,7 +19,8 @@ export class MatesService {
         requested: [],
         pending: []
     };
-    onlineUsers:Object;
+
+    private onlineUsers:Object;
 
     constructor(private http:Http,
                 private events:Events,
@@ -69,16 +70,16 @@ export class MatesService {
                             if (index > -1) {
                                 // replace
                                 this.auth.user.mates[index] = res.data.myRequest;
-                                this.sockets.socket.emit('mate:accepted', res.data);
+                                this.sockets.socket.emit('mate:', 'accepted', res.data);
                             } else {
                                 // we are sending new request
                                 this.auth.user.mates.push(res.data.myRequest);
 
                                 // notify other side
-                                this.sockets.socket.emit('mate:requested', res.data);
+                                this.sockets.socket.emit('mate:', 'requested', res.data);
                             }
                             this.sortMatesByStatus();
-                            this.updateLastActivity();
+                            this.updateUsersLastActivity();
                         }
                     } else {
                         this.events.publish('alert:error', res.msg);
@@ -110,7 +111,7 @@ export class MatesService {
                         });
                         if (index > -1) {
                             this.auth.user.mates.splice(index, 1);
-                            this.sockets.socket.emit('mate:remove', res.data);
+                            this.sockets.socket.emit('mate:', 'remove', res.data);
                             this.sortMatesByStatus();
                         }
                     } else {
@@ -125,6 +126,54 @@ export class MatesService {
                     observer.complete();
                 }
             );
+        });
+    }
+
+    registerSocketEvents(socket) {
+        socket.on('users', (data) => {
+            this.onlineUsers = data;
+            this.updateUsersLastActivity();
+        });
+
+        socket.on('mate:', (action:string, data:{fRequest:Friendship, myRequest:Friendship}) => {
+            switch (action) {
+                case 'requested':
+                    // someone sent me friend request
+                    this.auth.user.mates.push(data.fRequest);
+                    LocalNotifications.schedule({
+                        id: 1,
+                        text: `New mate request from ${data.fRequest.friend.name}.`
+                    });
+                    this.sortMatesByStatus('pending');
+                    break;
+
+                case 'accepted':
+                    // accepted my request
+                    let index = this.auth.user.mates.findIndex((f) => {
+                        return f._id === data.fRequest._id;
+                    });
+                    if (index > -1) {
+                        this.auth.user.mates[index] = data.fRequest;
+
+                        LocalNotifications.schedule({
+                            id: 1,
+                            text: `${data.fRequest.friend.name} accepted your mate request.`
+                        });
+                        this.sortMatesByStatus();
+                        this.updateUsersLastActivity();
+                    }
+                    break;
+
+                case 'remove':
+                    let index = this.auth.user.mates.findIndex((f) => {
+                        return f._id === data.fRequest._id;
+                    });
+                    if (index > -1) {
+                        this.auth.user.mates.splice(index, 1);
+                        this.sortMatesByStatus();
+                    }
+                    break;
+            }
         });
     }
 
@@ -146,52 +195,10 @@ export class MatesService {
                 });
                 this.pending$.next(this.mates.pending.length);
             }
-            // console.debug('sortMatesByStatus', this.mates);
         }, 0);
     }
 
-    registerSocketEvents(socket) {
-        // online users
-        socket.on('users', (data) => {
-            this.onlineUsers = data;
-            this.updateLastActivity();
-        });
-
-        // someone sent me friend request
-        socket.on('mate:pending', (data:any) => {
-            console.info('mate:pending', data);
-            this.auth.user.mates.push(data.fRequest);
-            this.sortMatesByStatus('pending');
-        });
-
-        // accepted my request
-        socket.on('mate:accepted', (data:any) => {
-            console.info('mate:accepted', data);
-            let index = this.auth.user.mates.findIndex((f) => {
-                return f._id === data.fRequest._id;
-            });
-            if (index > -1) {
-                this.auth.user.mates[index] = data.fRequest;
-            }
-            this.sortMatesByStatus();
-            this.updateLastActivity();
-        });
-
-        // removed my request
-        socket.on('mate:remove', (data:any) => {
-            console.info('mate:remove', data);
-            let index = this.auth.user.mates.findIndex((f) => {
-                return f._id === data.fRequest._id;
-            });
-            if (index > -1) {
-                this.auth.user.mates.splice(index, 1);
-            }
-            this.sortMatesByStatus();
-        });
-    }
-
-    private updateLastActivity() {
-        console.info('updateLastActivity()');
+    private updateUsersLastActivity() {
         if (this.onlineUsers) {
             this.mates.accepted.forEach((f:Friendship) => {
                 if (this.onlineUsers[f.friend._id]) {

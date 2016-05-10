@@ -5,13 +5,13 @@
     <ion-title>Mates</ion-title>
     <ion-buttons end>
         <button secondary (click)="searchMateModal()">
-            <ion-icon name="search"></ion-icon>
+            <ion-icon name="person-add"></ion-icon>
         </button>
     </ion-buttons>
 </ion-navbar>
 
-<ion-tabs>
-    <ion-tab [root]="tabAccepted" tabTitle="My mates"></ion-tab>
-    <ion-tab [root]="tabRequested" tabTitle="Sent requests"></ion-tab>
-    <ion-tab [root]="tabNew" tabTitle="Pending requests" tabBadgeStyle="danger"></ion-tab>
+<ion-tabs preloadTabs="true">
+    <ion-tab [root]="tabAccepted" tabTitle="My mates" tabIcon="contacts"></ion-tab>
+    <ion-tab [root]="tabRequested" tabTitle="Sent requests" tabIcon="share-alt"></ion-tab>
+    <ion-tab [root]="tabNew" tabTitle="Pending requests" tabBadgeStyle="danger" tabIcon="notifications"></ion-tab>
 </ion-tabs>

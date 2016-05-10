@@ -21,7 +21,7 @@ router.post('/', passport.authenticate('jwt', {session: false}),
 
         // save
         req.user.save(function (err, user) {
-            if (err) 
+            if (err)
                 return res.json({success: false, msg: err});
             return res.json({success: true, pet: req.user.pets[user.pets.length - 1]});
         });
@@ -168,8 +168,9 @@ router.post('/:id/upload',
                                                     Jimp.read(upload.dest + file.finalname, function (err, picture) {
                                                         if (err) throw err;
                                                         if (!err) {
-                                                            picture.resize(Jimp.AUTO, 200)            // resize
-                                                                .quality(60)                 // set JPEG quality
+                                                            picture
+                                                                // .resize(Jimp.AUTO, 200)            // resize
+                                                                .quality(100)                 // set JPEG quality
                                                                 .write(upload.dest + file.finalname, function () {
                                                                     // return with src URL
                                                                     file.url = upload.uploads + file.finalname;

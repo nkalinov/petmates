@@ -1,9 +1,33 @@
-var Walk = require('./walk.model');
+/**
+ *  id?:string;
+ *  user?:{
+ *      _id:string,
+ *      name:string
+ *  };
+ *  coords?:LatLngExpression;
+ *  pet?:{
+ *      name:string,
+ *      breed:{name:string},
+ *      birthday:Date,
+ *      pic:string
+ *  };
+ */
+function Walk(data, socket) {
+    // this.socket = socket;
+
+    if (data) {
+        Object.assign(this, data);
+    }
+}
+
 
 module.exports = (function () {
     var walks = [];
-    var exports = {
-        walks: walks
+
+    return {
+        walks: walks,
+        start: start,
+        stop: stop
     };
 
     /**
@@ -12,27 +36,24 @@ module.exports = (function () {
      * @param socketId
      * @returns Walk
      */
-    exports.start = function (data, socketId) {
-        // console.log('walk:start', JSON.stringify(data));
-        return walks[walks.push(new Walk(data, socketId)) - 1];
-    };
+    function start(data, socketId) {
+        var newLength = walks.push(new Walk(data, socketId));
+        return walks[newLength - 1];
+    }
 
     /**
      * Stop walk
      * @param walk
      * @returns {boolean}
      */
-    exports.stop = function (walk) {
-        if(walk) {
+    function stop(walk) {
+        if (walk) {
             var index = walks.indexOf(walk);
             if (index > -1) {
-                // console.log('walk:stop', JSON.stringify(walk));
                 walks.splice(index, 1);
                 return true;
             }
         }
         return false;
-    };
-
-    return exports;
+    }
 })();

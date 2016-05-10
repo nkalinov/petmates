@@ -89,12 +89,19 @@ UserSchema.methods.requestFriend = function (uid, cb) {
                 'mates.$.status': Friendship.Status.ACCEPTED,
                 'mates.$.added': Date.now()
             }
-        }, {new: true}).exec().then((friendUpdated) => {
-            // accept my 'pending' request
+        }, {new: true}, (err, friendUpdated) => {
             var myRequest = this.mates.id(find._id);
-            myRequest.status = Friendship.Status.ACCEPTED;
-            myRequest.added = Date.now();
+            if (err) {
+                // delete
+                myRequest.remove();
+            } else {
+                // accept my 'pending' request
+                myRequest.status = Friendship.Status.ACCEPTED;
+                myRequest.added = Date.now();
+            }
             this.save().then(() => {
+                if (err)
+                    return cb('User deleted');
                 cb(null, {
                     myRequest: myRequest,
                     fRequest: friendUpdated.mates.find((r) => r.friend.equals(this._id))
@@ -111,7 +118,10 @@ UserSchema.methods.requestFriend = function (uid, cb) {
                     friend: this._id
                 }
             }
-        }, {new: true}).exec().then((friendUpdated) => {
+        }, {new: true}, (err, friendUpdated) => {
+            if (err)
+                return cb('User deleted');
+
             // add new mate
             this.mates.push({
                 status: Friendship.Status.REQUESTED,
@@ -140,7 +150,7 @@ UserSchema.methods.removeFriend = function (fid) {
                     // remove friendship from OTHER side
                     this.model('User').findOneAndUpdate({_id: uid}, {
                         $pull: {
-                            'mates': {'mate.friend': this._id}
+                            mates: {friend: this._id}
                         }
                     }).exec().then((friendUpdated) => {
                         resolve({

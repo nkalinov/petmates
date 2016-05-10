@@ -9,6 +9,7 @@ import {CommonService} from "../../services/common.service";
 
 import Marker = L.Marker;
 import Map = L.Map;
+import {emit} from "cluster";
 
 @Page({
     templateUrl: 'build/pages/map/map.html'
@@ -21,14 +22,14 @@ export class MapPage {
     private geolocationOptions = {enableHighAccuracy: true};
     private positionSubscriber:Subscription;
     private walksSubscriber:Subscription;
-    private deleteInactiveInterval:any;
+    private deleteInactiveInterval:number;
 
     constructor(private auth:AuthService,
                 public walk:WalkService,
                 private events:Events,
                 private nav:NavController,
                 private config:Config) {
-        // Initial position
+
         Geolocation.getCurrentPosition(this.geolocationOptions).then((data) => {
             let myPosition = L.latLng(data.coords.latitude, data.coords.longitude);
 
@@ -45,54 +46,50 @@ export class MapPage {
                 icon: new UserIcon({iconUrl: `${this.auth.user.pic || 'build/img/default_user.gif'}`})
             }).addTo(this.map);
 
-            // init sockets and currentWalk object
+            // init currentWalk object
             this.walk.init(myPosition, this.marker);
 
         }).then(() => {
+
             // Watch for position change
             this.positionSubscriber = Geolocation.watchPosition(this.geolocationOptions).subscribe((data) => {
-                this.walk.setCurrentCoords(L.latLng(data.coords.latitude, data.coords.longitude));
-                this.marker.setLatLng(this.walk.getCurrentCoords());
+                let newCoords = L.latLng(data.coords.latitude, data.coords.longitude);
+                // TODO emit only if newCoords are "major change"
+                let emit = this.walk.getCurrentWalkCoords() != newCoords;
+
+                // update coords and marker
+                this.walk.updateCurrentWalkCoords(newCoords, emit);
+                this.marker.setLatLng(this.walk.getCurrentWalkCoords());
             });
 
-            // Walks
+            // watch walks$ (coming from socket.io every ~20sec.)
             this.walksSubscriber = this.walk.walks$.subscribe((walks:Array<Walk>) => {
-                console.log('walks$', walks);
-                walks.forEach((walk) => {
-                    if (this.markers[walk.id] && walk.coords !== this.markers[walk.id]) {
-                        // move marker
-                        this.markers[walk.id].setLatLng(walk.coords);
-                    } else {
-                        // add new marker to the map
-                        let marker = L.marker(walk.coords, {
-                                icon: new UserIcon({iconUrl: `${walk.pet.pic || 'build/img/default_pet.jpg'}`})
-                            })
-                            .addTo(this.map)
-                            .bindPopup(`<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${CommonService.getAge(walk.pet.birthday)}`);
+                console.debug('walks$', walks);
 
-                        marker['_id'] = walk.id;
-                        this.markers[walk.id] = marker;
+                walks.forEach((walk:Walk) => {
+                    if(walk.id !== this.walk.currentWalk.id) {
+                        // if walk already on the map
+                        if (this.markers[walk.id]) {
+                            // move marker
+                            this.markers[walk.id].setLatLng(walk.coords);
+                        } else {
+                            // marker popup text
+                            let popupText = `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${CommonService.getAge(walk.pet.birthday)}<br>Out with ${walk.user.name}`;
+
+                            // Add new marker to the map
+                            let marker = L.marker(walk.coords, {
+                                icon: new UserIcon({iconUrl: `${walk.pet.pic || 'build/img/default_pet.jpg'}`})
+                            }).addTo(this.map).bindPopup(popupText);
+
+                            // save
+                            marker['_id'] = walk.id;
+                            this.markers[walk.id] = marker;
+                        }
                     }
                 });
             });
 
-            // remove markers of inactive users (stopped walk) every 20 sec
-            // === delete difference from this.walk.walks AND this.markers
-            // todo OK to do it here in setInterval ? or ^^
-            this.deleteInactiveInterval = setInterval(() => {
-                for (var uid in this.markers) {
-                    if (this.markers.hasOwnProperty(uid)) {
-                        let key = uid;
-                        let find = this.walk.walks.find((walk:Walk) => {
-                            return walk.id === key;
-                        });
-                        if (!find) {
-                            this.map.removeLayer(this.markers[uid]);
-                            delete this.markers[uid];
-                        }
-                    }
-                }
-            }, this.config.get('deleteInactiveIntervalMs'));
+            this.cleanInactive();
 
         }, (err) => {
             this.events.publish('alert:error', 'You have disabled or no access to Geolocalization');
@@ -104,7 +101,6 @@ export class MapPage {
     }
 
     onPageWillUnload() {
-        console.info('MapPage onPageWillUnload');
         if (this.positionSubscriber) {
             this.positionSubscriber.unsubscribe();
         }
@@ -118,5 +114,26 @@ export class MapPage {
 
     openWalkModal() {
         this.nav.present(Modal.create(WalkModal));
+    }
+
+    /**
+     * Remove markers of inactive users (stopped walk) every deleteInactiveIntervalMs interval
+     * TODO OK to do it here in setInterval ? or ^^
+     */
+    private cleanInactive() {
+        this.deleteInactiveInterval = setInterval(() => {
+            for (var uid in this.markers) {
+                if (this.markers.hasOwnProperty(uid)) {
+                    let key = uid;
+                    let find = this.walk.walks.find((walk:Walk) => {
+                        return walk.id === key;
+                    });
+                    if (!find) {
+                        this.map.removeLayer(this.markers[uid]);
+                        delete this.markers[uid];
+                    }
+                }
+            }
+        }, this.config.get('deleteInactiveIntervalMs'));
     }
 }

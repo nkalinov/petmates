@@ -3,7 +3,7 @@
         {{mate.friend.name}}
     </ion-title>
     <ion-buttons end>
-        <button primary (click)="chatWith(mate.friend)">
+        <button primary (click)="chatWith(mate)">
             <ion-icon name="text"></ion-icon>
             Chat
         </button>
@@ -35,6 +35,7 @@
 
     <div padding>
         <button small block danger outline (click)="removeMate()">
+            <ion-icon name="trash"></ion-icon>
             Remove from my mates
         </button>
     </div>

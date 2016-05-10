@@ -15,10 +15,10 @@ export class CommonService {
         ];
         let publicPages = [{title: 'Login / sign-up', component: AuthModal}];
         let loggedInPages = [
-            {title: 'Mates around me', component: MapPage},
+            {title: 'Map', component: MapPage},
             {title: 'My pets', component: PetsPage},
-            {title: 'Mates', component: MatesPage},
-            {title: 'Profile', component: ProfilePage}
+            {title: 'My mates', component: MatesPage},
+            {title: 'Account', component: ProfilePage}
         ];
         return auth ? loggedInPages.concat(commonPages) : publicPages.concat(commonPages);
     }

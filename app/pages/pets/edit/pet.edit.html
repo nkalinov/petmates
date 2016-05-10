@@ -18,8 +18,8 @@
 
 <ion-content>
     <ion-row no-padding wrap center *ngIf="!isNew">
-        <ion-col no-padding width-100 class="profile-picture">
-            <pet-image [image]="pet.pic" (click)="changePicture()"></pet-image>
+        <ion-col no-padding width-100 class="profile-picture" (click)="changePicture()">
+            <pet-image [image]="pet.pic"></pet-image>
             <p class="change-text">Change picture</p>
         </ion-col>
     </ion-row>

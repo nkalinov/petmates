@@ -2,13 +2,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var Message = new Schema({
-    from: {
+    _id: false,
+    author: {
         type: Schema.Types.ObjectId,
-        ref: 'User'
-    },
-    to: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
     },
     msg: {
         type: String,
@@ -20,4 +18,4 @@ var Message = new Schema({
     }
 });
 
-module.exports = mongoose.model('Message', Message);
+module.exports = Message;

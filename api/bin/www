@@ -27,19 +27,23 @@ sockets.init(server);
 /**
  * "CRON" routines
  */
-// delete messages added > 48h
-setInterval(() => {
-    console.log('Deleting messages added > 48h..');
-    var d = new Date();
-    d.setDate(d.getDate() - 2);
+var cleanUpMessages = function () {
+    // todo 1. remove messages from conversations where added > now - 2d
+    // todo 2. remove conversations where members.length === 0
 
-    Message.remove({added: {$lt: d}}, (err, res) => {
-        if (err) {
-            console.log('Error', err);
-        }
-        console.log('OK', res.result);
-    });
-}, 86400 * 1000); // check every 24h
+    // var d = new Date();
+    // d.setDate(d.getDate() - 2);
+    //
+    // Message.remove({added: {$lt: d}}, (err, res) => {
+    //     if (err) {
+    //         console.log('Clean old messages', err);
+    //     }
+    //     console.log('Clean old messages', res.result);
+    // });
+};
+
+cleanUpMessages();
+setInterval(cleanUpMessages, 86400 * 1000); // check every 24h
 
 
 /**

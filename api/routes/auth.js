@@ -29,7 +29,7 @@ router.post('/', function (req, res) {
                         success: true,
                         data: {
                             token: 'JWT ' + token,
-                            profile: helpers.parseUser(user)
+                            profile: user
                         }
                     });
                 } else {

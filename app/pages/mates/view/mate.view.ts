@@ -6,7 +6,6 @@ import {PetImage} from '../../../common/pet-image';
 import {MateImage} from '../../../common/mate-image';
 import {MatesService} from '../../../services/mates.service';
 import {Friendship} from "../../../models/friendship.interface";
-import {ChatPage} from "../../chat/chat";
 
 @Page({
     templateUrl: 'build/pages/mates/view/mate.view.html',
@@ -20,25 +19,19 @@ import {ChatPage} from "../../chat/chat";
 
 export class MateViewPage {
     nav:NavController;
-    mate:Friendship;
+    friendship:Friendship;
 
     constructor(app:IonicApp,
                 navParams:NavParams,
                 private mates:MatesService) {
         this.nav = app.getActiveNav();
-        this.mate = navParams.get('mate');
-    }
-
-    chatWith(mate:Friendship) {
-        this.nav.present(Modal.create(ChatPage, {
-            mate: mate
-        }));
+        this.friendship = navParams.get('mate');
     }
     
     removeMate() {
         let alert = Alert.create({
             title: 'Remove mate',
-            message: `Are you sure you want to remove ${this.mate.friend.name} from you mates?`,
+            message: `Are you sure you want to remove ${this.friendship.friend.name} from you mates?`,
             buttons: [
                 {
                     text: 'Cancel',
@@ -48,7 +41,7 @@ export class MateViewPage {
                     text: 'Remove',
                     role: 'destructive',
                     handler: () => {
-                        this.mates.remove(this.mate).subscribe((res:any) => {
+                        this.mates.remove(this.friendship).subscribe((res:any) => {
                             if (res.success) {
                                 setTimeout(() => {
                                     this.nav.pop();

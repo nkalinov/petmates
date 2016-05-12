@@ -40,14 +40,15 @@ var SocketsModule = (function () {
         // send users last activity every minute
         setInterval(() => {
             if (connections.updated) {
-                io.sockets.emit('users', connections.export());
+                io.emit('users', connections.export());
                 connections.updated = false;
             }
         }, 60 * 1000);
 
         // send walk updates every 20sec.
         setInterval(() => {
-            io.sockets.emit('walks', walk.walks);
+            // todo namespace /bulgaria /usa ...
+            io.emit('walks', walk.walks);
         }, 20 * 1000);
     }
 
@@ -111,17 +112,21 @@ var SocketsModule = (function () {
         /**
          * Chat message sent
          * @param data
+         * @param conversation
          */
-        function onChatSend(data) {
+        function onChatSend(data, conversation) {
             // update user last activity
             connections.updated = true;
             connections[uid].lastActive = Date.now();
-            io.sockets.emit('users', connections.export()); // update last activity
 
-            // emit socket event
-            if (connections[data.to._id]) {
-                connections[data.to._id].socket.emit('chat:receive', data);
-            }
+            // emit to other members
+            conversation.members.forEach((m) => {
+                if (m._id !== data.author._id) {
+                    if (connections[m._id]) {
+                        connections[m._id].socket.emit('chat:receive', data, conversation._id);
+                    }
+                }
+            });
         }
     }
 

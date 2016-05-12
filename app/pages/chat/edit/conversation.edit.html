@@ -1,0 +1,49 @@
+<ion-toolbar>
+    <ion-buttons start>
+        <button dark (click)="viewCtrl.dismiss()">
+            Close
+        </button>
+    </ion-buttons>
+    <ion-title>
+        <span *ngIf="!conversation._id">New</span>
+        <span *ngIf="conversation._id">Edit</span>
+        conversation
+    </ion-title>
+    <ion-buttons end>
+        <button secondary (click)="createConversation()">
+            <span *ngIf="!conversation._id">Create</span>
+            <span *ngIf="conversation._id">Update</span>
+        </button>
+    </ion-buttons>
+</ion-toolbar>
+
+<ion-content>
+    <ion-list>
+        <ion-item>
+            <ion-label floating>Conversation title</ion-label>
+            <ion-input type="text" [(ngModel)]="conversation.name"></ion-input>
+        </ion-item>
+    </ion-list>
+
+    <ion-list>
+        <ion-list-header>
+            Participants
+        </ion-list-header>
+        <button ion-item detail-none (click)="addMatesModal()">
+            <ion-icon primary name="add"></ion-icon>
+            Add mates
+        </button>
+        <ion-item *ngFor="#f of conversation.members">
+            <ion-avatar item-left>
+                <mate-image [image]="f.pic"></mate-image>
+            </ion-avatar>
+            <ion-label>{{f.name}}</ion-label>
+        </ion-item>
+    </ion-list>
+
+    <div padding-horizontal *ngIf="conversation._id && conversation.members.length > 2">
+        <button block danger small outline (click)="leaveConversation()">
+            Leave group
+        </button>
+    </div>
+</ion-content>

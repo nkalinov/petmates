@@ -1,0 +1,42 @@
+<ion-navbar *navbar>
+    <button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Conversations</ion-title>
+    <ion-buttons end>
+        <button secondary (click)="createConversation()">
+            <ion-icon name="create-outline"></ion-icon>
+        </button>
+    </ion-buttons>
+</ion-navbar>
+
+<ion-content>
+    <ion-list class="conversations-list">
+        <button ion-item *ngFor="#chat of conversations" (click)="openConversation(chat)">
+            <ion-avatar item-left>
+                <mate-image [image]="chats.getMembersPic(chat)"></mate-image>
+            </ion-avatar>
+            <h2>
+                {{chats.getMembersNames(chat) | slice:0:21}}
+            </h2>
+            <p class="last-activity" text-small>
+                {{chats.getMembersLastActivity(chat) | messageTime:'Active '}}
+            </p>
+            <p *ngIf="chat.lastMessage">
+                <span *ngIf="chat.lastMessage.author._id === auth.user._id">You:</span>
+                <span *ngIf="chat.lastMessage.author._id !== auth.user._id">{{chat.lastMessage.author.name}}:</span>
+                {{chat.lastMessage.msg | slice:0:21}}
+            </p>
+            <ion-badge item-right *ngIf="chat.newMessages && chat.newMessages > 0">
+                {{chat.newMessages}}
+            </ion-badge>
+            <span item-right *ngIf="chat.lastMessage">
+                {{chat.lastMessage.added | date:'EEE'}}
+            </span>
+        </button>
+    </ion-list>
+
+    <p text-center text-small>
+        Chat messages are kept for the next 48h.
+    </p>
+</ion-content>

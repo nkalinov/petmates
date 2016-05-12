@@ -13,7 +13,7 @@
     </div>
     <ion-list>
         <ion-item-sliding *ngFor="#mate of mates.mates.accepted">
-            <button ion-item (click)="chatWith(mate)">
+            <button ion-item (click)="viewMate(mate)">
                 <ion-avatar item-left>
                     <mate-image [image]="mate.friend.pic"></mate-image>
                 </ion-avatar>
@@ -26,10 +26,6 @@
                 </ion-badge>
             </button>
             <ion-item-options>
-                <button primary (click)="viewMate(mate)">
-                    <ion-icon name="eye"></ion-icon>
-                    View
-                </button>
                 <button danger (click)="removeMate(mate)">
                     <ion-icon name="remove-circle"></ion-icon>
                     Remove
@@ -37,8 +33,4 @@
             </ion-item-options>
         </ion-item-sliding>
     </ion-list>
-
-    <p text-center text-small>
-        Chat messages are kept for the last 48h.
-    </p>
 </ion-content>

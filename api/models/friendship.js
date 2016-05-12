@@ -25,4 +25,3 @@ module.exports = {
         REQUESTED: 'requested'
     }
 };
-// module.exports = mongoose.model('Friendship', Friendship);

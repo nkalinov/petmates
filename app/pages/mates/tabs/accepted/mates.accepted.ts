@@ -1,10 +1,9 @@
-import {Page, NavController, Modal, Alert} from 'ionic-angular';
+import {Page, NavController, Alert} from 'ionic-angular';
 import {forwardRef} from 'angular2/core';
 import {MateImage} from '../../../../common/mate-image';
 import {MateViewPage} from "../../view/mate.view";
 import {Friendship} from "../../../../models/friendship.interface";
 import {MatesService} from "../../../../services/mates.service";
-import {ChatPage} from "../../../chat/chat";
 import {MessageTimePipe} from "../../../../pipes/message.time.pipe";
 import {AuthService} from "../../../../services/auth.service";
 
@@ -27,12 +26,6 @@ export class MatesAcceptedPage {
         this.nav.push(MateViewPage, {
             mate: friendship
         });
-    }
-
-    chatWith(mate:Friendship) {
-        this.nav.present(Modal.create(ChatPage, {
-            mate: mate
-        }));
     }
 
     removeMate(mate:Friendship) {

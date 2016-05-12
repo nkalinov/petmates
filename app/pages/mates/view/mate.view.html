@@ -1,29 +1,23 @@
 <ion-navbar *navbar>
     <ion-title>
-        {{mate.friend.name}}
+        {{friendship.friend.name}}
     </ion-title>
-    <ion-buttons end>
-        <button primary (click)="chatWith(mate)">
-            <ion-icon name="text"></ion-icon>
-            Chat
-        </button>
-    </ion-buttons>
 </ion-navbar>
 
 <ion-content>
     <ion-row no-padding wrap center>
         <ion-col no-padding width-100 class="profile-picture">
-            <mate-image [image]="mate.friend.pic"></mate-image>
+            <mate-image [image]="friendship.friend.pic"></mate-image>
         </ion-col>
     </ion-row>
-    <div *ngIf="mate.friend.pets.length===0">
-        <p text-center>{{mate.friend.name}} haven't added his pets.</p>
+    <div *ngIf="friendship.friend.pets.length===0">
+        <p text-center>{{friendship.friend.name}} haven't added his pets.</p>
     </div>
-    <ion-list *ngIf="mate.friend.pets.length > 0">
+    <ion-list *ngIf="friendship.friend.pets.length > 0">
         <ion-list-header>
-            {{mate.friend.name}}'s pets
+            {{friendship.friend.name}}'s pets
         </ion-list-header>
-        <ion-item *ngFor="#d of mate.friend.pets">
+        <ion-item *ngFor="#d of friendship.friend.pets">
             <ion-thumbnail item-left>
                 <pet-image [image]="d.pic"></pet-image>
             </ion-thumbnail>

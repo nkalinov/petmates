@@ -7,7 +7,7 @@ const routes = require('./routes/index');
 const users = require('./routes/users');
 const auth = require('./routes/auth');
 const mates = require('./routes/mates');
-const messages = require('./routes/messages');
+const conversations = require('./routes/conversations');
 const pets = require('./routes/pets');
 const breeds = require('./routes/breeds');
 const cors = require('cors');
@@ -36,7 +36,7 @@ app.use('/auth', auth);
 app.use('/user', users);
 app.use('/pets', pets);
 app.use('/mates', mates);
-app.use('/messages', messages);
+app.use('/conversations', conversations);
 
 db.init();
 

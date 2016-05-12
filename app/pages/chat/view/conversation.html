@@ -1,0 +1,32 @@
+<ion-navbar *navbar>
+    <ion-title>
+        {{chats.getMembersNames(conversation)}}
+        <span class="last-activity" text-small>
+            {{chats.getMembersLastActivity(conversation) | messageTime:'Active '}}
+        </span>
+    </ion-title>
+    <ion-buttons end>
+        <button dark (click)="editConversation()">
+            <ion-icon name="more"></ion-icon>
+        </button>
+    </ion-buttons>
+</ion-navbar>
+
+<ion-content id="chat" class="chat">
+    <div class="messages" *ngIf="conversation">
+        <div class="message" *ngFor="#m of conversation.messages" [ngClass]="{'me': m.author._id === auth.user._id}">
+            <ion-avatar class="avatar">
+                <mate-image [image]="m.author.pic"></mate-image>
+            </ion-avatar>
+            <p>{{ m.msg }}</p>
+            <span class="date">{{ m.added | messageTime }}</span>
+        </div>
+    </div>
+    <div class="msg">
+        <input type="text" placeholder="Message..."
+               [(ngModel)]="message.msg" (keydown.enter)="sendMessage()">
+        <button small (click)="sendMessage()" [disabled]="message.msg === ''">
+            <ion-icon name="send"></ion-icon>
+        </button>
+    </div>
+</ion-content>

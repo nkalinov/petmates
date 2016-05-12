@@ -4,6 +4,7 @@ var bcrypt = require('bcryptjs');
 var helpers = require('../helpers');
 var autopopulate = require('mongoose-autopopulate');
 var Friendship = require('./friendship');
+var Pet = require('./pet');
 
 // set up a mongoose model
 var UserSchema = new Schema({
@@ -22,20 +23,21 @@ var UserSchema = new Schema({
         required: true
     },
     picture: String,
-    pets: [{
-        name: String,
-        sex: String,
-        birthday: Date,
-        breed: {
-            type: Schema.Types.ObjectId,
-            ref: 'Breed',
-            autopopulate: true
-        },
-        picture: String
-    }],
+    pets: [Pet],
     mates: [Friendship.Schema],
     resetPasswordToken: String,
     resetPasswordExpires: Date
+}, {
+    toObject: {
+        virtuals: true
+    },
+    toJSON: {
+        virtuals: true
+    }
+});
+
+UserSchema.virtual('pic').get(function () {
+    return helpers.uploadPath(this.picture);
 });
 
 UserSchema.plugin(autopopulate);
@@ -104,7 +106,7 @@ UserSchema.methods.requestFriend = function (uid, cb) {
                     return cb('User deleted');
                 cb(null, {
                     myRequest: myRequest,
-                    fRequest: friendUpdated.mates.find((r) => r.friend.equals(this._id))
+                    fRequest: friendUpdated.friends.find((r) => r.friend.equals(this._id))
                 });
             });
         }, cb);
@@ -130,7 +132,7 @@ UserSchema.methods.requestFriend = function (uid, cb) {
             this.save().then(() => {
                 cb(null, {
                     myRequest: this.mates[this.mates.length - 1],
-                    fRequest: friendUpdated.mates[friendUpdated.mates.length - 1]
+                    fRequest: friendUpdated.friends[friendUpdated.friends.length - 1]
                 });
             });
         }, cb);
@@ -155,7 +157,7 @@ UserSchema.methods.removeFriend = function (fid) {
                     }).exec().then((friendUpdated) => {
                         resolve({
                             myRequest: friendship,
-                            fRequest: friendUpdated.mates.find((r) => r.friend.equals(this._id))
+                            fRequest: friendUpdated.friends.find((r) => r.friend.equals(this._id))
                         });
                     });
                 });

@@ -3,14 +3,13 @@ var router = express.Router();
 var config = require('../config/database');
 var passport = require('passport');
 var upload = require('../config/upload');
-var helpers = require('../helpers');
 var fs = require('fs');
 var Jimp = require('jimp');
 var User = require('../models/user');
 
 // check token validity and that user exists
 router.post('/check', passport.authenticate('jwt', {session: false}), function (req, res) {
-    return res.json({success: true, data: helpers.parseUser(req.user)});
+    return res.json({success: true, data: req.user});
 });
 
 // delete
@@ -62,7 +61,7 @@ router.put('/', passport.authenticate('jwt', {session: false}), function (req, r
         if (err) {
             return res.json({success: false, msg: err.message});
         }
-        return res.json({success: true, data: helpers.parseUser(user)});
+        return res.json({success: true, data: user});
     });
 });
 

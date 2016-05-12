@@ -8,6 +8,7 @@ import {AsyncPipe} from 'angular2/common';
 })
 export class MessageTimePipe extends AsyncPipe {
     value:Date;
+    prefix:string = '';
     timer:Observable<string>;
 
     constructor(ref:ChangeDetectorRef) {
@@ -17,6 +18,9 @@ export class MessageTimePipe extends AsyncPipe {
     transform(obj:any, args?:any[]):any {
         if (obj instanceof Date) {
             this.value = obj;
+            if (args.length) {
+                this.prefix = args[0];
+            }
 
             if (!this.timer) {
                 this.timer = this.getObservable();
@@ -57,7 +61,7 @@ export class MessageTimePipe extends AsyncPipe {
             else { // sent more than 2 days ago
                 result = '2d+ ago';
             }
-            return result;
+            return this.prefix + result;
         });
     };
 }

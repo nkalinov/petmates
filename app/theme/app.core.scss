@@ -5,7 +5,7 @@
 // By default each design mode includes these shared imports.
 // App Shared Sass variables belong in app.variables.scss.
 @import "../pages/map/map";
-@import "../pages/chat/chat";
+@import "../pages/chat/view/conversation";
 
 a[disabled],
 button[disabled] {
@@ -20,7 +20,16 @@ ion-item {
   }
 }
 
-pet-picture {
+mate-image {
+  display: block;
+  text-align: center;
+
+  & > ion-icon {
+    font-size: 30px;
+  }
+}
+
+pet-image {
   display: block;
 }
 
@@ -58,5 +67,5 @@ pet-picture {
 }
 
 [text-small] {
-  font-size: 10px;
+  font-size: 10px !important;
 }

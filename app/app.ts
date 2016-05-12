@@ -4,8 +4,6 @@ import {
     Platform,
     NavController,
     Modal,
-    Storage,
-    LocalStorage,
     Events,
     Alert,
     ViewController
@@ -20,7 +18,7 @@ import {CommonService} from './services/common.service';
 import {SocketService} from './services/socket.service';
 import {MatesService} from './services/mates.service';
 import {ChatService} from './services/chat.service';
-import {MapPage} from './pages/map/map';
+import {ConversationsListPage} from "./pages/chat/conversations.list.ts";
 
 enableProdMode();
 
@@ -47,9 +45,8 @@ class PetMatesApp {
     pages:Array<any> = [];
     rootPage:any;
     pages:Array<{title:string, component:any, active:boolean}>;
-    local:Storage = new Storage(LocalStorage);
-
-    private defaultRootPage:any = MapPage;
+    newRequests:any;
+    private defaultRootPage:any = ConversationsListPage;
     private authModal:ViewController;
 
     constructor(public auth:AuthService,
@@ -108,6 +105,11 @@ class PetMatesApp {
         this.events.subscribe('alert:info', (msg) => {
             this.showAlert(msg, 'Info');
         });
+
+        // todo show in template
+        // this.mates.pending$.subscribe((count) => {
+        //     this.newRequests = count > 0 ? count.toString() : null;
+        // });
     }
 
     private showAuthModal() {

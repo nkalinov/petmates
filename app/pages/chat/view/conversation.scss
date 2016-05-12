@@ -1,5 +1,15 @@
+.last-activity {
+  display: block;
+}
+
+.conversations-list {
+  .last-activity {
+    margin-top: -4px;
+  }
+}
+
 .chat {
-  margin-bottom: 50px;
+  margin-bottom: 39px;
 
   .messages {
     width: 100%;
@@ -8,8 +18,8 @@
     .message {
       width: 70%;
       padding: 5px 10px;
-      background: #387ef5;
-      color: #fff;
+      background: color($colors, light);
+      color: color($colors, dark);
       border-radius: 5px;
       margin: 5px;
       float: left;
@@ -24,14 +34,15 @@
       }
       p {
         margin: 0 0 5px 0;
-        color: #fff;
+        color: #000;
       }
 
       &.me {
         float: right;
-        background: #fff;
-        border: 1px solid #387ef5;
-        color: #222;
+        //background: #387ef5;
+        background: color($colors, primary);
+        border: 1px solid color($colors, primary);
+        color: color($colors, light);
         text-align: right;
 
         ion-avatar {
@@ -39,7 +50,7 @@
           margin: 0 -5px 0 5px;
         }
         p {
-          color: #000;
+          color: #fff;
         }
       }
     }

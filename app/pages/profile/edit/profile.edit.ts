@@ -47,18 +47,18 @@ export class ProfileEdit {
 
             // quality of resized image, defaults to 100
             quality: 60
-        }).then((image) => {
-            for (var i = 0; i < image.length; i++) {
-                console.log('Image URI: ' + image[i]);
+        }).then((images) => {
+            for (var i = 0; i < images.length; i++) {
+                console.log('Image URI: ' + images[i]);
             }
-            if (image) {
+            if (images) {
                 var options = new FileUploadOptions();
                 options.fileKey = 'picture';
                 options.headers = {
                     'Authorization': this.auth.token
                 };
                 var ft = new FileTransfer();
-                ft.upload(image, encodeURI(`${this.config.get('API')}/user/upload`),
+                ft.upload(images[0], encodeURI(`${this.config.get('API')}/user/upload`),
                     (res) => {
                         res.response = JSON.parse(res.response);
 

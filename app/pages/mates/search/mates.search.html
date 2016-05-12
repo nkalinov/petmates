@@ -8,7 +8,7 @@
 </ion-navbar>
 
 <ion-content>
-    <ion-searchbar [(ngModel)]="searchQuery" (input)="mates.search($event.value.trim())"></ion-searchbar>
+    <ion-searchbar [(ngModel)]="searchQuery" (input)="friends.search($event.value.trim())"></ion-searchbar>
     <div *ngIf="search.length === 0 && searchQuery !== ''">
         <p text-center>No results.</p>
     </div>

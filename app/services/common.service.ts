@@ -5,6 +5,7 @@ import {MapPage} from '../pages/map/map';
 import {AuthModal} from '../pages/auth/auth';
 import {ProfilePage} from '../pages/profile/profile';
 import {HelpPage} from '../pages/help/help';
+import {ConversationsListPage} from "../pages/chat/conversations.list.ts";
 
 @Injectable()
 export class CommonService {
@@ -16,8 +17,9 @@ export class CommonService {
         let publicPages = [{title: 'Login / sign-up', component: AuthModal}];
         let loggedInPages = [
             {title: 'Map', component: MapPage},
-            {title: 'My pets', component: PetsPage},
+            {title: 'Chats', component: ConversationsListPage},
             {title: 'My mates', component: MatesPage},
+            {title: 'My pets', component: PetsPage},
             {title: 'Account', component: ProfilePage}
         ];
         return auth ? loggedInPages.concat(commonPages) : publicPages.concat(commonPages);

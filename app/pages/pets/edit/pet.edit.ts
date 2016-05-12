@@ -1,5 +1,5 @@
 import {Page, ViewController, NavParams, Alert, NavController, Config, IonicApp} from 'ionic-angular';
-import {DatePicker, Camera, ImagePicker} from 'ionic-native';
+import {DatePicker, ImagePicker} from 'ionic-native';
 import {FormBuilder, ControlGroup, Validators} from 'angular2/common';
 import {forwardRef} from 'angular2/core';
 import {BreedService} from '../../../services/breed.service';
@@ -127,14 +127,14 @@ export class PetEditPage {
 
             // quality of resized image, defaults to 100
             quality: 60
-        }).then((image) => {
+        }).then((images) => {
                 var options = new FileUploadOptions();
                 options.fileKey = 'picture';
                 options.headers = {
                     'Authorization': this.pets.auth.token
                 };
                 var ft = new FileTransfer();
-                ft.upload(image, encodeURI(`${this.config.get('API')}/user/upload`),
+                ft.upload(images[0], encodeURI(`${this.config.get('API')}/user/upload`),
                     (res) => {
                         res.response = JSON.parse(res.response);
 

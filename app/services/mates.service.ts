@@ -20,8 +20,6 @@ export class MatesService {
         pending: []
     };
 
-    private onlineUsers:Object;
-
     constructor(private http:Http,
                 private events:Events,
                 private config:Config,
@@ -79,7 +77,6 @@ export class MatesService {
                                 this.sockets.socket.emit('mate:', 'requested', res.data);
                             }
                             this.sortMatesByStatus();
-                            this.updateUsersLastActivity();
                         }
                     } else {
                         this.events.publish('alert:error', res.msg);
@@ -130,11 +127,6 @@ export class MatesService {
     }
 
     registerSocketEvents(socket) {
-        socket.on('users', (data) => {
-            this.onlineUsers = data;
-            this.updateUsersLastActivity();
-        });
-
         socket.on('mate:', (action:string, data:{fRequest:Friendship, myRequest:Friendship}) => {
             switch (action) {
                 case 'requested':
@@ -154,13 +146,11 @@ export class MatesService {
                     });
                     if (index > -1) {
                         this.auth.user.mates[index] = data.fRequest;
-
                         LocalNotifications.schedule({
                             id: 1,
                             text: `${data.fRequest.friend.name} accepted your mate request.`
                         });
                         this.sortMatesByStatus();
-                        this.updateUsersLastActivity();
                     }
                     break;
 
@@ -196,15 +186,5 @@ export class MatesService {
                 this.pending$.next(this.mates.pending.length);
             }
         }, 0);
-    }
-
-    private updateUsersLastActivity() {
-        if (this.onlineUsers) {
-            this.mates.accepted.forEach((f:Friendship) => {
-                if (this.onlineUsers[f.friend._id]) {
-                    f.friend.lastActive = new Date(this.onlineUsers[f.friend._id]);
-                }
-            });
-        }
     }
 }

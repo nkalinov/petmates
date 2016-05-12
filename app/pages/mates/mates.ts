@@ -7,7 +7,7 @@ import {MatesAcceptedPage} from './tabs/accepted/mates.accepted';
 import {MatesRequestedPage} from "./tabs/requested/mates.requested";
 import {MatesPendingPage} from "./tabs/pending/mates.pending";
 import {Subscription} from "rxjs/Subscription";
-import {ChatPage} from "../chat/chat";
+import {ConversationPage} from "../chat/view/conversation";
 import {User} from "../../models/user.model";
 
 @Page({
@@ -41,11 +41,5 @@ export class MatesPage {
 
     searchMateModal() {
         this.nav.present(Modal.create(MatesSearchPage));
-    }
-
-    chatWith(mate:User) {
-        this.nav.present(Modal.create(ChatPage, {
-            mate: mate
-        }));
     }
 }

@@ -1,10 +1,9 @@
-import {Page, ViewController, NavParams, NavController, Modal} from 'ionic-angular';
-import {User} from '../../../models/user.model';
-import {MatesService} from '../../../services/mates.service';
+import {Page, ViewController, NavParams, NavController, Modal, IonicApp, Alert} from 'ionic-angular';
 import {MateImage} from '../../../common/mate-image';
 import {Conversation} from "../../../models/conversation.model";
 import {ChatService} from "../../../services/chat.service";
 import {ConversationEditMembersPage} from "./conversation.edit.members";
+import {ConversationsListPage} from "../conversations.list";
 
 @Page({
     directives: [MateImage],
@@ -12,30 +11,26 @@ import {ConversationEditMembersPage} from "./conversation.edit.members";
 })
 
 export class ConversationEditPage {
-    friends:Array<User> = [];
     conversation:Conversation;
 
     constructor(public viewCtrl:ViewController,
                 private chat:ChatService,
                 private nav:NavController,
+                private app:IonicApp,
                 navParams:NavParams) {
-        this.conversation = navParams.get('conversation') || new Conversation();
+        this.conversation = new Conversation(navParams.get('conversation'));
     }
 
-    save() {
-
-    }
-
-    createConversation() {
-        // get checked mates
-        this.conversation.members = this.friends.filter((f:any) => f.checked);
-        this.chat.createConversation(this.conversation).subscribe(() => {
-            // reset checked state
-            this.friends.forEach((f:any) => {
-                f.checked = false;
+    saveConversation() {
+        if (!this.conversation._id) {
+            this.chat.createConversation(this.conversation).subscribe(() => {
+                this.viewCtrl.dismiss();
             });
-            this.viewCtrl.dismiss();
-        });
+        } else {
+            this.chat.updateConversation(this.conversation).subscribe((updatedConversation) => {
+                this.viewCtrl.dismiss(updatedConversation);
+            });
+        }
     }
 
     addMatesModal() {
@@ -45,6 +40,29 @@ export class ConversationEditPage {
     }
 
     leaveConversation() {
-
+        let alert = Alert.create({
+            title: 'Leave conversation ' + (this.conversation.name || '') + '?',
+            message: 'Are you sure?',
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel'
+                },
+                {
+                    text: 'Delete',
+                    role: 'destructive',
+                    handler: () => {
+                        this.chat.leaveConversation(this.conversation).subscribe(() => {
+                            setTimeout(() => {
+                                this.viewCtrl.dismiss();
+                                let nav:NavController = this.app.getRootNav();
+                                nav.setRoot(ConversationsListPage);
+                            }, 1000);
+                        });
+                    }
+                }
+            ]
+        });
+        this.nav.present(alert);
     }
 }

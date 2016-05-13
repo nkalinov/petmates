@@ -11,22 +11,25 @@ import {AuthService} from '../../services/auth.service';
 @Page({
     directives: [MateImage],
     pipes: [MessageTimePipe, SlicePipe],
-    templateUrl: 'build/pages/chat/chat.list.html'
+    templateUrl: 'build/pages/chat/conversations.list.html'
 })
 
 export class ConversationsListPage {
     conversations:Array<Conversation> = [];
     private conversationsSubscription;
-    
+
     constructor(public chats:ChatService,
                 public auth:AuthService,
                 private nav:NavController) {
         this.conversationsSubscription = chats.conversations$.subscribe((res) => {
-           this.conversations = res; 
+            this.conversations = res;
         });
-        chats.getConversations(); // todo get them on app load ?
+        if (this.conversations.length === 0) {
+            // todo cond ok ?
+            chats.getConversations();
+        }
     }
-    
+
     onPageWillUnload() {
         this.conversationsSubscription.unsubscribe();
     }

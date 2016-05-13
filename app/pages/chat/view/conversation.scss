@@ -14,6 +14,7 @@
   .messages {
     width: 100%;
     position: absolute;
+    padding-bottom: 5px;
 
     .message {
       width: 70%;
@@ -69,7 +70,7 @@
     input {
       display: block;
       float: left;
-      width: 75%;
+      width: 85%;
       outline: none;
       border: 1px solid #ccc;
       border-radius: 3px;
@@ -80,8 +81,14 @@
     button {
       display: block;
       float: right;
-      width: 18%;
+      width: 12%;
       margin-top: 5px;
     }
+  }
+
+  .new-messages {
+    position: fixed;
+    bottom: 47px;
+    width: 100%;
   }
 }

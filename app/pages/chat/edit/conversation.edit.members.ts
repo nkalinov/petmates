@@ -13,13 +13,17 @@ export class ConversationEditMembersPage {
 
     constructor(public viewCtrl:ViewController,
                 navParams:NavParams,
-                mates:MatesService) {
-
+                private mates:MatesService) {
         this.conversation = navParams.get('conversation');
 
+        // get friends not in members
         this.friends = mates.mates.accepted
             .map((f) => f.friend)
-            .filter((u:User) => this.conversation.members.indexOf(u._id) === -1);
+            .filter((u:User) => !this.conversation.members.find((m:User) => m._id === u._id));
     }
 
+    addMatesToConversation() {
+        this.conversation.members = this.conversation.members.concat(this.friends.filter((u:any) => u.checked === true));
+        this.viewCtrl.dismiss();
+    }
 }

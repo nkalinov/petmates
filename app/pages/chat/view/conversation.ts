@@ -9,7 +9,7 @@ import {Conversation} from '../../../models/conversation.model.ts';
 import {ConversationEditPage} from "../edit/conversation.edit";
 
 @Page({
-    templateUrl: 'build/pages/chat/chat.html',
+    templateUrl: 'build/pages/chat/view/conversation.html',
     directives: [forwardRef(() => MateImage)],
     pipes: [MessageTimePipe]
 })
@@ -18,19 +18,17 @@ export class ConversationPage {
     @ViewChild(Content) content:Content;
     conversation:Conversation;
     message:Message;
-    msgs:Array<Message> = [];
 
     constructor(public auth:AuthService,
                 public chats:ChatService,
                 private nav:NavController,
                 navParams:NavParams) {
         this.conversation = navParams.get('conversation');
-        this.conversation.newMessages = 0; // read messages
         this.newMessage();
 
+        // load conversation messages
         this.chats.getMessages(this.conversation).subscribe((res) => {
-            this.msgs = res;
-            this.content.scrollToBottom(0);
+            this.scrollToBottom();
         }, () => nav.pop());
     }
 
@@ -39,17 +37,30 @@ export class ConversationPage {
     }
 
     editConversation() {
-        this.nav.present(Modal.create(ConversationEditPage, {
+        let modal = Modal.create(ConversationEditPage, {
             conversation: this.conversation
-        }));
+        });
+        this.nav.present(modal);
+        modal.onDismiss((updatedConversation) => {
+            if (updatedConversation) {
+                this.conversation = updatedConversation;
+            }
+        });
     }
 
     sendMessage() {
         this.chats.send(this.message, this.conversation).subscribe((res) => {
             if (res.success) {
                 this.newMessage();
-                this.content.scrollToBottom(0);
+                this.scrollToBottom();
             }
+        });
+    }
+
+    scrollToBottom() {
+        this.conversation.newMessages = 0; // read messages
+        setTimeout(() => {
+            this.content.scrollToBottom();
         });
     }
 

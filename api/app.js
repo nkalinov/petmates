@@ -3,7 +3,6 @@ const path = require('path');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const routes = require('./routes/index');
 const users = require('./routes/users');
 const auth = require('./routes/auth');
 const mates = require('./routes/mates');
@@ -30,7 +29,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 // Use the passport package in our application
 app.use(passport.initialize());
 
-app.use('/', routes);
 app.use('/breeds', breeds);
 app.use('/auth', auth);
 app.use('/user', users);

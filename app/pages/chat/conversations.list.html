@@ -17,7 +17,7 @@
                 <mate-image [image]="chats.getMembersPic(chat)"></mate-image>
             </ion-avatar>
             <h2>
-                {{chats.getMembersNames(chat) | slice:0:21}}
+                {{chats.getConversationTitle(chat) | slice:0:21}}
             </h2>
             <p class="last-activity" text-small>
                 {{chats.getMembersLastActivity(chat) | messageTime:'Active '}}

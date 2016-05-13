@@ -28,9 +28,9 @@ export class SocketService {
                         this.socket = socket;
                         // global socket event handlers
 
-                        socket.io.engine.on('heartbeat', () => {
-                            console.log('heartbeat');
-                        });
+                        // socket.io.engine.on('heartbeat', () => {
+                        //     console.log('heartbeat');
+                        // });
 
                         resolve(this.socket);
                     }).emit('authenticate', {token: this.auth.token.split(' ')[1]}); //send the jwt

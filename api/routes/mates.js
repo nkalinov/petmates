@@ -4,6 +4,7 @@ var User = require('../models/user');
 var passport = require('passport');
 var helpers = require('../helpers');
 
+// search by name
 router.get('/search', passport.authenticate('jwt', {session: false}), function (req, res) {
     var q = req.query.q;
     if (!q || q.trim() === '') {
@@ -19,10 +20,8 @@ router.get('/search', passport.authenticate('jwt', {session: false}), function (
             }
         }
         User.find(findOptions).select('_id name picture').limit(20).exec(function (err, data) {
-            if (err) {
+            if (err)
                 return res.json({success: false, msg: err});
-            }
-
             return res.json({success: true, data: data});
         });
     }
@@ -30,21 +29,19 @@ router.get('/search', passport.authenticate('jwt', {session: false}), function (
 
 // (send || accept) mate request
 router.post('/', passport.authenticate('jwt', {session: false}), function (req, res) {
-    req.user.requestFriend(req.body.conversation, (err, data) => {
-        if (err) {
+    req.user.requestFriend(req.body.mate, (err, data) => {
+        if (err)
             return res.json({success: false, msg: err});
-        }
-        res.json({success: true, data: data});
+        return res.json({success: true, data: data});
     });
 });
 
 // (remove || reject) mate
 router.delete('/:id', passport.authenticate('jwt', {session: false}), function (req, res) {
-    req.user.removeFriend(req.params.id).then((data) => {
-        res.json({success: true, data: data});
-    }, (err) => {
-        return res.json({success: false, msg: err});
-    });
+    req.user.removeFriend(req.params.id).then(
+        (data) => res.json({success: true, data: data}),
+        (err) => res.json({success: false, msg: err})
+    );
 });
 
 module.exports = router;

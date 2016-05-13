@@ -21,33 +21,104 @@ export class ChatService {
                 private auth:AuthService) {
     }
 
-    createConversation(conversation:Conversation) {
+    createConversation(c:Conversation) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', this.auth.token);
 
         return new Observable((observer) => {
             this.http.post(`${this.config.get('API')}/conversations`, JSON.stringify({
-                members: conversation.members.map((f) => f._id)
+                name: c.name,
+                members: c.members.map((f) => f._id)
             }), {headers: headers}).subscribe(
                 (res:any) => {
                     res = res.json();
                     if (res.success) {
                         let newConversation = new Conversation(res.data);
-                        newConversation.members = conversation.members;
+                        newConversation.members = c.members;
                         this.conversations.unshift(newConversation);
+                        this.conversations$.next(this.conversations);
                         observer.next(this.conversations[0]);
                     } else {
                         observer.error(res.msg);
                         this.events.publish('alert:error', res.msg);
                     }
-                    observer.complete();
                 },
                 (err) => {
                     this.events.publish('alert:error', err.text());
                     observer.error(err);
-                    observer.complete();
-                }
+                },
+                () => observer.complete()
+            );
+        });
+    }
+
+    /**
+     * Update existing conversation
+     * @param c - deep copy of the conversation
+     * @returns {Observable}
+     */
+    updateConversation(c:Conversation) {
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', this.auth.token);
+
+        return new Observable((observer) => {
+            this.http.put(`${this.config.get('API')}/conversations/${c._id}`, JSON.stringify({
+                name: c.name,
+                members: c.members.map((f) => f._id)
+            }), {headers: headers}).subscribe(
+                (res:any) => {
+                    res = res.json();
+                    if (res.success) {
+                        let index = this.conversations.findIndex((sc) => sc._id === c._id);
+                        if (index > -1) {
+                            // get messages and replace
+                            c.messages = this.conversations[index].messages;
+                            this.conversations[index] = c;
+                        }
+                        this.conversations$.next(this.conversations);
+                        observer.next(this.conversations[index]);
+                    } else {
+                        this.events.publish('alert:error', res.msg);
+                        observer.error(res.msg);
+                    }
+                },
+                (err) => {
+                    this.events.publish('alert:error', err.text());
+                    observer.error(err.text());
+                },
+                () => observer.complete()
+            );
+        });
+    }
+
+    leaveConversation(c:Conversation) {
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', this.auth.token);
+
+        return new Observable((observer) => {
+            this.http.delete(`${this.config.get('API')}/conversations/${c._id}`, {headers: headers}).subscribe(
+                (res:any) => {
+                    res = res.json();
+                    if (res.success) {
+                        let index = this.conversations.findIndex((sc) => sc._id === c._id);
+                        if (index > -1) {
+                            this.conversations.splice(index, 1);
+                        }
+                        this.conversations$.next(this.conversations);
+                        observer.next();
+                    } else {
+                        this.events.publish('alert:error', res.msg);
+                        observer.error(res.msg);
+                    }
+                },
+                (err) => {
+                    this.events.publish('alert:error', err.text());
+                    observer.error(err.text());
+                },
+                () => observer.complete()
             );
         });
     }
@@ -59,7 +130,19 @@ export class ChatService {
             (res:any) => {
                 res = res.json();
                 if (res.success) {
-                    this.conversations = res.data.map((data) => new Conversation(data));
+                    let newConversations = res.data.map((data) => new Conversation(data));
+                    if (this.conversations) {
+                        // get messages from saved conversations
+                        this.conversations.forEach((c) => {
+                            if (c.messages.length > 0) {
+                                let find = newConversations.find((nc:Conversation) => nc._id === c._id);
+                                if (find) {
+                                    find.messages = c.messages;
+                                }
+                            }
+                        });
+                    }
+                    this.conversations = newConversations;
                     this.conversations$.next(this.conversations);
                 } else {
                     this.events.publish('alert:error', res.msg);
@@ -90,7 +173,7 @@ export class ChatService {
                                 if (findAuthor) {
                                     parsed.author = findAuthor;
                                 } else {
-                                    // todo member leaved the group ?
+                                    // what todo with messages from members leaved the group ?
                                 }
                             }
                             return parsed;
@@ -163,30 +246,24 @@ export class ChatService {
 
         // new message in conversation
         socket.on('chat:receive', (message:Message, cid:string) => {
-            let find:Conversation = this.conversations.find((c) => c._id === cid);
-            if (find) {
+            let c:Conversation = this.conversations.find((c) => c._id === cid);
+            if (c) {
                 // add to conversation
-                find.messages.push(message);
+                c.messages.push(message);
                 message.added = new Date(<any>message.added);
-                find.lastMessage = message;
-
-                // increment badge
-                if (find.newMessages) {
-                    find.newMessages += 1;
-                } else {
-                    find.newMessages = 1;
-                }
+                c.lastMessage = message;
+                c.newMessages += 1;
             }
         });
     }
 
-    getMembersNames(c:Conversation) {
+    getConversationTitle(c:Conversation) {
+        if (c.name) {
+            return c.name;
+        }
         if (c.members.length === 2) {
             return c.members
                 .filter((m:User) => m._id !== this.auth.user._id)[0].name;
-        }
-        if (c.name) {
-            return c.name;
         }
         return c.members
             .filter((m:User) => m._id !== this.auth.user._id)

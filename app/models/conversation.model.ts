@@ -1,5 +1,5 @@
 import {Message} from './message.model';
-import {User} from "./user.model";
+import {EventEmitter} from "angular2/core";
 
 export class Conversation {
     _id:string;
@@ -8,7 +8,8 @@ export class Conversation {
     messages:Array<any> = [];
     lastMessage:Message;
 
-    newMessages:number;
+    newMessages:number = 0;
+    onNew:EventEmitter = new EventEmitter();
 
     constructor(data?) {
         if (data) {

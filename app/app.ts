@@ -18,7 +18,7 @@ import {CommonService} from './services/common.service';
 import {SocketService} from './services/socket.service';
 import {MatesService} from './services/mates.service';
 import {ChatService} from './services/chat.service';
-import {ConversationsListPage} from "./pages/chat/conversations.list.ts";
+import {ConversationsListPage} from './pages/chat/conversations.list';
 
 enableProdMode();
 

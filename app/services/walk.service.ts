@@ -99,7 +99,9 @@ export class WalkService {
 
     registerSocketEvents(socket) {
         socket.on('walks', (data:Array<Walk>) => {
+            console.debug('walks', data);
             if (data.length > 0) {
+                // todo refactor
                 // see if one of my mates.accepted is going out for a walk
                 this.mates.mates.accepted.forEach((mate:Friendship) => {
                     let mateWalk = data.find((walk:Walk) => walk.user._id === mate.friend._id);

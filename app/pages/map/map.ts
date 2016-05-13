@@ -64,8 +64,6 @@ export class MapPage {
 
             // watch walks$ (coming from socket.io every ~20sec.)
             this.walksSubscriber = this.walk.walks$.subscribe((walks:Array<Walk>) => {
-                console.debug('walks$', walks);
-
                 walks.forEach((walk:Walk) => {
                     if(walk.id !== this.walk.currentWalk.id) {
                         // if walk already on the map
@@ -118,7 +116,6 @@ export class MapPage {
 
     /**
      * Remove markers of inactive users (stopped walk) every deleteInactiveIntervalMs interval
-     * TODO OK to do it here in setInterval ? or ^^
      */
     private cleanInactive() {
         this.deleteInactiveInterval = setInterval(() => {

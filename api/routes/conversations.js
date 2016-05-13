@@ -41,14 +41,58 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
     }
 });
 
-// todo update conversation (add members, change name)
+// update conversation (add members, change name)
 router.put('/:cid', passport.authenticate('jwt', {session: false}), (req, res) => {
-    
+    var cid = req.params.cid;
+    var name = req.body.name;
+    var members = req.body.members;
+
+    Conversation.findOneAndUpdate({
+        _id: cid,
+        members: req.user._id
+    }, {
+        members: members,
+        name: name
+    }, (err, data) => {
+        if (err)
+            return res.json({success: false, msg: err});
+
+        res.json({success: true, data: data});
+
+        // broadcast to members
+        members
+            .filter((uid) => uid !== req.user.id)
+            .forEach((uid) => {
+                if (sockets.connections[uid]) {
+                    sockets.connections[uid].socket.emit('chat:conversation');
+                }
+            });
+    });
 });
 
-// todo quit group
-router.delete(':cid', passport.authenticate('jwt', {session: false}), (req, res) => {
-    
+// leave group
+router.delete('/:cid', passport.authenticate('jwt', {session: false}), (req, res) => {
+    Conversation.findOneAndUpdate({
+        _id: req.params.cid,
+        members: req.user._id
+    }, {
+        $pull: {
+            members: req.user._id
+        }
+    }, {new: true}, (err, data) => {
+        if (err)
+            return res.json({success: false, msg: err});
+
+        res.json({success: true});
+
+        // broadcast
+        data.members
+            .forEach((uid) => {
+                if (sockets.connections[uid]) {
+                    sockets.connections[uid].socket.emit('chat:conversation');
+                }
+            });
+    });
 });
 
 // add new message to conversation
@@ -64,29 +108,24 @@ router.post('/:cid', passport.authenticate('jwt', {session: false}), (req, res) 
     }, {
         $push: {messages: message},
         lastMessage: message
-    }, (err, data) => {
+    }, (err) => {
         if (err)
             return res.json({success: false, data: err, msg: 'Message could not be send! Try again.'});
-        res.json({success: true});
+
+        return res.json({success: true});
     });
 });
 
 // get messages from conversation id
-// todo sort added
 router.get('/:cid', passport.authenticate('jwt', {session: false}), (req, res) => {
-    var cid = req.params.cid;
-    if (cid) {
-        Conversation.findOne({
-            _id: cid,
-            members: req.user._id
-        }, 'messages', (err, c) => {
-            if (err)
-                return res.json({success: false, msg: 'Cannot see others conversations!'});
-            return res.json({success: true, data: c.messages || []});
-        });
-    } else {
-        return res.json({success: false, msg: 'Provide cid'});
-    }
+    Conversation.findOne({
+        _id: req.params.cid,
+        members: req.user._id
+    }, 'messages', (err, c) => {
+        if (err)
+            return res.json({success: false, msg: 'Cannot see others conversations!'});
+        return res.json({success: true, data: c.messages || []});
+    });
 });
 
 module.exports = router;

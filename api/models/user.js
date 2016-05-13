@@ -104,9 +104,10 @@ UserSchema.methods.requestFriend = function (uid, cb) {
             this.save().then(() => {
                 if (err)
                     return cb('User deleted');
+
                 cb(null, {
                     myRequest: myRequest,
-                    fRequest: friendUpdated.friends.find((r) => r.friend.equals(this._id))
+                    fRequest: friendUpdated.mates.find((r) => r.friend.equals(this._id))
                 });
             });
         }, cb);
@@ -132,7 +133,7 @@ UserSchema.methods.requestFriend = function (uid, cb) {
             this.save().then(() => {
                 cb(null, {
                     myRequest: this.mates[this.mates.length - 1],
-                    fRequest: friendUpdated.friends[friendUpdated.friends.length - 1]
+                    fRequest: friendUpdated.mates[friendUpdated.mates.length - 1]
                 });
             });
         }, cb);
@@ -157,7 +158,7 @@ UserSchema.methods.removeFriend = function (fid) {
                     }).exec().then((friendUpdated) => {
                         resolve({
                             myRequest: friendship,
-                            fRequest: friendUpdated.friends.find((r) => r.friend.equals(this._id))
+                            fRequest: friendUpdated.mates.find((r) => r.friend.equals(this._id))
                         });
                     });
                 });

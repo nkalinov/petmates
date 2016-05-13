@@ -1,7 +1,7 @@
 <ion-toolbar>
     <ion-buttons start>
         <button dark (click)="viewCtrl.dismiss()">
-            Close
+            Cancel
         </button>
     </ion-buttons>
     <ion-title>
@@ -10,7 +10,7 @@
         conversation
     </ion-title>
     <ion-buttons end>
-        <button secondary (click)="createConversation()">
+        <button secondary (click)="saveConversation()">
             <span *ngIf="!conversation._id">Create</span>
             <span *ngIf="conversation._id">Update</span>
         </button>
@@ -18,7 +18,7 @@
 </ion-toolbar>
 
 <ion-content>
-    <ion-list>
+    <ion-list *ngIf="conversation.members.length > 2">
         <ion-item>
             <ion-label floating>Conversation title</ion-label>
             <ion-input type="text" [(ngModel)]="conversation.name"></ion-input>
@@ -31,7 +31,7 @@
         </ion-list-header>
         <button ion-item detail-none (click)="addMatesModal()">
             <ion-icon primary name="add"></ion-icon>
-            Add mates
+            Add more mates
         </button>
         <ion-item *ngFor="#f of conversation.members">
             <ion-avatar item-left>

@@ -110,18 +110,18 @@ export class MatesService {
                             this.auth.user.mates.splice(index, 1);
                             this.sockets.socket.emit('mate:', 'remove', res.data);
                             this.sortMatesByStatus();
+                            observer.next(res);
                         }
                     } else {
                         this.events.publish('alert:error', res.msg);
+                        observer.error(res.msg);
                     }
-                    observer.next(res);
-                    observer.complete();
                 },
                 (err) => {
                     this.events.publish('alert:error', err.text());
-                    observer.error(err);
-                    observer.complete();
-                }
+                    observer.error(err.text());
+                },
+                () => observer.complete()
             );
         });
     }

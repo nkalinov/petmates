@@ -87,7 +87,7 @@ var SocketsModule = (function () {
          */
         function onWalkStart(data) {
             currentWalk = walk.start(data, socket.id);
-            console.log('onWalkStart', currentWalk);
+            // console.log('onWalkStart', currentWalk);
         }
 
         /**
@@ -95,7 +95,7 @@ var SocketsModule = (function () {
          * @param coords
          */
         function onWalkMove(coords) {
-            console.log('onWalkMove', currentWalk);
+            // console.log('onWalkMove', currentWalk);
             currentWalk.coords = coords;
         }
 

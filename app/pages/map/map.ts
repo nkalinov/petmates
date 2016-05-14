@@ -1,19 +1,19 @@
-import {Page, NavController, Modal, Events, Config} from 'ionic-angular';
+import {Page, NavController, Modal, Events, Config, IonicApp} from 'ionic-angular';
 import {Geolocation} from 'ionic-native';
 import {Subscription} from 'rxjs/Subscription';
 import {AuthService} from '../../services/auth.service';
-import {WalkService, UserIcon} from '../../services/walk.service.ts';
+import {WalkService, UserIcon} from '../../services/walk.service';
 import {WalkModal} from './walk-modal/walk-modal';
-import {Walk} from "../../models/walk.interface";
-import {CommonService} from "../../services/common.service";
-
+import {Walk} from '../../models/walk.interface';
+import {CommonService} from '../../services/common.service';
 import Marker = L.Marker;
 import Map = L.Map;
-import {emit} from "cluster";
+import {ConversationsListPage} from "../chat/conversations.list";
 
 @Page({
     templateUrl: 'build/pages/map/map.html'
 })
+
 export class MapPage {
     map:Map;
     marker:Marker;
@@ -22,12 +22,13 @@ export class MapPage {
     private geolocationOptions = {enableHighAccuracy: true};
     private positionSubscriber:Subscription;
     private walksSubscriber:Subscription;
-    private deleteInactiveInterval:number;
+    private clearInactiveInterval:number;
 
     constructor(private auth:AuthService,
                 public walk:WalkService,
                 private events:Events,
                 private nav:NavController,
+                private app:IonicApp,
                 private config:Config) {
 
         Geolocation.getCurrentPosition(this.geolocationOptions).then((data) => {
@@ -50,8 +51,7 @@ export class MapPage {
             this.walk.init(myPosition, this.marker);
 
         }).then(() => {
-
-            // Watch for position change
+            // watch position
             this.positionSubscriber = Geolocation.watchPosition(this.geolocationOptions).subscribe((data) => {
                 let newCoords = L.latLng(data.coords.latitude, data.coords.longitude);
                 // TODO emit only if newCoords are "major change"
@@ -62,10 +62,10 @@ export class MapPage {
                 this.marker.setLatLng(this.walk.getCurrentWalkCoords());
             });
 
-            // watch walks$ (coming from socket.io every ~20sec.)
+            // update walks markers
             this.walksSubscriber = this.walk.walks$.subscribe((walks:Array<Walk>) => {
                 walks.forEach((walk:Walk) => {
-                    if(walk.id !== this.walk.currentWalk.id) {
+                    if (walk.id !== this.walk.currentWalk.id) {
                         // if walk already on the map
                         if (this.markers[walk.id]) {
                             // move marker
@@ -76,7 +76,7 @@ export class MapPage {
 
                             // Add new marker to the map
                             let marker = L.marker(walk.coords, {
-                                icon: new UserIcon({iconUrl: `${walk.pet.pic || 'build/img/default_pet.jpg'}`})
+                                icon: new UserIcon({iconUrl: `${walk.pet.pic || this.config.get('defaultPetImage')}`})
                             }).addTo(this.map).bindPopup(popupText);
 
                             // save
@@ -86,16 +86,14 @@ export class MapPage {
                     }
                 });
             });
-
-            this.cleanInactive();
-
+            
+            this.startCleanInactive();
+            
         }, (err) => {
             this.events.publish('alert:error', 'You have disabled or no access to Geolocalization');
+            let nav:NavController = this.app.getRootNav();
+            nav.setRoot(ConversationsListPage);
         });
-    }
-
-    stopWalk() {
-        this.walk.stop();
     }
 
     onPageWillUnload() {
@@ -105,8 +103,8 @@ export class MapPage {
         if (this.walksSubscriber) {
             this.walksSubscriber.unsubscribe();
         }
-        if (this.deleteInactiveInterval) {
-            clearInterval(this.deleteInactiveInterval);
+        if (this.clearInactiveInterval) {
+            clearInterval(this.clearInactiveInterval);
         }
     }
 
@@ -117,8 +115,8 @@ export class MapPage {
     /**
      * Remove markers of inactive users (stopped walk) every deleteInactiveIntervalMs interval
      */
-    private cleanInactive() {
-        this.deleteInactiveInterval = setInterval(() => {
+    private startCleanInactive() {
+        this.clearInactiveInterval = setInterval(() => {
             for (var uid in this.markers) {
                 if (this.markers.hasOwnProperty(uid)) {
                     let key = uid;

@@ -3,15 +3,13 @@ import {Injectable} from 'angular2/core';
 import {Http, Headers, Response} from 'angular2/http';
 import {Pet} from '../models/pet.model';
 import {Observable} from 'rxjs/Observable';
-import {User} from '../models/user.model.ts';
+import {User} from '../models/user.model';
 
 @Injectable()
 export class AuthService {
     local:Storage = new Storage(LocalStorage);
     user:User;
     token:string;
-
-    private isAuthenticated:boolean = false;
 
     constructor(private http:Http,
                 private events:Events,
@@ -34,7 +32,6 @@ export class AuthService {
             (res:any) => {
                 res = res.json();
                 if (res.success) {
-                    this.isAuthenticated = true;
                     this.user = this.parseUser(res.data);
                     this.token = myToken;
                     return this.user;
@@ -45,20 +42,14 @@ export class AuthService {
         );
     }
 
-    authenticated() {
-        return this.isAuthenticated;
-    }
-
     login(name, password) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
-        let req = this.http.post(`${this.config.get('API')}/auth`,
-            JSON.stringify({name: name, password: password}),
-            {headers: headers}
-        );
 
-        // service response logic
-        req.subscribe(
+        this.http.post(`${this.config.get('API')}/auth`, JSON.stringify({
+            name: name,
+            password: password
+        }), {headers: headers}).subscribe(
             (res:any) => {
                 res = res.json();
                 if (res.success) {
@@ -66,18 +57,15 @@ export class AuthService {
                     this.local.set('id_token', token);
                     this.user = this.parseUser(res.data.profile);
                     this.token = token;
-                    this.isAuthenticated = true;
                     this.events.publish('user:login');
                 } else {
                     this.events.publish('alert:error', res.msg);
                 }
             },
             (err:Response) => {
-                console.log('login err', err);
                 this.events.publish('alert:error', err.text());
             }
         );
-        return req;
     }
 
     signup(data) {
@@ -117,16 +105,16 @@ export class AuthService {
                         this.user = this.parseUser(res.data);
                         this.user.password = ''; // reset password field
                         observer.next();
-                        observer.complete();
                     } else {
-                        this.events.publish('alert:error', res.msg);
+                        this.events.publish('alert:error', 'Username or email already registered');
+                        observer.error(res.msg);
                     }
                 },
                 (err) => {
-                    this.events.publish('alert:error', err);
-                    observer.next();
-                    observer.complete();
-                }
+                    this.events.publish('alert:error', err.text());
+                    observer.error(err.text());
+                },
+                () => observer.complete()
             );
         });
     }
@@ -239,11 +227,12 @@ export class AuthService {
         this.local.remove('id_token');
         this.user = null;
         this.token = null;
-        this.isAuthenticated = false;
     }
 
     private parseUser(user) {
         if (user) {
+            delete user.password;
+
             if (user.pets) {
                 user.pets.forEach((pet) => new Pet(pet));
             }

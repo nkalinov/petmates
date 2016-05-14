@@ -15,7 +15,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const serveStatic = require('serve-static');
 
-const app = express();
+var app = express();
 
 app.use(cors());
 app.use(helmet());

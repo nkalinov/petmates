@@ -15,7 +15,6 @@ const Conversation = require('../models/conversation');
 const port = normalizePort(process.env.PORT || '3001');
 app.set('port', port);
 
-
 /**
  * Create HTTP server and socket.io listener
  */
@@ -26,29 +25,20 @@ sockets.init(server);
 /**
  * "CRON" routines
  */
-var cleanUpMessages = function () {
-    // todo 1. remove messages from conversations where added > now - 2d
-    // todo 2 v1 remove conversations where members.length === 0
-    // todo 2 v2 remove conversations where !lastMessage
 
+// remove old messages
+var cleanUpMessages = function () {
     var lastTwoDays = new Date();
     lastTwoDays.setDate(lastTwoDays.getDate() - 2);
 
-    Conversation.where({
-        'messages.added': {
-            $lt: lastTwoDays
-        }
-    }).setOptions({multi: true}).update({
+    Conversation.update({}, {
         $pull: {
-            'messages.added': {
-                $lt: lastTwoDays
-            }
+            'messages': {added: {$lt: lastTwoDays}}
         }
-    }, (err, res) => {
+    }, {multi: true}, (err, res) => {
         if (err)
-            return console.error('Clean old messages ERROR', err);
-
-        console.log('Clean old messages', res);
+            return console.error('Clean old messages ERROR:', err);
+        console.log('Clean old messages:', res);
     });
 };
 

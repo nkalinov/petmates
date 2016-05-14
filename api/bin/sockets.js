@@ -37,7 +37,7 @@ var SocketsModule = (function () {
             timeout: 15000 // 15 seconds to send the authentication message
         })).on('authenticated', onSocketAuthenticated);
 
-        // send users last activity every minute
+        // send users last activity every 60sec.
         setInterval(() => {
             if (connections.updated) {
                 io.emit('users', connections.export());
@@ -87,7 +87,7 @@ var SocketsModule = (function () {
          */
         function onWalkStart(data) {
             currentWalk = walk.start(data, socket.id);
-            // console.log('onWalkStart', currentWalk);
+            socket.broadcast.emit('walk:start', currentWalk);
         }
 
         /**
@@ -95,7 +95,6 @@ var SocketsModule = (function () {
          * @param coords
          */
         function onWalkMove(coords) {
-            // console.log('onWalkMove', currentWalk);
             currentWalk.coords = coords;
         }
 

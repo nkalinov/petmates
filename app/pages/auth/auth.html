@@ -1,5 +1,8 @@
 <ion-toolbar>
-    <ion-title>Welcome to PetMates</ion-title>
+    <ion-title>
+        <ion-icon name="paw" primary></ion-icon>
+        PetMates
+    </ion-title>
 </ion-toolbar>
 
 <div padding>
@@ -25,7 +28,7 @@
             </ion-item>
         </ion-list>
         <div padding-horizontal>
-            <button secondary type="submit" block>Sign In</button>
+            <button secondary block>Sign In</button>
         </div>
         <div padding>
             <button type="button" (click)="openForgotForm()" small light block>Forgot password</button>
@@ -47,7 +50,7 @@
             </ion-item>
         </ion-list>
         <div padding-horizontal>
-            <button block type="submit">Create account</button>
+            <button block>Create account</button>
         </div>
     </form>
 </ion-content>

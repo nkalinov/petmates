@@ -18,7 +18,7 @@
 </ion-toolbar>
 
 <ion-content>
-    <ion-list *ngIf="conversation.members.length > 2">
+    <ion-list>
         <ion-item>
             <ion-label floating>Conversation title</ion-label>
             <ion-input type="text" [(ngModel)]="conversation.name"></ion-input>
@@ -31,7 +31,7 @@
         </ion-list-header>
         <button ion-item detail-none (click)="addMatesModal()">
             <ion-icon primary name="add"></ion-icon>
-            Add more mates
+            Add mates
         </button>
         <ion-item *ngFor="#f of conversation.members">
             <ion-avatar item-left>
@@ -41,9 +41,9 @@
         </ion-item>
     </ion-list>
 
-    <div padding-horizontal *ngIf="conversation._id && conversation.members.length > 2">
+    <div padding-horizontal *ngIf="conversation._id">
         <button block danger small outline (click)="leaveConversation()">
-            Leave group
+            Leave conversation
         </button>
     </div>
 </ion-content>

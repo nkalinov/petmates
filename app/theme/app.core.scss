@@ -59,7 +59,15 @@ pet-image {
 }
 
 #main-menu {
+  background: #fff url('../img/menu.jpg') no-repeat bottom center;
+
+  ion-content {
+    background-color: rgba(255,255,255, 0.5);
+  }
+
   .item {
+    background: none;
+
     &.active {
 
     }

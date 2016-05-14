@@ -42,10 +42,9 @@ enableProdMode();
     ]
 })
 class PetMatesApp {
-    pages:Array<any> = [];
     rootPage:any;
-    pages:Array<{title:string, component:any, active:boolean}>;
-    newRequests:any;
+    pages:Array<{title:string, component:any, active?:boolean, id?:string}>;
+    newRequests:number;
     private defaultRootPage:any = ConversationsListPage;
     private authModal:ViewController;
 
@@ -105,11 +104,9 @@ class PetMatesApp {
         this.events.subscribe('alert:info', (msg) => {
             this.showAlert(msg, 'Info');
         });
-
-        // todo show in template
-        // this.mates.pending$.subscribe((count) => {
-        //     this.newRequests = count > 0 ? count.toString() : null;
-        // });
+        this.mates.pending$.subscribe((count) => {
+            this.newRequests = count;
+        });
     }
 
     private showAuthModal() {

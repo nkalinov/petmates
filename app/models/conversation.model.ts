@@ -9,7 +9,6 @@ export class Conversation {
     lastMessage:Message;
 
     newMessages:number = 0;
-    onNew:EventEmitter = new EventEmitter();
 
     constructor(data?) {
         if (data) {

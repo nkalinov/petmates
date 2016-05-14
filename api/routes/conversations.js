@@ -22,6 +22,7 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
         // todo check if group with exactly the same members already exists
 
         var conversationModel = new Conversation();
+        conversationModel.name = req.body.name;
         conversationModel.members = req.body.members.concat([req.user.id]);
         conversationModel.save((err, data) => {
             if (err)
@@ -37,7 +38,7 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
             });
         });
     } else {
-        return res.json({success: false, msg: 'You must selected at least 1 participant.'});
+        return res.json({success: false, msg: 'Select at least 1 participant.'});
     }
 });
 
@@ -82,16 +83,25 @@ router.delete('/:cid', passport.authenticate('jwt', {session: false}), (req, res
     }, {new: true}, (err, data) => {
         if (err)
             return res.json({success: false, msg: err});
-
         res.json({success: true});
 
-        // broadcast
-        data.members
-            .forEach((uid) => {
-                if (sockets.connections[uid]) {
-                    sockets.connections[uid].socket.emit('chat:conversation');
-                }
-            });
+        var leftMembers = data.members || [];
+
+        // remove if last member
+        if (leftMembers.length <= 1) {
+            Conversation.remove({_id: data._id}, notify);
+        } else {
+            notify();
+        }
+
+        function notify() {
+            leftMembers
+                .forEach((uid) => {
+                    if (sockets.connections[uid]) {
+                        sockets.connections[uid].socket.emit('chat:conversation');
+                    }
+                });
+        }
     });
 });
 

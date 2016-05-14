@@ -15,23 +15,13 @@ import {AuthService} from '../../services/auth.service';
 })
 
 export class ConversationsListPage {
-    conversations:Array<Conversation> = [];
-    private conversationsSubscription;
-
     constructor(public chats:ChatService,
                 public auth:AuthService,
                 private nav:NavController) {
-        this.conversationsSubscription = chats.conversations$.subscribe((res) => {
-            this.conversations = res;
-        });
-        if (this.conversations.length === 0) {
-            // todo cond ok ?
+        // todo cond ok ?
+        if (chats.conversations.length === 0) {
             chats.getConversations();
         }
-    }
-
-    onPageWillUnload() {
-        this.conversationsSubscription.unsubscribe();
     }
 
     openConversation(c:Conversation) {

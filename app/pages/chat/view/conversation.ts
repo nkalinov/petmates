@@ -28,7 +28,7 @@ export class ConversationPage {
 
         // load conversation messages
         this.chats.getMessages(this.conversation).subscribe((res) => {
-            this.scrollToBottom();
+            this.scrollToBottom(0);
         }, () => nav.pop());
     }
 
@@ -57,10 +57,10 @@ export class ConversationPage {
         });
     }
 
-    scrollToBottom() {
+    scrollToBottom(duration = 300) {
         this.conversation.newMessages = 0; // read messages
         setTimeout(() => {
-            this.content.scrollToBottom();
+            this.content.scrollToBottom(duration);
         });
     }
 

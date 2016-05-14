@@ -1,5 +1,7 @@
-var multer = require('multer');
-var paths = {
+const multer = require('multer');
+const ip = require('ip');
+
+const paths = {
     public: 'public/',
     uploads: 'uploads/',
     tmp: 'public/tmp/'
@@ -29,6 +31,5 @@ var single = multer({
 module.exports = {
     single: single,
     dest: paths.public + paths.uploads,
-    uploads: 'http://127.0.0.1:3001/' + paths.uploads // API public link
-    // uploads: 'http://192.168.0.104:3001/' + paths.uploads // API public link
+    uploads: 'http://' + ip.address() + ':' + (process.env.PORT || '3001') + '/' + paths.uploads
 };

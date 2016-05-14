@@ -18,7 +18,7 @@ export class CommonService {
         let loggedInPages = [
             {title: 'Map', component: MapPage},
             {title: 'Chats', component: ConversationsListPage},
-            {title: 'My mates', component: MatesPage},
+            {title: 'My mates', component: MatesPage, id: 'mates'},
             {title: 'My pets', component: PetsPage},
             {title: 'Account', component: ProfilePage}
         ];

@@ -64,16 +64,13 @@ export class MatesService {
                             let index = this.auth.user.mates.findIndex((friendship:Friendship) => {
                                 return friendship._id === res.data.myRequest._id;
                             });
-                            // if yes --> we are accepting pending request
                             if (index > -1) {
-                                // replace
+                                // we are accepting pending request -> replace
                                 this.auth.user.mates[index] = res.data.myRequest;
                                 this.sockets.socket.emit('mate:', 'accepted', res.data);
                             } else {
-                                // we are sending new request
+                                // new request
                                 this.auth.user.mates.push(res.data.myRequest);
-
-                                // notify other side
                                 this.sockets.socket.emit('mate:', 'requested', res.data);
                             }
                             this.sortMatesByStatus();
@@ -82,13 +79,12 @@ export class MatesService {
                         this.events.publish('alert:error', res.msg);
                     }
                     observer.next(res);
-                    observer.complete();
                 },
                 (err) => {
                     this.events.publish('alert:error', err.text());
                     observer.error(err);
-                    observer.complete();
-                }
+                },
+                () => observer.complete()
             );
         });
     }
@@ -128,6 +124,7 @@ export class MatesService {
 
     registerSocketEvents(socket) {
         socket.on('mate:', (action:string, data:{fRequest:Friendship, myRequest:Friendship}) => {
+            console.info('mate:', action, data);
             switch (action) {
                 case 'requested':
                     // someone sent me friend request

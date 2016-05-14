@@ -18,12 +18,6 @@
                     <mate-image [image]="mate.friend.pic"></mate-image>
                 </ion-avatar>
                 <h2>{{mate.friend.name}}</h2>
-                <p *ngIf="mate.friend.lastActive && mate.friend.lastActive > fourthyEightHours">
-                    Active {{mate.friend.lastActive | messageTime}}
-                </p>
-                <ion-badge item-right *ngIf="mate.newMessages && mate.newMessages > 0">
-                    {{mate.newMessages}}
-                </ion-badge>
             </button>
             <ion-item-options>
                 <button danger (click)="removeMate(mate)">

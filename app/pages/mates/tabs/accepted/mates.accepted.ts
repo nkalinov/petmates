@@ -14,12 +14,9 @@ import {AuthService} from "../../../../services/auth.service";
 })
 
 export class MatesAcceptedPage {
-    fourthyEightHours:Date = new Date();
-
     constructor(public mates:MatesService,
                 public auth:AuthService,
                 private nav:NavController) {
-        this.fourthyEightHours.setDate(this.fourthyEightHours.getDate() - 2);
     }
 
     viewMate(friendship:Friendship) {

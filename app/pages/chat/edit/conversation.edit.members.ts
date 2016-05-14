@@ -2,9 +2,11 @@ import {Page, NavParams, ViewController} from 'ionic-angular';
 import {User} from '../../../models/user.model';
 import {MatesService} from '../../../services/mates.service';
 import {Conversation} from '../../../models/conversation.model';
+import {MateImage} from '../../../common/mate-image';
 
 @Page({
-    templateUrl: 'build/pages/chat/edit/conversation.edit.members.html'
+    templateUrl: 'build/pages/chat/edit/conversation.edit.members.html',
+    directives: [MateImage]
 })
 
 export class ConversationEditMembersPage {
@@ -17,9 +19,15 @@ export class ConversationEditMembersPage {
         this.conversation = navParams.get('conversation');
 
         // get friends not in members
-        this.friends = mates.mates.accepted
+        this.friends = this.mates.mates.accepted
             .map((f) => f.friend)
             .filter((u:User) => !this.conversation.members.find((m:User) => m._id === u._id));
+    }
+
+    onPageWillLeave() {
+        this.friends.forEach((f:any) => {
+            f.checked = false;
+        });
     }
 
     addMatesToConversation() {

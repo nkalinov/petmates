@@ -12,7 +12,7 @@
 
 <ion-content>
     <ion-list class="conversations-list">
-        <button ion-item *ngFor="#chat of conversations" (click)="openConversation(chat)">
+        <button ion-item *ngFor="#chat of chats.conversations$ | async" (click)="openConversation(chat)">
             <ion-avatar item-left>
                 <mate-image [image]="chats.getMembersPic(chat)"></mate-image>
             </ion-avatar>

@@ -2,7 +2,10 @@
     <button menuToggle>
         <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>PetMates</ion-title>
+    <ion-title>
+        <ion-icon primary name="paw"></ion-icon>
+        PetMates
+    </ion-title>
     <ion-buttons end>
         <!--<button>-->
         <!--<ion-icon name="funnel"></ion-icon>-->
@@ -26,7 +29,7 @@
         </button>
     </ion-buttons>
     <ion-buttons end *ngIf="walk.currentWalk.pet">
-        <button danger (click)="stopWalk()">
+        <button danger (click)="walk.stop()">
             Stop walk
             <ion-icon name="close"></ion-icon>
         </button>

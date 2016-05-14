@@ -1,4 +1,4 @@
-import {Page, ViewController, NavController, Modal} from 'ionic-angular';
+import {Page, NavController, Modal} from 'ionic-angular';
 import {AuthService} from '../../services/auth.service';
 import {ForgotForm} from './forgot/forgot.form';
 
@@ -12,16 +12,16 @@ export class AuthModal {
     email:string;
     password:string;
 
-    constructor(private authService:AuthService,
+    constructor(private auth:AuthService,
                 private nav:NavController) {
     }
 
     login() {
-        this.authService.login(this.name, this.password);
+        this.auth.login(this.name, this.password);
     }
 
     signup() {
-        this.authService.signup({
+        this.auth.signup({
             name: this.name,
             email: this.email,
             password: this.password

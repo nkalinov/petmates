@@ -12,7 +12,7 @@ import {BehaviorSubject} from 'rxjs/Rx';
 @Injectable()
 export class ChatService {
     conversations$ = new BehaviorSubject([]);
-    private conversations:Array<Conversation> = [];
+    conversations:Array<Conversation> = [];
 
     constructor(private http:Http,
                 private sockets:SocketService,
@@ -35,13 +35,13 @@ export class ChatService {
                     res = res.json();
                     if (res.success) {
                         let newConversation = new Conversation(res.data);
-                        newConversation.members = c.members;
+                        newConversation.members = c.members.concat(this.auth.user);
                         this.conversations.unshift(newConversation);
                         this.conversations$.next(this.conversations);
                         observer.next(this.conversations[0]);
                     } else {
-                        observer.error(res.msg);
                         this.events.publish('alert:error', res.msg);
+                        observer.error(res.msg);
                     }
                 },
                 (err) => {
@@ -174,14 +174,18 @@ export class ChatService {
                                     parsed.author = findAuthor;
                                 } else {
                                     // what todo with messages from members leaved the group ?
+                                    parsed.author = new User({
+                                        _id: parsed.author,
+                                        name: ''
+                                    });
                                 }
                             }
                             return parsed;
                         });
                         observer.next(conversation.messages);
                     } else {
-                        observer.error(res.msg);
                         this.events.publish('alert:error', res.msg);
+                        observer.error(res.msg);
                     }
                 },
                 (err) => {
@@ -229,6 +233,7 @@ export class ChatService {
         socket.on('users', (data) => {
             if (data && data !== {}) {
                 this.conversations.forEach((c:Conversation) => {
+                    // todo make this more "global" information
                     c.members.forEach((m:User) => {
                         if (data[m._id]) {
                             // if online

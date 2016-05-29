@@ -1,4 +1,4 @@
-import {Directive, ElementRef, Input, OnInit} from 'angular2/core';
+import {Directive, ElementRef, Input, OnInit} from '@angular/core';
 import {CommonService} from '../services/common.service';
 
 @Directive({

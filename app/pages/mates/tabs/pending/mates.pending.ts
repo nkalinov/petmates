@@ -1,5 +1,5 @@
 import {Page} from 'ionic-angular';
-import {forwardRef} from 'angular2/core';
+import {forwardRef} from '@angular/core';
 import {MateImage} from '../../../../common/mate-image';
 import {MatesService} from '../../../../services/mates.service';
 import {Friendship} from '../../../../models/friendship.interface';

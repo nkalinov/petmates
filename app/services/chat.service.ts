@@ -1,13 +1,13 @@
 import {Events, Config} from 'ionic-angular';
-import {Injectable} from 'angular2/core';
-import {Http, Headers} from 'angular2/http';
+import {Injectable} from '@angular/core';
+import {Http, Headers} from '@angular/http';
 import {SocketService} from './socket.service';
 import {AuthService} from './auth.service';
 import {Message} from '../models/message.model';
 import {Observable} from 'rxjs/Observable';
 import {User} from '../models/user.model';
 import {Conversation} from '../models/conversation.model';
-import {BehaviorSubject} from 'rxjs/Rx';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class ChatService {
@@ -231,6 +231,7 @@ export class ChatService {
     registerChatEvents(socket) {
         // update conversations members last activity
         socket.on('users', (data) => {
+            console.info('users', data);
             if (data && data !== {}) {
                 this.conversations.forEach((c:Conversation) => {
                     // todo make this more "global" information
@@ -241,6 +242,7 @@ export class ChatService {
                         }
                     });
                 });
+                this.conversations$.next(this.conversations);
             }
         });
 

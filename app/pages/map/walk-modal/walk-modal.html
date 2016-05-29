@@ -26,7 +26,7 @@
         <ion-list radio-group [(ngModel)]="selectedPet">
             <ion-list-header>Choose the pet which is going out</ion-list-header>
 
-            <ion-item *ngFor="#d of auth.user.pets">
+            <ion-item *ngFor="let d of auth.user.pets">
                 <ion-thumbnail item-left>
                     <pet-image [image]="d.pic"></pet-image>
                 </ion-thumbnail>

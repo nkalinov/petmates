@@ -19,7 +19,7 @@
         All your mates are in the conversation.
     </p>
     <ion-list>
-        <ion-item *ngFor="#f of friends">
+        <ion-item *ngFor="let f of friends">
             <ion-checkbox [(ngModel)]="f.checked"></ion-checkbox>
             <ion-label>{{f.name}}</ion-label>
             <ion-avatar item-right>

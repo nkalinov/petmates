@@ -1,8 +1,8 @@
 import {Storage, LocalStorage, Events, Config} from 'ionic-angular';
-import {Injectable} from 'angular2/core';
-import {Http, Headers, Response} from 'angular2/http';
+import {Injectable} from '@angular/core';
+import {Http, Headers, Response} from '@angular/http';
 import {Pet} from '../models/pet.model';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs/Rx';
 import {User} from '../models/user.model';
 
 @Injectable()

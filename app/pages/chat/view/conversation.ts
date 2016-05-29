@@ -1,19 +1,20 @@
 import {Page, NavParams, NavController, Content, Modal} from 'ionic-angular';
-import {forwardRef, ViewChild} from 'angular2/core';
-import {ChatService} from '../../../services/chat.service.ts';
-import {AuthService} from '../../../services/auth.service.ts';
+import {forwardRef, ViewChild} from '@angular/core';
+import {ChatService} from '../../../services/chat.service';
+import {AuthService} from '../../../services/auth.service';
 import {MateImage} from '../../../common/mate-image';
-import {Message} from '../../../models/message.model.ts';
-import {MessageTimePipe} from '../../../pipes/message.time.pipe.ts';
-import {Conversation} from '../../../models/conversation.model.ts';
-import {ConversationEditPage} from "../edit/conversation.edit";
+import {Message} from '../../../models/message.model';
+import {Conversation} from '../../../models/conversation.model';
+import {ConversationEditPage} from '../edit/conversation.edit';
+import {LastActivity} from '../../../common/last-activity';
 
 @Page({
     templateUrl: 'build/pages/chat/view/conversation.html',
-    directives: [forwardRef(() => MateImage)],
-    pipes: [MessageTimePipe]
+    directives: [
+        forwardRef(() => MateImage), 
+        forwardRef(() => LastActivity)
+    ]
 })
-
 export class ConversationPage {
     @ViewChild(Content) content:Content;
     conversation:Conversation;
@@ -67,6 +68,6 @@ export class ConversationPage {
     private newMessage() {
         this.message = new Message({
             author: this.auth.user
-        })
+        });
     }
 }

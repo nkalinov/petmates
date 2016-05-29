@@ -1,5 +1,5 @@
 import {Page, NavController, Alert} from 'ionic-angular';
-import {forwardRef} from 'angular2/core';
+import {forwardRef} from '@angular/core';
 import {MateImage} from '../../../../common/mate-image';
 import {MateViewPage} from "../../view/mate.view";
 import {Friendship} from "../../../../models/friendship.interface";

@@ -1,7 +1,7 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {Config} from 'ionic-angular';
 import {AuthService} from './auth.service';
-const io = require('../../api/node_modules/socket.io-client');
+import * as io from 'socket.io-client/lib';
 
 @Injectable()
 export class SocketService {

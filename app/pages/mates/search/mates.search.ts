@@ -1,4 +1,4 @@
-import {forwardRef} from 'angular2/core';
+import {forwardRef} from '@angular/core';
 import {Page, ViewController} from 'ionic-angular';
 import {MatesService} from '../../../services/mates.service';
 import {MateImage} from '../../../common/mate-image';

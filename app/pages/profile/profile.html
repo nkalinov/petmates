@@ -16,8 +16,7 @@
     <ion-card>
         <ion-item>
             <ion-avatar item-left>
-                <img *ngIf="auth.user.pic" src="{{ auth.user.pic }}">
-                <img *ngIf="!auth.user.pic" src="build/img/default_user.gif">
+                <mate-image [image]="auth.user.pic"></mate-image>
             </ion-avatar>
             <h2>{{ auth.user.name }}</h2>
             <p>{{ auth.user.email }}</p>

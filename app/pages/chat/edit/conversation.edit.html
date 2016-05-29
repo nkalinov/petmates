@@ -33,7 +33,7 @@
             <ion-icon primary name="add"></ion-icon>
             Add mates
         </button>
-        <ion-item *ngFor="#f of conversation.members">
+        <ion-item *ngFor="let f of conversation.members">
             <ion-avatar item-left>
                 <mate-image [image]="f.pic"></mate-image>
             </ion-avatar>

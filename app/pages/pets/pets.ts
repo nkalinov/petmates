@@ -1,5 +1,5 @@
 import {Page, Modal, NavController} from 'ionic-angular';
-import {forwardRef} from 'angular2/core';
+import {forwardRef} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {PetEditPage} from './edit/pet.edit';
 import {GenderInfo} from '../../common/gender';

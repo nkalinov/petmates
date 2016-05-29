@@ -47,7 +47,7 @@
                 <ion-label>Breed</ion-label>
                 <ion-select required ngControl="breed" [(ngModel)]="pet.breed._id"
                             (change)="onSelectBreed($event)">
-                    <ion-option *ngFor="#b of breeds" value="{{b._id}}">
+                    <ion-option *ngFor="let b of breeds" value="{{b._id}}">
                         {{b.name}}
                     </ion-option>
                 </ion-select>

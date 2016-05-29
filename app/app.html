@@ -5,7 +5,7 @@
 
     <ion-content>
         <ion-list>
-            <button menuClose ion-item *ngFor="#p of pages" (click)="openPage(p)"
+            <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)"
                     [ngClass]="{active: p.active}">
                 <ion-label>{{p.title}}</ion-label>
                 <ion-badge primary item-right *ngIf="p.id === 'mates' && newRequests > 0">

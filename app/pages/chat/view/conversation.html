@@ -1,9 +1,7 @@
 <ion-navbar *navbar>
     <ion-title>
         {{chats.getConversationTitle(conversation)}}
-        <span class="last-activity" text-small>
-            {{chats.getMembersLastActivity(conversation) | messageTime:'Active '}}
-        </span>
+        <last-activity prefix="Active" [chat]="conversation" text-small></last-activity>
     </ion-title>
     <ion-buttons end>
         <button (click)="editConversation()">
@@ -14,7 +12,7 @@
 
 <ion-content id="chat" class="chat">
     <div class="messages">
-        <div class="message" *ngFor="#m of conversation.messages" [ngClass]="{'me': m.author._id === auth.user._id}">
+        <div class="message" *ngFor="let m of conversation.messages" [ngClass]="{'me': m.author._id === auth.user._id}">
             <ion-avatar class="avatar">
                 <mate-image [image]="m.author.pic"></mate-image>
             </ion-avatar>
@@ -22,7 +20,9 @@
                 {{m.author.name}}
             </span>
             <p>{{ m.msg }}</p>
-            <span class="date">{{ m.added | messageTime }}</span>
+            <span class="date">
+                {{ m.added | date: 'short' }}
+            </span>
         </div>
     </div>
     <div class="new-messages" text-center *ngIf="conversation.newMessages > 0">

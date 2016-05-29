@@ -1,16 +1,16 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {Config} from 'ionic-angular/index';
 import {Walk} from '../models/walk.interface';
 import {AuthService} from './auth.service';
 import {Pet} from '../models/pet.model';
-import {BehaviorSubject} from 'rxjs/subject/BehaviorSubject';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {SocketService} from "./socket.service";
 import {LocalNotifications} from 'ionic-native';
 import {MatesService} from "./mates.service";
 import {Friendship} from "../models/friendship.interface";
 import LatLngExpression = L.LatLngExpression;
 import Marker = L.Marker;
-const uuid = require('../../api/node_modules/node-uuid');
+import * as uuid from '../../api/node_modules/node-uuid/uuid.js';
 
 export var UserIcon = L.Icon.extend({
     options: {

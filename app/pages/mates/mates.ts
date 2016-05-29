@@ -1,5 +1,5 @@
 import {Page, Modal, NavController, Tab} from 'ionic-angular';
-import {QueryList, ViewChildren} from 'angular2/core';
+import {QueryList, ViewChildren} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {MatesSearchPage} from './search/mates.search';
 import {MatesService} from '../../services/mates.service';

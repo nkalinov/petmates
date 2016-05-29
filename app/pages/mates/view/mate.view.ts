@@ -1,5 +1,5 @@
 import {Page, IonicApp, NavParams, NavController, Alert, Modal} from 'ionic-angular';
-import {forwardRef} from 'angular2/core';
+import {forwardRef} from '@angular/core';
 import {AgeInfo} from '../../../common/age';
 import {GenderInfo} from '../../../common/gender';
 import {PetImage} from '../../../common/pet-image';

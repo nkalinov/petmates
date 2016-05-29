@@ -1,6 +1,6 @@
-import {Pipe, ChangeDetectorRef} from 'angular2/core';
+import {Pipe, ChangeDetectorRef} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {AsyncPipe} from 'angular2/common';
+import {AsyncPipe} from '@angular/common';
 
 @Pipe({
     name: 'messageTime',
@@ -26,15 +26,15 @@ export class MessageTimePipe extends AsyncPipe {
                 this.timer = this.getObservable();
             }
 
-            return super.transform(this.timer, args);
+            return super.transform(this.timer);
         }
 
-        return super.transform(obj, args);
+        return super.transform(obj);
     }
 
     private getObservable() {
         return Observable.interval(1000).startWith(0).map(()=> {
-            var result:string;
+            let result:string;
             // current time
             let now = new Date().getTime();
 
@@ -44,21 +44,16 @@ export class MessageTimePipe extends AsyncPipe {
             // format string
             if (delta < 10) {
                 result = 'now';
-            }
-            else if (delta < 60) { // sent in last minute
+            } else if (delta < 60) { // sent in last minute
                 // result = Math.floor(delta) + ' seconds ago';
                 result = 'now';
-            }
-            else if (delta < 3600) { // sent in last hour
+            } else if (delta < 3600) { // sent in last hour
                 result = Math.floor(delta / 60) + 'm ago';
-            }
-            else if (delta < 86400) { // sent on last day
+            } else if (delta < 86400) { // sent on last day
                 result = Math.floor(delta / 3600) + 'h ago';
-            }
-            else if (delta < (2 * 86400)) { // sent yesterday
+            } else if (delta < (2 * 86400)) { // sent yesterday
                 result = Math.floor(delta / 86400) + 'd ago';
-            }
-            else { // sent more than 2 days ago
+            } else { // sent more than 2 days ago
                 result = '2d+ ago';
             }
             return this.prefix + result;

@@ -13,7 +13,7 @@
         <p text-center>No results.</p>
     </div>
     <ion-list>
-        <ion-item-sliding *ngFor="#item of search">
+        <ion-item-sliding *ngFor="let item of search">
             <ion-item>
                 <ion-avatar item-left>
                     <mate-image [image]="item.pic"></mate-image>

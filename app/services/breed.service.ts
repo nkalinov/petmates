@@ -1,7 +1,7 @@
-import {Injectable} from 'angular2/core';
-import {Http, Headers} from 'angular2/http';
+import {Injectable} from '@angular/core';
+import {Http, Headers} from '@angular/http';
 import {Events, Config} from 'ionic-angular';
-import {BehaviorSubject} from 'rxjs/subject/BehaviorSubject';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Breed} from "../models/breed.interface";
 import {AuthService} from "./auth.service";
 

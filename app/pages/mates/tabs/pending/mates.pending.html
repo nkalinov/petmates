@@ -6,7 +6,7 @@
         </p>
     </div>
     <ion-list>
-        <ion-item-sliding *ngFor="#mate of mates.mates.pending">
+        <ion-item-sliding *ngFor="let mate of mates.mates.pending">
             <button ion-item>
                 <ion-avatar item-left>
                     <mate-image [image]="mate.friend.pic"></mate-image>

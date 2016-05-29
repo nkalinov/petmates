@@ -15,7 +15,7 @@
         <p text-center>No pets? You should adopt one!</p>
     </div>
     <ion-list *ngIf="auth.user.pets.length > 0">
-        <button ion-item *ngFor="#d of auth.user.pets" (click)="petEdit(d)">
+        <button ion-item *ngFor="let d of auth.user.pets" (click)="petEdit(d)">
             <ion-thumbnail item-left>
                 <pet-image [image]="d.pic"></pet-image>
             </ion-thumbnail>

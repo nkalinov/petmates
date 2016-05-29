@@ -17,7 +17,7 @@
         <ion-list-header>
             {{friendship.friend.name}}'s pets
         </ion-list-header>
-        <ion-item *ngFor="#d of friendship.friend.pets">
+        <ion-item *ngFor="let d of friendship.friend.pets">
             <ion-thumbnail item-left>
                 <pet-image [image]="d.pic"></pet-image>
             </ion-thumbnail>

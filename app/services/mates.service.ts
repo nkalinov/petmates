@@ -1,14 +1,14 @@
 import {LocalNotifications} from 'ionic-native';
 import {Events, Config} from 'ionic-angular';
-import {Injectable} from 'angular2/core';
-import {Http, Headers} from 'angular2/http';
+import {Injectable} from '@angular/core';
+import {Http, Headers} from '@angular/http';
 import {Subject} from 'rxjs/Subject';
 import {User} from '../models/user.model.ts';
 import {AuthService} from './auth.service';
 import {Observable} from 'rxjs/Observable';
 import {Friendship, STATUS_REQUESTED, STATUS_ACCEPTED, STATUS_PENDING} from '../models/friendship.interface';
 import {SocketService} from './socket.service';
-import {BehaviorSubject} from 'rxjs/Rx';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class MatesService {

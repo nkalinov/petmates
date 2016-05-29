@@ -1,4 +1,4 @@
-import {Directive, ElementRef, Input, OnInit} from 'angular2/core';
+import {Directive, ElementRef, Input, OnInit} from '@angular/core';
 
 @Directive({
     selector: '[gender]'

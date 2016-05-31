@@ -29,9 +29,13 @@
         </ion-list>
         <div padding-horizontal>
             <button secondary block>Sign In</button>
+            <button type="button" (click)="openForgotForm()" small light block>Forgot password</button>
         </div>
         <div padding>
-            <button type="button" (click)="openForgotForm()" small light block>Forgot password</button>
+            <button facebook block (click)="auth.loginFacebook()">
+                <ion-icon name="logo-facebook"></ion-icon>
+                Facebook login
+            </button>
         </div>
     </form>
     <form (ngSubmit)="signup()" *ngSwitchWhen="'sign-up'">

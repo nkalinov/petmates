@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var config = require('../config/database');
 var passport = require('passport');
 var upload = require('../config/upload');
 var fs = require('fs');
@@ -8,9 +7,10 @@ var Jimp = require('jimp');
 var User = require('../models/user');
 
 // check token validity and that user exists
-router.post('/check', passport.authenticate('jwt', {session: false}), function (req, res) {
-    return res.json({success: true, data: req.user});
-});
+router.post('/check', passport.authenticate('jwt', {session: false}), (req, res) => res.json({
+    success: true,
+    data: req.user
+}));
 
 // delete
 router.delete('/', passport.authenticate('jwt', {session: false}), function (req, res) {

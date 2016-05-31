@@ -5,6 +5,14 @@ var Conversation = require('../models/conversation');
 var passport = require('passport');
 var sockets = require('../bin/sockets');
 
+// todo route middleware to ensure user is logged in
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated())
+        return next();
+
+    res.json({success: false, msg: 'Not authorized'});
+}
+
 // get conversations in which I'm in the members
 router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
     Conversation.find({

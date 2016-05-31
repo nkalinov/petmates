@@ -10,7 +10,6 @@ const conversations = require('./routes/conversations');
 const pets = require('./routes/pets');
 const breeds = require('./routes/breeds');
 const cors = require('cors');
-const db = require('./config/database');
 const helmet = require('helmet');
 const compression = require('compression');
 const serveStatic = require('serve-static');
@@ -36,7 +35,8 @@ app.use('/pets', pets);
 app.use('/mates', mates);
 app.use('/conversations', conversations);
 
-db.init();
+// connect db
+require('./config/database');
 
 // pass passport for configuration
 require('./config/passport')(passport);

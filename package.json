@@ -13,7 +13,7 @@
     "ionic-native": "^1.1.1",
     "ionicons": "3.0.0-alpha.3",
     "reflect-metadata": "^0.1.2",
-    "rxjs": "^5.0.0-beta.6",
+    "rxjs": "5.0.0-beta.6",
     "socket.io-client": "^1.4.6",
     "zone.js": "^0.6.12"
   },
@@ -38,7 +38,15 @@
       "id": "cordova-plugin-whitelist"
     },
     "de.appplant.cordova.plugin.local-notification",
-    "cordova-plugin-network-information"
+    "cordova-plugin-network-information",
+    {
+      "variables": {
+        "APP_ID": "123456789",
+        "APP_NAME": "myApplication"
+      },
+      "locator": "cordova-plugin-facebook4",
+      "id": "cordova-plugin-facebook4"
+    }
   ],
   "cordovaPlatforms": [
     "android",

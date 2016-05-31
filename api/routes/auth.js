@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 var jwt = require('jsonwebtoken');
-var config = require('../config/database');
+var auth = require('../config/auth');
 var upload = require('../config/upload');
 var email = require('../config/email');
 var helpers = require('../helpers');
@@ -10,19 +10,27 @@ var async = require('async');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 var mg = require('nodemailer-mailgun-transport');
+var passport = require('passport');
 
 // login
 router.post('/', function (req, res) {
-    User.findOne({$or: [{name: req.body.name}, {email: req.body.name}]}, function (err, user) {
-        if (err) throw err;
+    User.findOne({
+        $or: [
+            {name: req.body.name},
+            {email: req.body.name}
+        ]
+    }, function (err, user) {
+        if (err) {
+            throw err;
+        }
         if (!user) {
-            res.send({success: false, msg: 'Authentication failed. User not found.'});
+            res.json({success: false, msg: 'Authentication failed. User not found.'});
         } else {
             // check if password matches
             user.comparePassword(req.body.password, function (err, isMatch) {
                 if (isMatch && !err) {
                     // if user is found and password is right create a token
-                    var token = jwt.sign({_id: user._id}, config.secret);
+                    var token = jwt.sign({_id: user._id}, auth.Jwt.secretOrKey);
 
                     // return the information including token as JSON
                     res.json({

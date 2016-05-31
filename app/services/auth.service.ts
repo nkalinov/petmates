@@ -4,6 +4,7 @@ import {Http, Headers, Response} from '@angular/http';
 import {Pet} from '../models/pet.model';
 import {Observable} from 'rxjs/Rx';
 import {User} from '../models/user.model';
+import {Facebook} from 'ionic-native';
 
 @Injectable()
 export class AuthService {
@@ -54,6 +55,7 @@ export class AuthService {
                 res = res.json();
                 if (res.success) {
                     let token = res.data.token;
+                    
                     this.local.set('id_token', token);
                     this.user = this.parseUser(res.data.profile);
                     this.token = token;
@@ -66,6 +68,23 @@ export class AuthService {
                 this.events.publish('alert:error', err.text());
             }
         );
+    }
+
+    loginFacebook() {
+        Facebook.login(['public_profile', 'email']).then((res) => {
+            console.log('Facebook.login', res);
+
+            /**
+             * TODO
+             * /api/check {name}
+             * | true -> login
+             * | false -> me?fields...then(signup).then(login)
+             */
+            Facebook.api('me?fields=id,email,name,picture', null).then((profile) => {
+                console.log(`Facebook.api('me?fields=id,email,name,picture'`, JSON.stringify(profile));
+            });
+
+        }, (err) => console.error(err));
     }
 
     signup(data) {

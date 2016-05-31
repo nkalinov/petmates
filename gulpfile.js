@@ -38,7 +38,10 @@ gulp.task('watch', ['sass', 'html', 'fonts', 'scripts', 'img'], function () {
     gulpWatch('app/**/*.html', function () {
         gulp.start('html');
     });
-    return buildBrowserify({watch: true});
+    return buildBrowserify({
+        watch: true,
+        src: ['./app/app.ts', './typings/index.d.ts']
+    });
 });
 
 gulp.task('build', ['sass', 'html', 'fonts', 'scripts', 'img'], buildBrowserify);

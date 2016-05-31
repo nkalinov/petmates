@@ -12,7 +12,7 @@ export class AuthModal {
     email:string;
     password:string;
 
-    constructor(private auth:AuthService,
+    constructor(public auth:AuthService,
                 private nav:NavController) {
     }
 

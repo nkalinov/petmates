@@ -8,6 +8,7 @@ var Pet = require('./pet');
 
 // set up a mongoose model
 var UserSchema = new Schema({
+    facebookId: String,
     name: {
         type: String,
         unique: true,

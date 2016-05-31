@@ -1,24 +1,18 @@
-var fs = require('fs');
-var mongoose = require('mongoose');
-var Breed = require('../models/breed');
+const fs = require('fs');
+const mongoose = require('mongoose');
+const Breed = require('../models/breed');
 
-module.exports = {
-    secret: '05da9d7d21aa63c31bd70ad8819f9c9626bf9952',
-    init: init
-};
-
-// init database
-function init() {
-    // connect db
+module.exports = () => {
+    // todo use auth.secret
     mongoose.connect('mongodb://127.0.0.1/pm2', function (err) {
         if (err) throw err;
-        checkBreeds();
+        seed();
     });
-}
+};
 
 // check for new breeds
 // TODO insert only new OR updated entries
-function checkBreeds() {
+function seed() {
     Breed.find({}, function (err, dbBreeds) {
         if (err) throw err;
 

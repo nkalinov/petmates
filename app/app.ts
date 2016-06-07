@@ -1,13 +1,6 @@
-import {
-    App,
-    Platform,
-    Modal,
-    Events,
-    Alert,
-    ViewController, Nav
-} from 'ionic-angular';
+import {Modal, Events, Alert, ViewController, Nav, ionicBootstrap, Platform} from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
-import {ViewChild} from '@angular/core';
+import {ViewChild, Component} from '@angular/core';
 import {AuthModal} from './pages/auth/auth';
 import {AuthService} from './services/auth.service';
 import {BreedService} from './services/breed.service';
@@ -17,29 +10,9 @@ import {SocketService} from './services/socket.service';
 import {MatesService} from './services/mates.service';
 import {ChatService} from './services/chat.service';
 import {ConversationsListPage} from './pages/chat/conversations.list';
-import {MessageTimePipe} from './pipes/message.time.pipe';
 
-@App({
+@Component({
     templateUrl: 'build/app.html',
-    pipes: [MessageTimePipe],
-    prodMode: true,
-    config: {
-        // API: 'http://79.124.64.127:3001', // dk
-        API: 'http://127.0.0.1:3001',
-        // API: 'http://192.168.0.104:3001',
-        emitCoordsIntervalMs: 15 * 1000,
-        deleteInactiveIntervalMs: 30 * 1000,
-        defaultPetImage: 'build/img/default_pet.jpg',
-        defaultMateImage: 'build/img/default_user.gif',
-    },
-    providers: [
-        AuthService,
-        BreedService,
-        WalkService,
-        SocketService,
-        MatesService,
-        ChatService
-    ]
 })
 
 class PetMatesApp {
@@ -71,7 +44,7 @@ class PetMatesApp {
                 this.showAuthModal();
             } else {
                 // reset active state
-                this.pages.forEach(page => page.active = false);
+                this.pages.forEach((page) => page.active = false);
 
                 // Reset the content nav to have just this page
                 // we wouldn't want the back button to show in this scenario
@@ -111,7 +84,10 @@ class PetMatesApp {
 
     private showAuthModal() {
         this.authModal = Modal.create(AuthModal);
-        this.nav.present(this.authModal);
+        setTimeout(() => {
+            this.nav.present(this.authModal);
+        }, 500);
+
         // set as active
         let find = this.pages.find((page) => page.component === AuthModal);
         if (find) {
@@ -160,3 +136,26 @@ class PetMatesApp {
         this.showAuthModal();
     }
 }
+
+// Pass the main app component as the first argument
+// Pass any providers for your app in the second argument
+// Set any config for your app as the third argument:
+// http://ionicframework.com/docs/v2/api/config/Config/
+ionicBootstrap(PetMatesApp, [
+    AuthService,
+    BreedService,
+    WalkService,
+    SocketService,
+    MatesService,
+    ChatService
+], {
+    tabbarPlacement: 'bottom',
+    // prodMode: true,
+    // API: 'http://79.124.64.127:3001',
+    // API: 'http://192.168.0.104:3001',
+    API: 'http://127.0.0.1:3001',
+    emitCoordsIntervalMs: 15 * 1000,
+    deleteInactiveIntervalMs: 30 * 1000,
+    defaultPetImage: 'build/img/default_pet.jpg',
+    defaultMateImage: 'build/img/default_user.gif',
+});

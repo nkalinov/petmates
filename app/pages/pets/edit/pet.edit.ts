@@ -1,13 +1,13 @@
-import {Page, ViewController, NavParams, Alert, NavController, Config, IonicApp} from 'ionic-angular';
+import {ViewController, NavParams, Alert, NavController, Config, App} from 'ionic-angular';
 import {DatePicker, ImagePicker} from 'ionic-native';
 import {FormBuilder, ControlGroup, Validators} from '@angular/common';
-import {forwardRef} from '@angular/core';
+import {forwardRef, Component} from '@angular/core';
 import {BreedService} from '../../../services/breed.service';
 import {PetService} from '../../../services/pet.service';
 import {Pet} from '../../../models/pet.model';
 import {PetImage} from '../../../common/pet-image';
 
-@Page({
+@Component({
     providers: [PetService],
     directives: [
         forwardRef(() => PetImage)
@@ -29,15 +29,13 @@ export class PetEditPage {
                 navParams:NavParams,
                 fb:FormBuilder,
                 private config:Config,
-                private app:IonicApp) {
+                private app:App) {
         this.nav = this.app.getActiveNav();
         let petParams = navParams.get('pet');
 
         if (petParams) {
-            this.pet = JSON.parse(JSON.stringify(petParams));
-            if (this.pet.birthday) {
-                this.pet.birthday = new Date(<any>this.pet.birthday);
-            }
+            this.pet = petParams;
+            this.pet = Object.assign({}, petParams);
             this.isNew = false;
         } else {
             this.pet = new Pet();
@@ -98,18 +96,18 @@ export class PetEditPage {
         }
     }
 
-    onSelectBirthday():void {
-        DatePicker.show({
-            date: new Date(),
-            mode: 'date'
-        }).then(
-            date => this.pet.birthday = date,
-            err => {
-                this.pets.events.publish('alert:err', err);
-                this.pet.birthday = null;
-            }
-        );
-    }
+    // onSelectBirthday():void {
+    //     DatePicker.show({
+    //         date: new Date(),
+    //         mode: 'date'
+    //     }).then(
+    //         date => this.pet.birthday = date,
+    //         err => {
+    //             this.pets.events.publish('alert:err', err);
+    //             this.pet.birthday = null;
+    //         }
+    //     );
+    // }
 
     changePicture() {
         ImagePicker.getPictures({

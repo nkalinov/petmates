@@ -1,4 +1,5 @@
-import {Page, ViewController} from 'ionic-angular';
+import {ViewController} from 'ionic-angular';
+import {Component} from '@angular/core';
 import {AuthService} from '../../../services/auth.service';
 import {WalkService} from '../../../services/walk.service.ts';
 import {PetsPage} from '../../pets/pets';
@@ -6,7 +7,7 @@ import {AgeInfo} from '../../../common/age';
 import {GenderInfo} from '../../../common/gender';
 import {PetImage} from '../../../common/pet-image';
 
-@Page({
+@Component({
     directives: [GenderInfo, AgeInfo, PetImage],
     templateUrl: 'build/pages/map/walk-modal/walk-modal.html'
 })

@@ -30,11 +30,10 @@
                 <ion-label>Name</ion-label>
                 <ion-input required type="text" ngControl="name" [(ngModel)]="pet.name"></ion-input>
             </ion-item>
-            <ion-item (click)="onSelectBirthday()">
+            <ion-item>
                 <ion-label>Birthday</ion-label>
-                <ion-note item-right>
-                    {{pet.birthday | date:'mediumDate'}}
-                </ion-note>
+                <ion-datetime
+                              [(ngModel)]="pet.birthday"></ion-datetime>
             </ion-item>
             <ion-item>
                 <ion-label>Gender</ion-label>

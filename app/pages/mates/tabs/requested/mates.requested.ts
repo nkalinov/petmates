@@ -1,10 +1,9 @@
-import {Page} from 'ionic-angular';
-import {forwardRef} from '@angular/core';
+import {forwardRef, Component} from '@angular/core';
 import {MateImage} from '../../../../common/mate-image';
 import {MatesService} from '../../../../services/mates.service';
 import {Friendship} from '../../../../models/friendship.interface';
 
-@Page({
+@Component({
     directives: [forwardRef(() => MateImage)],
     templateUrl: 'build/pages/mates/tabs/requested/mates.requested.html'
 })

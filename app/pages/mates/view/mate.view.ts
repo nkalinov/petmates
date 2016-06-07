@@ -1,13 +1,13 @@
-import {Page, IonicApp, NavParams, NavController, Alert, Modal} from 'ionic-angular';
-import {forwardRef} from '@angular/core';
+import {App, NavParams, NavController, Alert} from 'ionic-angular';
+import {Component, forwardRef} from '@angular/core';
 import {AgeInfo} from '../../../common/age';
 import {GenderInfo} from '../../../common/gender';
 import {PetImage} from '../../../common/pet-image';
 import {MateImage} from '../../../common/mate-image';
 import {MatesService} from '../../../services/mates.service';
-import {Friendship} from "../../../models/friendship.interface";
+import {Friendship} from '../../../models/friendship.interface';
 
-@Page({
+@Component({
     templateUrl: 'build/pages/mates/view/mate.view.html',
     directives: [
         forwardRef(() => GenderInfo),
@@ -21,7 +21,7 @@ export class MateViewPage {
     nav:NavController;
     friendship:Friendship;
 
-    constructor(app:IonicApp,
+    constructor(app:App,
                 navParams:NavParams,
                 private mates:MatesService) {
         this.nav = app.getActiveNav();

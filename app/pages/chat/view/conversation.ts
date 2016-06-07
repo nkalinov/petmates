@@ -1,5 +1,5 @@
-import {Page, NavParams, NavController, Content, Modal} from 'ionic-angular';
-import {forwardRef, ViewChild} from '@angular/core';
+import {NavParams, NavController, Content, Modal} from 'ionic-angular';
+import {forwardRef, ViewChild, Component} from '@angular/core';
 import {ChatService} from '../../../services/chat.service';
 import {AuthService} from '../../../services/auth.service';
 import {MateImage} from '../../../common/mate-image';
@@ -8,7 +8,7 @@ import {Conversation} from '../../../models/conversation.model';
 import {ConversationEditPage} from '../edit/conversation.edit';
 import {LastActivity} from '../../../common/last-activity';
 
-@Page({
+@Component({
     templateUrl: 'build/pages/chat/view/conversation.html',
     directives: [
         forwardRef(() => MateImage), 
@@ -50,7 +50,7 @@ export class ConversationPage {
     }
 
     sendMessage() {
-        this.chats.send(this.message, this.conversation).subscribe((res) => {
+        this.chats.send(this.message, this.conversation).subscribe((res:any) => {
             if (res.success) {
                 this.newMessage();
                 this.scrollToBottom();

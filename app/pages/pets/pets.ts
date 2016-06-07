@@ -1,12 +1,12 @@
-import {Page, Modal, NavController} from 'ionic-angular';
-import {forwardRef} from '@angular/core';
+import {Modal, NavController} from 'ionic-angular';
+import {Component, forwardRef} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {PetEditPage} from './edit/pet.edit';
 import {GenderInfo} from '../../common/gender';
 import {AgeInfo} from '../../common/age';
 import {PetImage} from '../../common/pet-image';
 
-@Page({
+@Component({
     templateUrl: 'build/pages/pets/pets.html',
     directives: [
         forwardRef(() => GenderInfo),

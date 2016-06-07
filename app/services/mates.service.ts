@@ -45,13 +45,16 @@ export class MatesService {
         }
     }
 
-    add(friend:User):Observable {
+    add(friend:User):Observable<any> {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', this.auth.token);
 
         return new Observable((observer) => {
-            this.http.post(`${this.config.get('API')}/mates`, JSON.stringify({mate: friend._id}), {headers: headers}).subscribe(
+            this.http.post(`${this.config.get('API')}/mates`,
+                JSON.stringify({mate: friend._id}),
+                {headers: headers}
+            ).subscribe(
                 (res:any) => {
                     res = res.json();
                     if (res.success) {
@@ -89,7 +92,7 @@ export class MatesService {
         });
     }
 
-    remove(friendship:Friendship):Observable {
+    remove(friendship:Friendship):Observable<any> {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', this.auth.token);
@@ -125,6 +128,7 @@ export class MatesService {
     registerSocketEvents(socket) {
         socket.on('mate:', (action:string, data:{fRequest:Friendship, myRequest:Friendship}) => {
             console.info('mate:', action, data);
+            let index = -1;
             switch (action) {
                 case 'requested':
                     // someone sent me friend request
@@ -138,7 +142,7 @@ export class MatesService {
 
                 case 'accepted':
                     // accepted my request
-                    let index = this.auth.user.mates.findIndex((f) => {
+                    index = this.auth.user.mates.findIndex((f) => {
                         return f._id === data.fRequest._id;
                     });
                     if (index > -1) {
@@ -152,7 +156,7 @@ export class MatesService {
                     break;
 
                 case 'remove':
-                    let index = this.auth.user.mates.findIndex((f) => {
+                    index = this.auth.user.mates.findIndex((f) => {
                         return f._id === data.fRequest._id;
                     });
                     if (index > -1) {

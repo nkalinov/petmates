@@ -1,11 +1,11 @@
-import {forwardRef} from '@angular/core';
-import {Page, ViewController} from 'ionic-angular';
+import {Component, forwardRef} from '@angular/core';
+import {ViewController} from 'ionic-angular';
 import {MatesService} from '../../../services/mates.service';
 import {MateImage} from '../../../common/mate-image';
 import {User} from '../../../models/user.model';
-import {Subscription} from "rxjs/Subscription";
+import {Subscription} from 'rxjs/Subscription';
 
-@Page({
+@Component({
     templateUrl: 'build/pages/mates/search/mates.search.html',
     directives: [
         forwardRef(() => MateImage)
@@ -25,7 +25,7 @@ export class MatesSearchPage {
     }
 
     public addMate(mate) {
-        this.mates.add(mate).subscribe((res) => {
+        this.mates.add(mate).subscribe((res:any) => {
             if (res.success && res.data) {
                 this.search.splice(this.search.indexOf(mate), 1);
             }

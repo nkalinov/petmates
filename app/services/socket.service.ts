@@ -33,7 +33,7 @@ export class SocketService {
                         // });
 
                         resolve(this.socket);
-                    }).emit('authenticate', {token: this.auth.token.split(' ')[1]}); //send the jwt
+                    }).emit('authenticate', {token: this.auth.token.split(' ')[1]}); // send the jwt
                 });
             } else {
                 resolve(this.socket);

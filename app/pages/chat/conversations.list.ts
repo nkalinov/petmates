@@ -1,5 +1,6 @@
 import {Page, NavController, Modal} from 'ionic-angular';
 import {SlicePipe} from '@angular/common';
+import {Component} from '@angular/core';
 import {MateImage} from '../../common/mate-image';
 import {ChatService} from '../../services/chat.service';
 import {ConversationPage} from './view/conversation';
@@ -8,7 +9,7 @@ import {Conversation} from '../../models/conversation.model';
 import {AuthService} from '../../services/auth.service';
 import {LastActivity} from '../../common/last-activity';
 
-@Page({
+@Component({
     pipes: [SlicePipe],
     directives: [MateImage, LastActivity],
     templateUrl: 'build/pages/chat/conversations.list.html'

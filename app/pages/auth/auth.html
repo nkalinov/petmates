@@ -5,56 +5,60 @@
     </ion-title>
 </ion-toolbar>
 
-<div padding>
-    <ion-segment [(ngModel)]="mode">
+<ion-content>
+    <ion-segment padding [(ngModel)]="mode">
         <ion-segment-button value="login">
-            Login
+            Sign in
         </ion-segment-button>
         <ion-segment-button value="sign-up">
-            Sign-up
+            New user
         </ion-segment-button>
     </ion-segment>
-</div>
-<ion-content [ngSwitch]="mode">
-    <form (ngSubmit)="login()" *ngSwitchWhen="'login'">
-        <ion-list>
-            <ion-item>
-                <ion-label floating>Username / Email</ion-label>
-                <ion-input required type="text" [(ngModel)]="name"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label floating>Password</ion-label>
-                <ion-input required type="password" [(ngModel)]="password"></ion-input>
-            </ion-item>
-        </ion-list>
-        <div padding-horizontal>
-            <button secondary block>Sign In</button>
-            <button type="button" (click)="openForgotForm()" small light block>Forgot password</button>
-        </div>
-        <div padding>
-            <button facebook block (click)="auth.loginFacebook()">
-                <ion-icon name="logo-facebook"></ion-icon>
-                Facebook login
-            </button>
-        </div>
-    </form>
-    <form (ngSubmit)="signup()" *ngSwitchWhen="'sign-up'">
-        <ion-list>
-            <ion-item>
-                <ion-label floating>Username</ion-label>
-                <ion-input required type="text" [(ngModel)]="name"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label floating>Email</ion-label>
-                <ion-input required type="text" [(ngModel)]="email"></ion-input>
-            </ion-item>
-            <ion-item>
-                <ion-label floating>Password</ion-label>
-                <ion-input required type="password" [(ngModel)]="password"></ion-input>
-            </ion-item>
-        </ion-list>
-        <div padding-horizontal>
-            <button block>Create account</button>
-        </div>
-    </form>
+    <div [ngSwitch]="mode">
+        <form (ngSubmit)="login()" *ngSwitchWhen="'login'">
+            <ion-list>
+                <ion-item>
+                    <ion-label stacked>Username / Email</ion-label>
+                    <ion-input required type="text" [(ngModel)]="name"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label stacked>Password</ion-label>
+                    <ion-input required type="password" [(ngModel)]="password"></ion-input>
+                </ion-item>
+            </ion-list>
+            <div padding-horizontal>
+                <button block>Login</button>
+            </div>
+            <div padding>
+                <button type="button" (click)="openForgotForm()" small light block>
+                    Forgot password?
+                </button>
+            </div>
+            <div padding>
+                <button facebook block (click)="auth.loginFacebook()">
+                    <ion-icon name="logo-facebook"></ion-icon>
+                    Facebook login
+                </button>
+            </div>
+        </form>
+        <form (ngSubmit)="signup()" *ngSwitchWhen="'sign-up'">
+            <ion-list>
+                <ion-item>
+                    <ion-label stacked>Username</ion-label>
+                    <ion-input required type="text" [(ngModel)]="name"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label stacked>Email</ion-label>
+                    <ion-input required type="text" [(ngModel)]="email"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label stacked>Password</ion-label>
+                    <ion-input required type="password" [(ngModel)]="password"></ion-input>
+                </ion-item>
+            </ion-list>
+            <div padding-horizontal>
+                <button block>Create account</button>
+            </div>
+        </form>
+    </div>
 </ion-content>

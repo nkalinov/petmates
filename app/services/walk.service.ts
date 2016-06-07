@@ -4,13 +4,13 @@ import {Walk} from '../models/walk.interface';
 import {AuthService} from './auth.service';
 import {Pet} from '../models/pet.model';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {SocketService} from "./socket.service";
+import {SocketService} from './socket.service';
 import {LocalNotifications} from 'ionic-native';
-import {MatesService} from "./mates.service";
-import {Friendship} from "../models/friendship.interface";
+import {MatesService} from './mates.service';
+import {Friendship} from '../models/friendship.interface';
 import LatLngExpression = L.LatLngExpression;
 import Marker = L.Marker;
-import * as uuid from '../../api/node_modules/node-uuid/uuid.js';
+import * as uuid from 'node-uuid/uuid.js';
 
 export var UserIcon = L.Icon.extend({
     options: {
@@ -39,7 +39,7 @@ export class WalkService {
 
     init(coords:LatLngExpression, marker:Marker):void {
         this.currentWalk = {
-            id: uuid.v1(),
+            id: uuid.v4(),
             user: {
                 _id: this.auth.user._id,
                 name: this.auth.user.name
@@ -55,7 +55,7 @@ export class WalkService {
      */
     start(petId:string) {
         // new walk id
-        this.currentWalk.id = uuid.v1();
+        this.currentWalk.id = uuid.v4();
 
         // map pet
         let pet:Pet = this.auth.user.pets.find((p:Pet) => p._id === petId);
@@ -72,7 +72,9 @@ export class WalkService {
         this.sockets.socket.emit('walk:start', this.currentWalk);
 
         // change my marker's icon
-        this.currentWalkMarker.setIcon(new UserIcon({iconUrl: `${this.currentWalk.pet.pic || this.config.get('defaultPetImage')}`}));
+        this.currentWalkMarker.setIcon(new UserIcon({
+            iconUrl: `${this.currentWalk.pet.pic || this.config.get('defaultPetImage')}`
+        }));
 
         // start emitting my coordinates
         this.emitCoordsInterval = setInterval(() => {
@@ -83,7 +85,9 @@ export class WalkService {
     stop() {
         this.currentWalk.pet = null;
         this.sockets.socket.emit('walk:stop');
-        this.currentWalkMarker.setIcon(new UserIcon({iconUrl: `${this.auth.user.pic || this.config.get('defaultMateImage')}`}));
+        this.currentWalkMarker.setIcon(new UserIcon({
+            iconUrl: `${this.auth.user.pic || this.config.get('defaultMateImage')}`
+        }));
         clearInterval(this.emitCoordsInterval);
     }
 

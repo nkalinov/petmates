@@ -1,10 +1,11 @@
 import {Page, NavParams, ViewController} from 'ionic-angular';
+import {Component} from '@angular/core';
 import {User} from '../../../models/user.model';
 import {MatesService} from '../../../services/mates.service';
 import {Conversation} from '../../../models/conversation.model';
 import {MateImage} from '../../../common/mate-image';
 
-@Page({
+@Component({
     templateUrl: 'build/pages/chat/edit/conversation.edit.members.html',
     directives: [MateImage]
 })

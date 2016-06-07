@@ -1,7 +1,8 @@
 import {Page, ViewController} from 'ionic-angular';
+import {Component} from '@angular/core';
 import {AuthService} from '../../../services/auth.service';
 
-@Page({
+@Component({
     templateUrl: 'build/pages/auth/forgot/forgot.form.html'
 })
 

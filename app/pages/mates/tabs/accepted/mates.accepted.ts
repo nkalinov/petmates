@@ -1,13 +1,13 @@
-import {Page, NavController, Alert} from 'ionic-angular';
-import {forwardRef} from '@angular/core';
+import {NavController, Alert} from 'ionic-angular';
+import {forwardRef, Component} from '@angular/core';
 import {MateImage} from '../../../../common/mate-image';
-import {MateViewPage} from "../../view/mate.view";
-import {Friendship} from "../../../../models/friendship.interface";
-import {MatesService} from "../../../../services/mates.service";
-import {MessageTimePipe} from "../../../../pipes/message.time.pipe";
-import {AuthService} from "../../../../services/auth.service";
+import {MateViewPage} from '../../view/mate.view';
+import {Friendship} from '../../../../models/friendship.interface';
+import {MatesService} from '../../../../services/mates.service';
+import {MessageTimePipe} from '../../../../pipes/message.time.pipe';
+import {AuthService} from '../../../../services/auth.service';
 
-@Page({
+@Component({
     directives: [forwardRef(() => MateImage)],
     templateUrl: 'build/pages/mates/tabs/accepted/mates.accepted.html',
     pipes: [MessageTimePipe]

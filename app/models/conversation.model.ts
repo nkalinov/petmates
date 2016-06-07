@@ -1,5 +1,4 @@
 import {Message} from './message.model';
-import {EventEmitter} from "angular2/core";
 
 export class Conversation {
     _id:string;

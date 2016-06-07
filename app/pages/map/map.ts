@@ -1,16 +1,17 @@
-import {Page, NavController, Modal, Events, Config, IonicApp} from 'ionic-angular';
+import {NavController, Modal, Events, Config, App} from 'ionic-angular';
 import {Geolocation} from 'ionic-native';
+import {Component} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 import {AuthService} from '../../services/auth.service';
 import {WalkService, UserIcon} from '../../services/walk.service';
 import {WalkModal} from './walk-modal/walk-modal';
 import {Walk} from '../../models/walk.interface';
 import {CommonService} from '../../services/common.service';
+import {ConversationsListPage} from '../chat/conversations.list';
 import Marker = L.Marker;
 import Map = L.Map;
-import {ConversationsListPage} from "../chat/conversations.list";
 
-@Page({
+@Component({
     templateUrl: 'build/pages/map/map.html'
 })
 
@@ -28,7 +29,7 @@ export class MapPage {
                 public walk:WalkService,
                 private events:Events,
                 private nav:NavController,
-                private app:IonicApp,
+                private app:App,
                 private config:Config) {
 
         Geolocation.getCurrentPosition(this.geolocationOptions).then((data) => {

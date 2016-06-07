@@ -1,16 +1,14 @@
-import {Page, Modal, NavController, Tab} from 'ionic-angular';
-import {QueryList, ViewChildren} from '@angular/core';
+import {Modal, NavController, Tab} from 'ionic-angular';
+import {QueryList, ViewChildren, Component} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {MatesSearchPage} from './search/mates.search';
 import {MatesService} from '../../services/mates.service';
 import {MatesAcceptedPage} from './tabs/accepted/mates.accepted';
-import {MatesRequestedPage} from "./tabs/requested/mates.requested";
-import {MatesPendingPage} from "./tabs/pending/mates.pending";
-import {Subscription} from "rxjs/Subscription";
-import {ConversationPage} from "../chat/view/conversation";
-import {User} from "../../models/user.model";
+import {MatesRequestedPage} from './tabs/requested/mates.requested';
+import {MatesPendingPage} from './tabs/pending/mates.pending';
+import {Subscription} from 'rxjs/Subscription';
 
-@Page({
+@Component({
     templateUrl: 'build/pages/mates/mates.html'
 })
 
@@ -31,7 +29,7 @@ export class MatesPage {
     ngAfterViewInit() {
         this.pendingRequestsBadgeSubscription = this.mates.pending$.subscribe((length) => {
             // set new requests badge
-            this.tabs.last.tabBadge = length > 0 ? length.toString() : null;
+            this.tabs.last.tabBadge = length > 0 ? length.toString() : undefined;
         });
     }
 

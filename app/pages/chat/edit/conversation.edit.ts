@@ -1,11 +1,12 @@
-import {Page, ViewController, NavParams, NavController, Modal, IonicApp, Alert} from 'ionic-angular';
+import {Page, ViewController, NavParams, NavController, Modal, App, Alert} from 'ionic-angular';
+import {Component} from '@angular/core';
 import {MateImage} from '../../../common/mate-image';
-import {Conversation} from "../../../models/conversation.model";
-import {ChatService} from "../../../services/chat.service";
-import {ConversationEditMembersPage} from "./conversation.edit.members";
-import {ConversationsListPage} from "../conversations.list";
+import {Conversation} from '../../../models/conversation.model';
+import {ChatService} from '../../../services/chat.service';
+import {ConversationEditMembersPage} from './conversation.edit.members';
+import {ConversationsListPage} from '../conversations.list';
 
-@Page({
+@Component({
     directives: [MateImage],
     templateUrl: 'build/pages/chat/edit/conversation.edit.html'
 })
@@ -16,7 +17,7 @@ export class ConversationEditPage {
     constructor(public viewCtrl:ViewController,
                 private chat:ChatService,
                 private nav:NavController,
-                private app:IonicApp,
+                private app:App,
                 navParams:NavParams) {
         this.conversation = new Conversation(navParams.get('conversation'));
     }

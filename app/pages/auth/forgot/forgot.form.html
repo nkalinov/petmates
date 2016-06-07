@@ -6,35 +6,33 @@
     </ion-buttons>
     <ion-title>Forgot password?</ion-title>
 </ion-toolbar>
-
-<div padding *ngIf="!tokenValid">
-    <ion-segment [(ngModel)]="mode">
-        <ion-segment-button value="request">
-            Submit request
-        </ion-segment-button>
-        <ion-segment-button value="verify">
-            Verify token
-        </ion-segment-button>
-    </ion-segment>
-</div>
-
 <ion-content>
+    <div padding *ngIf="!tokenValid">
+        <ion-segment [(ngModel)]="mode">
+            <ion-segment-button value="request">
+                Submit request
+            </ion-segment-button>
+            <ion-segment-button value="verify">
+                Verify token
+            </ion-segment-button>
+        </ion-segment>
+    </div>
     <div [ngSwitch]="mode" *ngIf="!tokenValid">
         <form (ngSubmit)="auth.submitForgotRequest(email)" *ngSwitchWhen="'request'">
             <ion-list>
                 <ion-item>
-                    <ion-label floating>Email</ion-label>
+                    <ion-label stacked>Account email</ion-label>
                     <ion-input required type="text" [(ngModel)]="email"></ion-input>
                 </ion-item>
             </ion-list>
             <div padding-horizontal>
-                <button small light block type="submit" block>Submit</button>
+                <button small light block type="submit" block>Send me a reset token</button>
             </div>
         </form>
         <form (ngSubmit)="checkResetToken()" *ngSwitchWhen="'verify'">
             <ion-list>
                 <ion-item>
-                    <ion-label floating>Reset password token</ion-label>
+                    <ion-label stacked>Reset password token</ion-label>
                     <ion-input required type="text" [(ngModel)]="token"></ion-input>
                 </ion-item>
             </ion-list>
@@ -47,7 +45,7 @@
     <form *ngIf="tokenValid" (ngSubmit)="changePassword()">
         <ion-list>
             <ion-item>
-                <ion-label floating>New password</ion-label>
+                <ion-label stacked>New password</ion-label>
                 <ion-input required type="password" [(ngModel)]="password"></ion-input>
             </ion-item>
             <div padding-horizontal>

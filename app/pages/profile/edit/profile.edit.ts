@@ -1,11 +1,12 @@
 import {ImagePicker} from 'ionic-native';
-import {Page, ViewController, Events, Config} from 'ionic-angular';
+import {ViewController, Events, Config} from 'ionic-angular';
+import {Component} from '@angular/core';
 import {AuthService} from '../../../services/auth.service';
-import {User} from '../../../models/user.model.ts';
+import {User} from '../../../models/user.model';
 import {CommonService} from '../../../services/common.service';
 import {MateImage} from '../../../common/mate-image';
 
-@Page({
+@Component({
     templateUrl: 'build/pages/profile/edit/profile.edit.html',
     directives: [MateImage]
 })
@@ -28,7 +29,7 @@ export class ProfileEdit {
     public save() {
         this.auth.update(this.user).subscribe(() => {
             this.viewCtrl.dismiss();
-        })
+        });
     }
 
     public changePicture() {
@@ -48,16 +49,16 @@ export class ProfileEdit {
             // quality of resized image, defaults to 100
             quality: 60
         }).then((images) => {
-            for (var i = 0; i < images.length; i++) {
+            for (let i = 0; i < images.length; i++) {
                 console.log('Image URI: ' + images[i]);
             }
             if (images) {
-                var options = new FileUploadOptions();
+                let options = new FileUploadOptions();
                 options.fileKey = 'picture';
                 options.headers = {
                     'Authorization': this.auth.token
                 };
-                var ft = new FileTransfer();
+                const ft = new FileTransfer();
                 ft.upload(images[0], encodeURI(`${this.config.get('API')}/user/upload`),
                     (res) => {
                         res.response = JSON.parse(res.response);
@@ -84,6 +85,7 @@ export class ProfileEdit {
         this.picture = <Array<File>> fileInput.target.files[0];
         this.upload();
     }
+
     // dev
     private upload() {
         CommonService.makeFileRequest(`${this.config.get('API')}/user/upload`, this.picture, this.auth.token).then(

@@ -1,9 +1,10 @@
-import {Page, ActionSheet, NavController, Alert, Modal} from 'ionic-angular';
+import {ActionSheet, NavController, Alert, Modal} from 'ionic-angular';
+import {Component} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {ProfileEdit} from './edit/profile.edit';
 import {MateImage} from '../../common/mate-image';
 
-@Page({
+@Component({
     templateUrl: 'build/pages/profile/profile.html',
     directives: [MateImage]
 })

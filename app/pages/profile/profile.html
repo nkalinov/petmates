@@ -1,16 +1,18 @@
-<ion-toolbar>
-    <ion-buttons start>
-        <button menuToggle>
-            <ion-icon name="menu"></ion-icon>
-        </button>
-    </ion-buttons>
-    <ion-title>Profile</ion-title>
-    <ion-buttons end>
-        <button right [hidden]="edit" (click)="openDangerSheet()">
-            <ion-icon name="settings"></ion-icon>
-        </button>
-    </ion-buttons>
-</ion-toolbar>
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons start>
+            <button menuToggle>
+                <ion-icon name="menu"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title>Profile</ion-title>
+        <ion-buttons end>
+            <button right [hidden]="edit" (click)="openDangerSheet()">
+                <ion-icon name="settings"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
 
 <ion-content padding *ngIf="auth.user">
     <ion-card>

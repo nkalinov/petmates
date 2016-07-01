@@ -1,17 +1,19 @@
-<ion-toolbar>
-    <ion-buttons start>
-        <button dark (click)="viewCtrl.dismiss()">
-            Cancel
-        </button>
-    </ion-buttons>
-    <ion-title>Go for a walk</ion-title>
-    <ion-buttons end>
-        <button secondary (click)="start()" [disabled]="!selectedPet">
-            Start
-            <ion-icon name="paw"></ion-icon>
-        </button>
-    </ion-buttons>
-</ion-toolbar>
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons start>
+            <button dark (click)="viewCtrl.dismiss()">
+                Cancel
+            </button>
+        </ion-buttons>
+        <ion-title>Go for a walk</ion-title>
+        <ion-buttons end>
+            <button secondary (click)="start()" [disabled]="!selectedPet">
+                Start
+                <ion-icon name="paw"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
 
 <ion-content>
     <div *ngIf="auth.user.pets.length===0">

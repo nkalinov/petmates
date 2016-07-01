@@ -1,20 +1,22 @@
-<ion-navbar *navbar>
-    <ion-buttons start *ngIf="isNew">
-        <button dark (click)="viewCtrl.dismiss()">
-            Cancel
-        </button>
-    </ion-buttons>
-    <ion-title>
-        <span *ngIf="!isNew">Edit</span>
-        <span *ngIf="isNew">New</span>
-        pet
-    </ion-title>
-    <ion-buttons end>
-        <button secondary (click)="save()" [disabled]="!petForm.valid">
-            Save
-        </button>
-    </ion-buttons>
-</ion-navbar>
+<ion-header>
+    <ion-navbar>
+        <ion-buttons start *ngIf="isNew">
+            <button dark (click)="viewCtrl.dismiss()">
+                Cancel
+            </button>
+        </ion-buttons>
+        <ion-title>
+            <span *ngIf="!isNew">Edit</span>
+            <span *ngIf="isNew">New</span>
+            pet
+        </ion-title>
+        <ion-buttons end>
+            <button secondary (click)="save()" [disabled]="!petForm.valid">
+                Save
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
 
 <ion-content>
     <ion-row no-padding wrap center *ngIf="!isNew">
@@ -33,7 +35,7 @@
             <ion-item>
                 <ion-label>Birthday</ion-label>
                 <ion-datetime
-                              [(ngModel)]="pet.birthday"></ion-datetime>
+                        [(ngModel)]="pet.birthday"></ion-datetime>
             </ion-item>
             <ion-item>
                 <ion-label>Gender</ion-label>

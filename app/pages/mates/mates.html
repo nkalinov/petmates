@@ -1,14 +1,16 @@
-<ion-navbar *navbar>
-    <button menuToggle>
-        <ion-icon name="menu"></ion-icon>
-    </button>
-    <ion-title>Mates</ion-title>
-    <ion-buttons end>
-        <button secondary (click)="searchMateModal()">
-            <ion-icon name="person-add"></ion-icon>
+<ion-header>
+    <ion-navbar>
+        <button menuToggle>
+            <ion-icon name="menu"></ion-icon>
         </button>
-    </ion-buttons>
-</ion-navbar>
+        <ion-title>Mates</ion-title>
+        <ion-buttons end>
+            <button secondary (click)="searchMateModal()">
+                <ion-icon name="person-add"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
 
 <ion-tabs preloadTabs="true">
     <ion-tab [root]="tabAccepted" tabTitle="My mates" tabIcon="contacts"></ion-tab>

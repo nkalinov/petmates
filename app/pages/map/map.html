@@ -1,37 +1,41 @@
-<ion-navbar *navbar>
-    <button menuToggle>
-        <ion-icon name="menu"></ion-icon>
-    </button>
-    <ion-title>
-        <ion-icon primary name="paw"></ion-icon>
-        PetMates
-    </ion-title>
-    <ion-buttons end>
-        <!--<button>-->
-        <!--<ion-icon name="funnel"></ion-icon>-->
-        <!--</button>-->
-        <button (click)="map.setView(marker.getLatLng(), 16);">
-            <ion-icon name="locate"></ion-icon>
+<ion-header>
+    <ion-navbar>
+        <button menuToggle>
+            <ion-icon name="menu"></ion-icon>
         </button>
-    </ion-buttons>
-</ion-navbar>
+        <ion-title>
+            <ion-icon primary name="paw"></ion-icon>
+            PetMates
+        </ion-title>
+        <ion-buttons end>
+            <!--<button>-->
+            <!--<ion-icon name="funnel"></ion-icon>-->
+            <!--</button>-->
+            <button (click)="map.setView(marker.getLatLng(), 16);">
+                <ion-icon name="locate"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
 
 <div id="map"></div>
 
-<ion-toolbar position="bottom">
-    <p *ngIf="walk.currentWalk.pet">
-        Out with {{walk.currentWalk.pet.name}}
-    </p>
-    <ion-buttons end *ngIf="!walk.currentWalk.pet">
-        <button secondary (click)="openWalkModal()">
-            Go for a walk
-            <ion-icon name="paw"></ion-icon>
-        </button>
-    </ion-buttons>
-    <ion-buttons end *ngIf="walk.currentWalk.pet">
-        <button danger (click)="walk.stop()">
-            Stop walk
-            <ion-icon name="close"></ion-icon>
-        </button>
-    </ion-buttons>
-</ion-toolbar>
+<ion-footer>
+    <ion-toolbar>
+        <p *ngIf="walk.currentWalk.pet">
+            Out with {{walk.currentWalk.pet.name}}
+        </p>
+        <ion-buttons end *ngIf="!walk.currentWalk.pet">
+            <button secondary (click)="openWalkModal()">
+                Go for a walk
+                <ion-icon name="paw"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-buttons end *ngIf="walk.currentWalk.pet">
+            <button danger (click)="walk.stop()">
+                Stop walk
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>

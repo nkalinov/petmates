@@ -1,21 +1,23 @@
-<ion-toolbar>
-    <ion-buttons start>
-        <button dark (click)="viewCtrl.dismiss()">
-            Cancel
-        </button>
-    </ion-buttons>
-    <ion-title>
-        <span *ngIf="!conversation._id">New</span>
-        <span *ngIf="conversation._id">Edit</span>
-        conversation
-    </ion-title>
-    <ion-buttons end>
-        <button secondary (click)="saveConversation()">
-            <span *ngIf="!conversation._id">Create</span>
-            <span *ngIf="conversation._id">Update</span>
-        </button>
-    </ion-buttons>
-</ion-toolbar>
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons start>
+            <button dark (click)="viewCtrl.dismiss()">
+                Cancel
+            </button>
+        </ion-buttons>
+        <ion-title>
+            <span *ngIf="!conversation._id">New</span>
+            <span *ngIf="conversation._id">Edit</span>
+            conversation
+        </ion-title>
+        <ion-buttons end>
+            <button secondary (click)="saveConversation()">
+                <span *ngIf="!conversation._id">Create</span>
+                <span *ngIf="conversation._id">Update</span>
+            </button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
 
 <ion-content>
     <ion-list>

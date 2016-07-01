@@ -1,11 +1,14 @@
-<ion-toolbar>
-    <ion-buttons start>
-        <button (click)="viewCtrl.dismiss()">
-            Close
-        </button>
-    </ion-buttons>
-    <ion-title>Forgot password?</ion-title>
-</ion-toolbar>
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons start>
+            <button (click)="viewCtrl.dismiss()">
+                Close
+            </button>
+        </ion-buttons>
+        <ion-title>Forgot password?</ion-title>
+    </ion-toolbar>
+</ion-header>
+
 <ion-content>
     <div padding *ngIf="!tokenValid">
         <ion-segment [(ngModel)]="mode">

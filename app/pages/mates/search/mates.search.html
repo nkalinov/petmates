@@ -1,11 +1,13 @@
-<ion-navbar *navbar>
-    <ion-buttons start>
-        <button dark type="button" (click)="viewCtrl.dismiss()">
-            Close
-        </button>
-    </ion-buttons>
-    <ion-title>Find your mates</ion-title>
-</ion-navbar>
+<ion-header>
+    <ion-navbar>
+        <ion-buttons start>
+            <button dark type="button" (click)="viewCtrl.dismiss()">
+                Close
+            </button>
+        </ion-buttons>
+        <ion-title>Find your mates</ion-title>
+    </ion-navbar>
+</ion-header>
 
 <ion-content>
     <ion-searchbar [(ngModel)]="searchQuery" (ionInput)="mates.search($event.value.trim())"></ion-searchbar>

@@ -9,7 +9,8 @@
             Add members
         </ion-title>
         <ion-buttons end>
-            <button secondary (click)="addMatesToConversation()">
+            <button secondary (click)="addMatesToConversation()"
+                    [disabled]="!haveCheckedFriends()">
                 Add
             </button>
         </ion-buttons>

@@ -1,10 +1,10 @@
-import {ImagePicker} from 'ionic-native';
-import {ViewController, Events, Config} from 'ionic-angular';
-import {Component} from '@angular/core';
-import {AuthService} from '../../../services/auth.service';
-import {User} from '../../../models/user.model';
-import {CommonService} from '../../../services/common.service';
-import {MateImage} from '../../../common/mate-image';
+import { ImagePicker } from 'ionic-native';
+import { ViewController, Events, Config } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { AuthService } from '../../../services/auth.service';
+import { User } from '../../../models/user.model';
+import { CommonService } from '../../../services/common.service';
+import { MateImage } from '../../../common/mate-image';
 
 @Component({
     templateUrl: 'build/pages/profile/edit/profile.edit.html',
@@ -60,7 +60,7 @@ export class ProfileEdit {
                 };
                 const ft = new FileTransfer();
                 ft.upload(images[0], encodeURI(`${this.config.get('API')}/user/upload`),
-                    (res) => {
+                    (res:any) => {
                         res.response = JSON.parse(res.response);
 
                         if (res.response.success) {
@@ -89,7 +89,7 @@ export class ProfileEdit {
     // dev
     private upload() {
         CommonService.makeFileRequest(`${this.config.get('API')}/user/upload`, this.picture, this.auth.token).then(
-            (res) => {
+            (res:any) => {
                 if (res.response.success) {
                     this.user.pic = res.response.file.url;
                     this.auth.user.pic = this.user.pic;

@@ -11,9 +11,10 @@
             conversation
         </ion-title>
         <ion-buttons end>
-            <button secondary (click)="saveConversation()">
+            <button secondary (click)="saveConversation()"
+                    [disabled]="conversation.members.length <= 0">
                 <span *ngIf="!conversation._id">Create</span>
-                <span *ngIf="conversation._id">Update</span>
+                <span *ngIf="conversation._id">Save</span>
             </button>
         </ion-buttons>
     </ion-toolbar>
@@ -22,7 +23,7 @@
 <ion-content>
     <ion-list>
         <ion-item>
-            <ion-label floating>Conversation title</ion-label>
+            <ion-label stacked>Conversation title</ion-label>
             <ion-input type="text" [(ngModel)]="conversation.name"></ion-input>
         </ion-item>
     </ion-list>

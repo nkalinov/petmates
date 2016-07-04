@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar>
+    <ion-toolbar>
         <button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
@@ -8,30 +8,36 @@
             PetMates
         </ion-title>
         <ion-buttons end>
-            <!--<button>-->
+            <!--<button *ngIf="GEOaccess">-->
             <!--<ion-icon name="funnel"></ion-icon>-->
             <!--</button>-->
-            <button (click)="map.setView(marker.getLatLng(), 16);">
+            <button (click)="map.setView(marker.getLatLng(), 16);" *ngIf="GEOaccess">
                 <ion-icon name="locate"></ion-icon>
             </button>
         </ion-buttons>
-    </ion-navbar>
+    </ion-toolbar>
 </ion-header>
 
-<div id="map"></div>
+<ion-content class="map-page">
+<!--<ion-content class="map-page" [fullscreen]="true">-->
+    <h5 class="no-geo-access" padding text-center *ngIf="!GEOaccess">
+        To use the Map feature, you must allow access to your device location.
+    </h5>
+    <div id="map" *ngIf="GEOaccess"></div>
+</ion-content>
 
-<ion-footer>
+<ion-footer *ngIf="GEOaccess">
     <ion-toolbar>
-        <p *ngIf="walk.currentWalk.pet">
+        <p *ngIf="walk.currentWalk.started">
             Out with {{walk.currentWalk.pet.name}}
         </p>
-        <ion-buttons end *ngIf="!walk.currentWalk.pet">
+        <ion-buttons end *ngIf="!walk.currentWalk.started">
             <button secondary (click)="openWalkModal()">
                 Go for a walk
                 <ion-icon name="paw"></ion-icon>
             </button>
         </ion-buttons>
-        <ion-buttons end *ngIf="walk.currentWalk.pet">
+        <ion-buttons end *ngIf="walk.currentWalk.started">
             <button danger (click)="walk.stop()">
                 Stop walk
                 <ion-icon name="close"></ion-icon>

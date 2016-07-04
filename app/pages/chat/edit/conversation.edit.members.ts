@@ -1,9 +1,9 @@
-import {Page, NavParams, ViewController} from 'ionic-angular';
-import {Component} from '@angular/core';
-import {User} from '../../../models/user.model';
-import {MatesService} from '../../../services/mates.service';
-import {Conversation} from '../../../models/conversation.model';
-import {MateImage} from '../../../common/mate-image';
+import { NavParams, ViewController } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { User } from '../../../models/user.model';
+import { MatesService } from '../../../services/mates.service';
+import { Conversation } from '../../../models/conversation.model';
+import { MateImage } from '../../../common/mate-image';
 
 @Component({
     templateUrl: 'build/pages/chat/edit/conversation.edit.members.html',
@@ -25,14 +25,20 @@ export class ConversationEditMembersPage {
             .filter((u:User) => !this.conversation.members.find((m:User) => m._id === u._id));
     }
 
-    onPageWillLeave() {
+    ionViewWillLeave() {
         this.friends.forEach((f:any) => {
             f.checked = false;
         });
     }
 
+    haveCheckedFriends() {
+        return this.friends.filter((f:any) => f.checked).length > 0;
+    }
+
     addMatesToConversation() {
-        this.conversation.members = this.conversation.members.concat(this.friends.filter((u:any) => u.checked === true));
+        this.conversation.members = this.conversation.members.concat(
+            this.friends.filter((u:any) => u.checked === true)
+        );
         this.viewCtrl.dismiss();
     }
 }

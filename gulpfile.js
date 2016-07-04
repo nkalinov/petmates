@@ -1,7 +1,9 @@
 var gulp = require('gulp'),
     gulpWatch = require('gulp-watch'),
     del = require('del'),
+    runSequence = require('run-sequence'),
     argv = process.argv;
+
 
 /**
  * Ionic hooks
@@ -31,34 +33,66 @@ var copyHTML = require('ionic-gulp-html-copy');
 var copyFonts = require('ionic-gulp-fonts-copy');
 var copyScripts = require('ionic-gulp-scripts-copy');
 
-gulp.task('watch', ['sass', 'html', 'fonts', 'scripts', 'img'], function () {
-    gulpWatch('app/**/*.scss', function () {
-        gulp.start('sass');
-    });
-    gulpWatch('app/**/*.html', function () {
-        gulp.start('html');
-    });
-    return buildBrowserify({watch: true});
+var isRelease = argv.indexOf('--release') > -1;
+
+gulp.task('watch', ['clean'], function (done) {
+    runSequence(
+        ['sass', 'html', 'fonts', 'scripts', 'img'],
+        function () {
+            gulpWatch('app/**/*.scss', function () {
+                gulp.start('sass');
+            });
+            gulpWatch('app/**/*.html', function () {
+                gulp.start('html');
+            });
+            buildBrowserify({watch: true})
+                .on('end', done)
+                .on('error', function (err) {
+                    console.error(err);
+                    throw err;
+                });
+        }
+    );
 });
 
-gulp.task('build', ['sass', 'html', 'fonts', 'scripts', 'img'], buildBrowserify);
+gulp.task('build', ['clean'], function (done) {
+    runSequence(
+        ['sass', 'html', 'fonts', 'scripts', 'img'],
+        function () {
+            buildBrowserify({
+                minify: isRelease,
+                browserifyOptions: {
+                    debug: !isRelease
+                },
+                uglifyOptions: {
+                    mangle: false
+                }
+            }).on('end', done);
+        }
+    );
+});
+
 gulp.task('sass', buildSass);
 gulp.task('html', copyHTML);
 gulp.task('fonts', copyFonts);
-gulp.task('scripts', function () {
-    return copyScripts({
-        src: [
-            'node_modules/es6-shim/es6-shim.min.js',
-            'node_modules/zone.js/dist/zone.js',
-            'node_modules/reflect-metadata/Reflect.js',
-            'bower_components/leaflet/dist/leaflet-src.js'
-        ]
-    })
+gulp.task('scripts', copyScripts);
+gulp.task('clean', function () {
+    return del('www/build');
 });
+
 gulp.task('img', function () {
-    return gulp.src('app/theme/img/**/*')
+    return gulp
+        .src('app/theme/img/**/*')
         .pipe(gulp.dest('www/build/img'));
 });
-gulp.task('clean', function (done) {
-    del('www/build', done);
-});
+
+// gulp.task('scripts', function () {
+//     return copyScripts({
+//         src: [
+//             'node_modules/es6-shim/es6-shim.min.js',
+//             'node_modules/zone.js/dist/zone.js',
+//             'node_modules/reflect-metadata/Reflect.js',
+//             'bower_components/leaflet/dist/leaflet-src.js'
+//         ]
+//     })
+// });

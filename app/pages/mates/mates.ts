@@ -1,18 +1,17 @@
-import {Modal, NavController, Tab} from 'ionic-angular';
-import {QueryList, ViewChildren, Component} from '@angular/core';
-import {AuthService} from '../../services/auth.service';
-import {MatesSearchPage} from './search/mates.search';
-import {MatesService} from '../../services/mates.service';
-import {MatesAcceptedPage} from './tabs/accepted/mates.accepted';
-import {MatesRequestedPage} from './tabs/requested/mates.requested';
-import {MatesPendingPage} from './tabs/pending/mates.pending';
-import {Subscription} from 'rxjs/Subscription';
+import { Tab } from 'ionic-angular';
+import { QueryList, ViewChildren, Component, AfterViewInit } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
+import { MatesService } from '../../services/mates.service';
+import { MatesAcceptedPage } from './tabs/accepted/mates.accepted';
+import { MatesRequestedPage } from './tabs/requested/mates.requested';
+import { MatesPendingPage } from './tabs/pending/mates.pending';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     templateUrl: 'build/pages/mates/mates.html'
 })
 
-export class MatesPage {
+export class MatesPage implements AfterViewInit {
     @ViewChildren(Tab)
     tabs:QueryList<Tab>;
     tabAccepted:MatesAcceptedPage = MatesAcceptedPage;
@@ -22,8 +21,7 @@ export class MatesPage {
     private pendingRequestsBadgeSubscription:Subscription;
 
     constructor(public auth:AuthService,
-                private mates:MatesService,
-                private nav:NavController) {
+                private mates:MatesService) {
     }
 
     ngAfterViewInit() {
@@ -33,11 +31,7 @@ export class MatesPage {
         });
     }
 
-    onPageWillUnload() {
+    ionViewWillUnload() {
         this.pendingRequestsBadgeSubscription.unsubscribe();
-    }
-
-    searchMateModal() {
-        this.nav.present(Modal.create(MatesSearchPage));
     }
 }

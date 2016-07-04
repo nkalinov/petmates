@@ -10,12 +10,12 @@
 </ion-header>
 
 <ion-content>
-    <ion-searchbar [(ngModel)]="searchQuery" (ionInput)="mates.search($event.value.trim())"></ion-searchbar>
-    <div *ngIf="search.length === 0 && searchQuery !== ''">
+    <ion-searchbar [(ngModel)]="searchQuery" (ionInput)="mates.search($event)"></ion-searchbar>
+    <div *ngIf="searchResults.length === 0 && searchQuery !== ''">
         <p text-center>No results.</p>
     </div>
     <ion-list>
-        <ion-item-sliding *ngFor="let item of search">
+        <ion-item-sliding *ngFor="let item of searchResults">
             <ion-item>
                 <ion-avatar item-left>
                     <mate-image [image]="item.pic"></mate-image>

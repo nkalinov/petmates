@@ -1,11 +1,11 @@
-import {ViewController} from 'ionic-angular';
-import {Component} from '@angular/core';
-import {AuthService} from '../../../services/auth.service';
-import {WalkService} from '../../../services/walk.service.ts';
-import {PetsPage} from '../../pets/pets';
-import {AgeInfo} from '../../../common/age';
-import {GenderInfo} from '../../../common/gender';
-import {PetImage} from '../../../common/pet-image';
+import { ViewController } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { AuthService } from '../../../services/auth.service';
+import { WalkService } from '../../../services/walk.service.ts';
+import { PetsPage } from '../../pets/pets';
+import { AgeInfo } from '../../../common/age';
+import { GenderInfo } from '../../../common/gender';
+import { PetImage } from '../../../common/pet-image';
 
 @Component({
     directives: [GenderInfo, AgeInfo, PetImage],

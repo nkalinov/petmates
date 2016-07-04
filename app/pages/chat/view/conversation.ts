@@ -28,12 +28,12 @@ export class ConversationPage {
         this.newMessage();
 
         // load conversation messages
-        this.chats.getMessages(this.conversation).subscribe((res) => {
+        this.chats.getMessages(this.conversation).subscribe(() => {
             this.scrollToBottom(0);
         }, () => nav.pop());
     }
 
-    onPageWillUnload() {
+    ionViewWillUnload() {
         this.conversation.newMessages = 0; // read messages
     }
 

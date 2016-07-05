@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core';
-import {Config} from 'ionic-angular';
-import {AuthService} from './auth.service';
-import * as io from 'socket.io-client/lib';
+import { Injectable } from '@angular/core';
+import { Config } from 'ionic-angular';
+import { AuthService } from './auth.service';
+import * as io from 'socket.io-client';
 
 @Injectable()
 export class SocketService {
@@ -33,7 +33,7 @@ export class SocketService {
                         // });
 
                         resolve(this.socket);
-                    }).emit('authenticate', {token: this.auth.token.split(' ')[1]}); // send the jwt
+                    }).emit('authenticate', { token: this.auth.token.split(' ')[1] }); // send the jwt
                 });
             } else {
                 resolve(this.socket);

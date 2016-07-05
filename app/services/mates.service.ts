@@ -1,14 +1,14 @@
-import {LocalNotifications} from 'ionic-native';
-import {Events, Config} from 'ionic-angular';
-import {Injectable} from '@angular/core';
-import {Http, Headers} from '@angular/http';
-import {Subject} from 'rxjs/Subject';
-import {User} from '../models/user.model.ts';
-import {AuthService} from './auth.service';
-import {Observable} from 'rxjs/Observable';
-import {Friendship, STATUS_REQUESTED, STATUS_ACCEPTED, STATUS_PENDING} from '../models/friendship.interface';
-import {SocketService} from './socket.service';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import { LocalNotifications } from 'ionic-native';
+import { Events, Config } from 'ionic-angular';
+import { Injectable } from '@angular/core';
+import { Http, Headers } from '@angular/http';
+import { Subject } from 'rxjs/Subject';
+import { User } from '../models/user.model.ts';
+import { AuthService } from './auth.service';
+import { Observable } from 'rxjs/Observable';
+import { Friendship, STATUS_REQUESTED, STATUS_ACCEPTED, STATUS_PENDING } from '../models/friendship.interface';
+import { SocketService } from './socket.service';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class MatesService {
@@ -27,13 +27,15 @@ export class MatesService {
                 private sockets:SocketService) {
     }
 
-    search(q):void {
-        if (q && q !== '') {
+    search(event):void {
+        let value = event.target.value.trim();
+
+        if (value && value !== '') {
             let headers = new Headers();
             headers.append('Authorization', this.auth.token);
 
             this.http.get(`${this.config.get('API')}/mates/search`, {
-                search: 'q=' + q,
+                search: 'q=' + value,
                 headers: headers
             }).subscribe((res:any) => {
                 res = res.json();
@@ -42,6 +44,8 @@ export class MatesService {
             }, (err) => {
                 this.events.publish('alert:error', err.text());
             });
+        } else {
+            this.search$.next([]);
         }
     }
 
@@ -52,8 +56,8 @@ export class MatesService {
 
         return new Observable((observer) => {
             this.http.post(`${this.config.get('API')}/mates`,
-                JSON.stringify({mate: friend._id}),
-                {headers: headers}
+                JSON.stringify({ mate: friend._id }),
+                { headers: headers }
             ).subscribe(
                 (res:any) => {
                     res = res.json();
@@ -98,7 +102,7 @@ export class MatesService {
         headers.append('Authorization', this.auth.token);
 
         return new Observable((observer) => {
-            this.http.delete(`${this.config.get('API')}/mates/${friendship._id}`, {headers: headers}).subscribe(
+            this.http.delete(`${this.config.get('API')}/mates/${friendship._id}`, { headers: headers }).subscribe(
                 (res:any) => {
                     res = res.json();
                     if (res.success) {
@@ -133,6 +137,7 @@ export class MatesService {
                 case 'requested':
                     // someone sent me friend request
                     this.auth.user.mates.push(data.fRequest);
+                    // TODO test
                     LocalNotifications.schedule({
                         id: 1,
                         text: `New mate request from ${data.fRequest.friend.name}.`
@@ -147,6 +152,7 @@ export class MatesService {
                     });
                     if (index > -1) {
                         this.auth.user.mates[index] = data.fRequest;
+                        // TODO test
                         LocalNotifications.schedule({
                             id: 1,
                             text: `${data.fRequest.friend.name} accepted your mate request.`

@@ -1,26 +1,29 @@
-<ion-toolbar>
-    <ion-buttons start>
-        <button dark (click)="viewCtrl.dismiss()">
-            Cancel
-        </button>
-    </ion-buttons>
-    <ion-title>
-        <span *ngIf="!conversation._id">New</span>
-        <span *ngIf="conversation._id">Edit</span>
-        conversation
-    </ion-title>
-    <ion-buttons end>
-        <button secondary (click)="saveConversation()">
-            <span *ngIf="!conversation._id">Create</span>
-            <span *ngIf="conversation._id">Update</span>
-        </button>
-    </ion-buttons>
-</ion-toolbar>
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons start>
+            <button dark (click)="viewCtrl.dismiss()">
+                Cancel
+            </button>
+        </ion-buttons>
+        <ion-title>
+            <span *ngIf="!conversation._id">New</span>
+            <span *ngIf="conversation._id">Edit</span>
+            conversation
+        </ion-title>
+        <ion-buttons end>
+            <button secondary (click)="saveConversation()"
+                    [disabled]="conversation.members.length <= 0">
+                <span *ngIf="!conversation._id">Create</span>
+                <span *ngIf="conversation._id">Save</span>
+            </button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
 
 <ion-content>
     <ion-list>
         <ion-item>
-            <ion-label floating>Conversation title</ion-label>
+            <ion-label stacked>Conversation title</ion-label>
             <ion-input type="text" [(ngModel)]="conversation.name"></ion-input>
         </ion-item>
     </ion-list>

@@ -1,26 +1,29 @@
-import {Injectable} from '@angular/core';
-import {MatesPage} from '../pages/mates/mates.ts';
-import {PetsPage} from '../pages/pets/pets';
-import {MapPage} from '../pages/map/map';
-import {AuthModal} from '../pages/auth/auth';
-import {ProfilePage} from '../pages/profile/profile';
-import {HelpPage} from '../pages/help/help';
-import {ConversationsListPage} from '../pages/chat/conversations.list.ts';
+import { Injectable } from '@angular/core';
+import { MatesPage } from '../pages/mates/mates.ts';
+import { PetsPage } from '../pages/pets/pets';
+import { MapPage } from '../pages/map/map';
+import { AuthModal } from '../pages/auth/auth';
+import { ProfilePage } from '../pages/profile/profile';
+import { HelpPage } from '../pages/help/help';
+import { ConversationsListPage } from '../pages/chat/conversations.list.ts';
+import { Page } from '../models/page.interface';
 
 @Injectable()
 export class CommonService {
 
-    static getMenu(auth?:boolean = false) {
+    static getMenu(auth?:boolean = false):Array<Page> {
         let commonPages = [
-            {title: 'Help', component: HelpPage}
+            // {title: 'Help', component: HelpPage}
         ];
-        let publicPages = [{title: 'Login / sign-up', component: AuthModal}];
+        let publicPages = [
+            { title: 'Login / sign-up', component: AuthModal }
+        ];
         let loggedInPages = [
-            {title: 'Map', component: MapPage},
-            {title: 'Chats', component: ConversationsListPage},
-            {title: 'My mates', component: MatesPage, id: 'mates'},
-            {title: 'My pets', component: PetsPage},
-            {title: 'Account', component: ProfilePage}
+            { title: 'Map', component: MapPage },
+            { title: 'Chats', component: ConversationsListPage },
+            { title: 'My mates', component: MatesPage, id: 'mates' },
+            { title: 'My pets', component: PetsPage },
+            { title: 'Account', component: ProfilePage }
         ];
         return auth ? loggedInPages.concat(commonPages) : publicPages.concat(commonPages);
     }
@@ -99,7 +102,7 @@ export class CommonService {
      * @param fieldName
      * @returns {Promise<R>|Promise<T>|Promise}
      */
-    static makeFileRequest(url:string, file:File, token?:string, fieldName?:string = 'picture') {
+    static makeFileRequest(url:string, file:File, token?:string, fieldName:string = 'picture') {
         return new Promise((resolve, reject) => {
             let formData:any = new FormData();
             let xhr = new XMLHttpRequest();
@@ -107,7 +110,7 @@ export class CommonService {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        resolve({response: JSON.parse(xhr.response)});
+                        resolve({ response: JSON.parse(xhr.response) });
                     } else {
                         reject(xhr.response);
                     }

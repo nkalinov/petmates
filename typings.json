@@ -2,7 +2,9 @@
   "dependencies": {},
   "devDependencies": {},
   "globalDependencies": {
-    "es6-shim": "registry:dt/es6-shim#0.31.2+20160317120654",
-    "leaflet": "registry:dt/leaflet#0.7.3+20160412142116"
+    "es6-shim": "registry:dt/es6-shim#0.31.2+20160602141504",
+    "geojson": "registry:dt/geojson#0.0.0+20160619034323",
+    "leaflet": "registry:dt/leaflet#1.0.0+20160630180443",
+    "node": "registry:dt/node#6.0.0+20160621231320"
   }
 }

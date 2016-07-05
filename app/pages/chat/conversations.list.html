@@ -1,14 +1,16 @@
-<ion-navbar *navbar>
-    <button menuToggle>
-        <ion-icon name="menu"></ion-icon>
-    </button>
-    <ion-title>Conversations</ion-title>
-    <ion-buttons end>
-        <button secondary (click)="createConversation()">
-            <ion-icon name="create-outline"></ion-icon>
+<ion-header>
+    <ion-navbar>
+        <button menuToggle>
+            <ion-icon name="menu"></ion-icon>
         </button>
-    </ion-buttons>
-</ion-navbar>
+        <ion-title>Conversations</ion-title>
+        <ion-buttons end>
+            <button secondary (click)="createConversation()">
+                <ion-icon name="create-outline"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
 
 <ion-content>
     <ion-list class="conversations-list">

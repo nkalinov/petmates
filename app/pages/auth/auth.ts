@@ -1,4 +1,4 @@
-import {Page, NavController, Modal} from 'ionic-angular';
+import {NavController, Modal} from 'ionic-angular';
 import {Component} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {ForgotForm} from './forgot/forgot.form';

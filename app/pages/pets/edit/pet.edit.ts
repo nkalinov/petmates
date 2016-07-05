@@ -1,5 +1,5 @@
 import {ViewController, NavParams, Alert, NavController, Config, App} from 'ionic-angular';
-import {DatePicker, ImagePicker} from 'ionic-native';
+import {ImagePicker} from 'ionic-native';
 import {FormBuilder, ControlGroup, Validators} from '@angular/common';
 import {forwardRef, Component} from '@angular/core';
 import {BreedService} from '../../../services/breed.service';
@@ -95,19 +95,6 @@ export class PetEditPage {
             this.pet.breed.name = newBreed.name;
         }
     }
-
-    // onSelectBirthday():void {
-    //     DatePicker.show({
-    //         date: new Date(),
-    //         mode: 'date'
-    //     }).then(
-    //         date => this.pet.birthday = date,
-    //         err => {
-    //             this.pets.events.publish('alert:err', err);
-    //             this.pet.birthday = null;
-    //         }
-    //     );
-    // }
 
     changePicture() {
         ImagePicker.getPictures({

@@ -12,14 +12,6 @@ button[disabled] {
   opacity: 0.5;
 }
 
-ion-item {
-  &.invalid {
-    ion-label {
-      color: color($colors, danger);
-    }
-  }
-}
-
 mate-image {
   display: block;
   text-align: center;
@@ -58,21 +50,36 @@ pet-image {
   }
 }
 
-//#main-menu {
-//  background: #fff url('../img/menu.jpg') no-repeat bottom center;
-//
-//  ion-content {
-//    background-color: rgba(255,255,255, 0.5);
-//  }
-//
-//  .item {
-//    background: none;
-//
-//    &.active {
-//
-//    }
-//  }
-//}
+#main-menu {
+  background: #fff url('../img/menu.jpg') bottom center;
+
+  .toolbar-title {
+
+    .outline {
+      color: #fff;
+      //color: color($colors, secondary);
+      //text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff;
+    }
+  }
+
+  ion-content {
+    background: none;
+  }
+
+  .item {
+    background: none;
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+
+    .item-inner {
+      border: none;
+    }
+
+    &.active {
+
+    }
+  }
+}
 
 [text-small] {
   font-size: 10px !important;

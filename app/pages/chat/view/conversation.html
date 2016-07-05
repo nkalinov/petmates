@@ -1,16 +1,18 @@
-<ion-navbar *navbar>
-    <ion-title>
-        {{chats.getConversationTitle(conversation)}}
-        <last-activity prefix="Active" [chat]="conversation" text-small></last-activity>
-    </ion-title>
-    <ion-buttons end>
-        <button (click)="editConversation()">
-            <ion-icon name="settings"></ion-icon>
-        </button>
-    </ion-buttons>
-</ion-navbar>
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            {{chats.getConversationTitle(conversation)}}
+            <last-activity prefix="Active" [chat]="conversation" text-small></last-activity>
+        </ion-title>
+        <ion-buttons end>
+            <button (click)="editConversation()">
+                <ion-icon name="settings"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
 
-<ion-content id="chat" class="chat">
+<ion-content class="chat">
     <div class="messages">
         <div class="message" *ngFor="let m of conversation.messages" [ngClass]="{'me': m.author._id === auth.user._id}">
             <ion-avatar class="avatar">
@@ -30,10 +32,14 @@
             New messages
         </button>
     </div>
-    <div class="msg">
+</ion-content>
+
+<ion-footer>
+    <ion-toolbar class="toolbar-msg">
         <input type="text" placeholder="Message..." [(ngModel)]="message.msg" (keydown.enter)="sendMessage()">
         <button small (click)="sendMessage()" [disabled]="message.msg === ''">
             <ion-icon name="send"></ion-icon>
         </button>
-    </div>
-</ion-content>
+    </ion-toolbar>
+</ion-footer>
+

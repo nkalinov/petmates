@@ -1,10 +1,10 @@
-import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
-import {Events, Config} from 'ionic-angular';
-import {AuthService} from './auth.service';
-import {Pet} from '../models/pet.model';
-import {Observable} from 'rxjs/Observable';
-import {CommonService} from "./common.service";
+import { Injectable } from '@angular/core';
+import { Http, Headers, Response } from '@angular/http';
+import { Events, Config } from 'ionic-angular';
+import { AuthService } from './auth.service';
+import { Pet } from '../models/pet.model';
+import { Observable } from 'rxjs/Observable';
+import { CommonService } from './common.service';
 
 @Injectable()
 export class PetService {
@@ -25,13 +25,13 @@ export class PetService {
                 // update
                 req = this.http.put(`${this.config.get('API')}/pets/${pet._id}`,
                     JSON.stringify(pet),
-                    {headers: headers}
+                    { headers: headers }
                 );
             } else {
                 // create
                 req = this.http.post(`${this.config.get('API')}/pets`,
                     JSON.stringify(pet),
-                    {headers: headers}
+                    { headers: headers }
                 );
             }
             req.subscribe(
@@ -70,7 +70,7 @@ export class PetService {
 
         return new Observable((observer) => {
             this.http.delete(`${this.config.get('API')}/pets/${pet._id}`,
-                {headers: headers}
+                { headers: headers }
             ).subscribe(
                 (res:any) => {
                     res = res.json();
@@ -98,7 +98,7 @@ export class PetService {
     upload(picture, pet:Pet) {
         CommonService.makeFileRequest(`${this.config.get('API')}/pets/${pet._id}/upload`, picture, this.auth.token)
             .then(
-                (res) => {
+                (res:any) => {
                     if (res.response.success) {
                         pet.pic = res.response.file.url;
                         // replace

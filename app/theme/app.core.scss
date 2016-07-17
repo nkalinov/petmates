@@ -4,83 +4,8 @@
 // These are the imports which make up the design of this app.
 // By default each design mode includes these shared imports.
 // App Shared Sass variables belong in app.variables.scss.
+@import "global";
+@import "components";
+@import "../pages/auth/auth";
 @import "../pages/map/map";
 @import "../pages/chat/view/conversation";
-
-a[disabled],
-button[disabled] {
-  opacity: 0.5;
-}
-
-mate-image {
-  display: block;
-  text-align: center;
-
-  & > ion-icon {
-    font-size: 30px;
-  }
-}
-
-pet-image {
-  display: block;
-}
-
-.profile-picture {
-  max-height: 200px;
-
-  img {
-    display: block;
-    margin: 0 auto;
-    max-height: 200px;
-  }
-
-  .change-text {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: block;
-    text-align: center;
-    width: 100%;
-    padding: 3px 0;
-    margin: 0;
-    background: transparentize(#000, 0.9);
-    color: #fff;
-    font-size: 11px;
-    letter-spacing: 1px;
-  }
-}
-
-#main-menu {
-  background: #fff url('../img/menu.jpg') bottom center;
-
-  .toolbar-title {
-
-    .outline {
-      color: #fff;
-      //color: color($colors, secondary);
-      //text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff;
-    }
-  }
-
-  ion-content {
-    background: none;
-  }
-
-  .item {
-    background: none;
-    color: #fff;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-
-    .item-inner {
-      border: none;
-    }
-
-    &.active {
-
-    }
-  }
-}
-
-[text-small] {
-  font-size: 10px !important;
-}

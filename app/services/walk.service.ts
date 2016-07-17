@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Config } from 'ionic-angular';
-import { BackgroundGeolocation } from 'ionic-native';
 import { Walk } from '../models/walk.model';
 import { AuthService } from './auth.service';
 import { Pet } from '../models/pet.model';
@@ -72,9 +71,6 @@ export class WalkService {
         this.emitCoordsInterval = setInterval(() => {
             this.emitCoords();
         }, this.config.get('emitCoordsIntervalMs'));
-
-        // Turn ON the background-geolocation system.  The user will be tracked whenever they suspend the app.
-        // BackgroundGeolocation.start();
     }
 
     stop() {
@@ -86,9 +82,6 @@ export class WalkService {
             }));
             clearInterval(this.emitCoordsInterval);
             this.currentWalk.stop();
-
-            // If you wish to turn OFF background-tracking, call the #stop method.
-            // BackgroundGeolocation.stop();
         }
     }
 
@@ -107,10 +100,9 @@ export class WalkService {
             console.info('walk:start', data);
             let find = this.mates.mates.accepted.find((f:Friendship) => f.friend._id === data.user._id);
             if (find) {
-                // todo TEST
                 LocalNotifications.schedule({
                     id: 1,
-                    text: `${data.user.name} is out for a walk with ${data.pet.name}.`
+                    text: `${data.user.name} is out with ${data.pet.name}.`
                 });
             }
         });

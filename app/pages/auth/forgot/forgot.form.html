@@ -24,8 +24,8 @@
         <form (ngSubmit)="auth.submitForgotRequest(email)" *ngSwitchWhen="'request'">
             <ion-list>
                 <ion-item>
-                    <ion-label stacked>Account email</ion-label>
-                    <ion-input required type="text" [(ngModel)]="email"></ion-input>
+                    <ion-input required type="text" [(ngModel)]="email"
+                               placeholder="Account email"></ion-input>
                 </ion-item>
             </ion-list>
             <div padding-horizontal>
@@ -35,8 +35,8 @@
         <form (ngSubmit)="checkResetToken()" *ngSwitchWhen="'verify'">
             <ion-list>
                 <ion-item>
-                    <ion-label stacked>Reset password token</ion-label>
-                    <ion-input required type="text" [(ngModel)]="token"></ion-input>
+                    <ion-input required type="text" [(ngModel)]="token"
+                               placeholder="Reset token"></ion-input>
                 </ion-item>
             </ion-list>
             <div padding-horizontal>
@@ -48,8 +48,8 @@
     <form *ngIf="tokenValid" (ngSubmit)="changePassword()">
         <ion-list>
             <ion-item>
-                <ion-label stacked>New password</ion-label>
-                <ion-input required type="password" [(ngModel)]="password"></ion-input>
+                <ion-input required type="password" [(ngModel)]="password"
+                           placeholder="New password"></ion-input>
             </ion-item>
             <div padding-horizontal>
                 <button small light block type="submit" block>Change password</button>

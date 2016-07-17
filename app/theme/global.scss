@@ -1,0 +1,36 @@
+a[disabled],
+button[disabled] {
+  opacity: 0.5;
+}
+
+[text-small] {
+  font-size: 10px !important;
+}
+
+#main-menu {
+  background: #fff url('../img/menu.jpg') bottom center;
+
+  .toolbar-title {
+    .outline {
+      color: #fff;
+    }
+  }
+
+  ion-content {
+    background: none;
+  }
+
+  .item {
+    background: none;
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+
+    .item-inner {
+      border: none;
+    }
+
+    &.active {
+
+    }
+  }
+}

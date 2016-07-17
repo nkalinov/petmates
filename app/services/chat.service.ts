@@ -1,13 +1,14 @@
-import {Events, Config} from 'ionic-angular';
-import {Injectable} from '@angular/core';
-import {Http, Headers} from '@angular/http';
-import {SocketService} from './socket.service';
-import {AuthService} from './auth.service';
-import {Message} from '../models/message.model';
-import {Observable} from 'rxjs/Observable';
-import {User} from '../models/user.model';
-import {Conversation} from '../models/conversation.model';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import { Events, Config } from 'ionic-angular';
+import { Injectable } from '@angular/core';
+import { Http, Headers } from '@angular/http';
+import { SocketService } from './socket.service';
+import { AuthService } from './auth.service';
+import { Message } from '../models/message.model';
+import { Observable } from 'rxjs/Observable';
+import { User } from '../models/user.model';
+import { Conversation } from '../models/conversation.model';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { LocalNotifications } from 'ionic-native';
 
 @Injectable()
 export class ChatService {
@@ -30,7 +31,7 @@ export class ChatService {
             this.http.post(`${this.config.get('API')}/conversations`, JSON.stringify({
                 name: c.name,
                 members: c.members.map((f) => f._id)
-            }), {headers: headers}).subscribe(
+            }), { headers: headers }).subscribe(
                 (res:any) => {
                     res = res.json();
                     if (res.success) {
@@ -67,7 +68,7 @@ export class ChatService {
             this.http.put(`${this.config.get('API')}/conversations/${c._id}`, JSON.stringify({
                 name: c.name,
                 members: c.members.map((f) => f._id)
-            }), {headers: headers}).subscribe(
+            }), { headers: headers }).subscribe(
                 (res:any) => {
                     res = res.json();
                     if (res.success) {
@@ -99,7 +100,7 @@ export class ChatService {
         headers.append('Authorization', this.auth.token);
 
         return new Observable((observer) => {
-            this.http.delete(`${this.config.get('API')}/conversations/${c._id}`, {headers: headers}).subscribe(
+            this.http.delete(`${this.config.get('API')}/conversations/${c._id}`, { headers: headers }).subscribe(
                 (res:any) => {
                     res = res.json();
                     if (res.success) {
@@ -126,7 +127,7 @@ export class ChatService {
     getConversations() {
         let headers = new Headers();
         headers.append('Authorization', this.auth.token);
-        this.http.get(`${this.config.get('API')}/conversations`, {headers: headers}).subscribe(
+        this.http.get(`${this.config.get('API')}/conversations`, { headers: headers }).subscribe(
             (res:any) => {
                 res = res.json();
                 if (res.success) {
@@ -159,7 +160,7 @@ export class ChatService {
         headers.append('Authorization', this.auth.token);
 
         return new Observable((observer) => {
-            this.http.get(`${this.config.get('API')}/conversations/${conversation._id}`, {headers: headers}).subscribe(
+            this.http.get(`${this.config.get('API')}/conversations/${conversation._id}`, { headers: headers }).subscribe(
                 (res:any) => {
                     res = res.json();
                     if (res.success) {
@@ -205,7 +206,7 @@ export class ChatService {
         return new Observable((observer) => {
             this.http.post(`${this.config.get('API')}/conversations/${conversation._id}`, JSON.stringify({
                 msg: message.msg
-            }), {headers: headers}).subscribe(
+            }), { headers: headers }).subscribe(
                 (res:any) => {
                     res = res.json();
                     if (res.success) {
@@ -253,6 +254,11 @@ export class ChatService {
 
         // new message in conversation
         socket.on('chat:receive', (message:Message, cid:string) => {
+            LocalNotifications.schedule({
+                id: 1,
+                text: `${message.author.name}: ${message.msg}`
+            });
+
             let c:Conversation = this.conversations.find((c) => c._id === cid);
             if (c) {
                 // add to conversation

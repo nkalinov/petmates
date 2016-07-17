@@ -1,0 +1,39 @@
+$auth-input-placeholder-color: #fafafa;
+
+.auth-page {
+  background: #fff url('../img/menu.jpg') bottom center;
+
+  .title {
+    & > span {
+      color: #fff;
+    }
+  }
+
+  .segment-button {
+    color: #fff;
+  }
+
+  ion-list {
+    ion-item {
+      background: none;
+      color: #fafafa;
+
+      ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+        color: $auth-input-placeholder-color;
+        opacity: .8;
+      }
+      :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+        color: $auth-input-placeholder-color;
+        opacity: .8;
+      }
+      ::-moz-placeholder { /* Mozilla Firefox 19+ */
+        color: $auth-input-placeholder-color;
+        opacity: .8;
+      }
+      :-ms-input-placeholder { /* Internet Explorer 10-11 */
+        color: $auth-input-placeholder-color;
+        opacity: .8;
+      }
+    }
+  }
+}

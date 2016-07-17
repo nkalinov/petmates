@@ -1,37 +1,29 @@
-<ion-header>
-    <ion-toolbar>
-        <ion-title>
-            <ion-icon name="paw" primary></ion-icon>
-            PetMates
-        </ion-title>
-    </ion-toolbar>
-</ion-header>
+<ion-content class="auth-page">
+    <h4 class="title" text-center>
+        <ion-icon name="paw" primary></ion-icon>
+        <span secondary>PetMates</span>
+    </h4>
 
-<ion-content>
     <ion-segment padding [(ngModel)]="mode">
         <ion-segment-button value="login">
             Sign in
         </ion-segment-button>
         <ion-segment-button value="sign-up">
-            New user
+            Create account
         </ion-segment-button>
     </ion-segment>
-    <div [ngSwitch]="mode">
-        <form (ngSubmit)="login()" *ngSwitchWhen="'login'">
+    <div [ngSwitch]="mode" padding>
+        <form (ngSubmit)="login()" *ngSwitchCase="'login'">
             <ion-list>
                 <ion-item>
-                    <ion-label stacked>Username / Email</ion-label>
-                    <ion-input required type="text" [(ngModel)]="name"></ion-input>
+                    <ion-input required type="text" [(ngModel)]="name" placeholder="Username / Email"></ion-input>
                 </ion-item>
                 <ion-item>
-                    <ion-label stacked>Password</ion-label>
-                    <ion-input required type="password" [(ngModel)]="password"></ion-input>
+                    <ion-input required type="password" [(ngModel)]="password" placeholder="Password"></ion-input>
                 </ion-item>
             </ion-list>
-            <div padding-horizontal>
-                <button block>Login</button>
-            </div>
-            <div padding>
+            <button block>Login</button>
+            <div padding-vertical>
                 <button type="button" (click)="openForgotForm()" small light block>
                     Forgot password?
                 </button>
@@ -43,23 +35,20 @@
                 </button>
             </div>
         </form>
-        <form (ngSubmit)="signup()" *ngSwitchWhen="'sign-up'">
+        <form (ngSubmit)="signup()" *ngSwitchCase="'sign-up'">
             <ion-list>
                 <ion-item>
-                    <ion-label stacked>Username</ion-label>
-                    <ion-input required type="text" [(ngModel)]="name"></ion-input>
+                    <ion-input required type="text" [(ngModel)]="name" placeholder="Username"></ion-input>
                 </ion-item>
                 <ion-item>
-                    <ion-label stacked>Email</ion-label>
-                    <ion-input required type="text" [(ngModel)]="email"></ion-input>
+                    <ion-input required type="text" [(ngModel)]="email" placeholder="Email"></ion-input>
                 </ion-item>
                 <ion-item>
-                    <ion-label stacked>Password</ion-label>
-                    <ion-input required type="password" [(ngModel)]="password"></ion-input>
+                    <ion-input required type="password" [(ngModel)]="password" placeholder="Password"></ion-input>
                 </ion-item>
             </ion-list>
             <div padding-horizontal>
-                <button block>Create account</button>
+                <button block>Submit</button>
             </div>
         </form>
     </div>

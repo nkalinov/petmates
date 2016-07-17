@@ -1,5 +1,5 @@
-import { NavController, Modal, Events, Config } from 'ionic-angular';
-import { BackgroundGeolocation, Geolocation } from 'ionic-native';
+import { NavController, Modal, Config } from 'ionic-angular';
+import { Geolocation } from 'ionic-native';
 import { Component } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import { AuthService } from '../../services/auth.service';
@@ -24,14 +24,13 @@ export class MapPage {
 
     constructor(private auth:AuthService,
                 public walk:WalkService,
-                private events:Events,
                 private nav:NavController,
                 private config:Config) {
         this.initGeolocation();
     }
 
     private initGeolocation() {
-        Geolocation.getCurrentPosition({ enableHighAccuracy: true }).then((data) => {
+        Geolocation.getCurrentPosition({ timeout: 10000, enableHighAccuracy: true }).then((data) => {
             this.GEOaccess = true;
             let position = L.latLng(data.coords.latitude, data.coords.longitude);
 
@@ -76,98 +75,98 @@ export class MapPage {
         });
     }
 
-    private initBackgroundGeolocation() {
-        BackgroundGeolocation.isLocationEnabled().then((enabled) => {
-            if (enabled) {
-                this.GEOaccess = true;
-
-                // https://github.com/mauron85/cordova-plugin-background-geolocation
-                BackgroundGeolocation
-                    .configure({
-                        desiredAccuracy: 10,
-                        stationaryRadius: 20,
-                        distanceFilter: 30,
-                        debug: true, //  enable this hear sounds for background-geolocation life-cycle.
-                        stopOnTerminate: false, // enable this to clear background location settings when the app terminates
-                    })
-                    .then((location) => {
-                        this.GEOaccess = true;
-                        console.log('[js] BackgroundGeolocation callback:  ' + location.latitude + ',' + location.longitude);
-
-                        if (!this.walk.currentWalk.started) {
-                            // start walk
-                            let myPosition = L.latLng(location.latitude, location.longitude);
-
-                            // init map
-                            this.map = L.map('map', { zoomControl: false }).setView(myPosition, 16);
-
-                            // use OSM
-                            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-                                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                            }).addTo(this.map);
-
-                            // add my marker
-                            this.marker = L.marker(myPosition, {
-                                icon: new UserIcon({ iconUrl: `${this.auth.user.pic || 'build/img/default_user.gif'}` })
-                            }).addTo(this.map);
-
-                            this.walk.init(myPosition, this.marker);
-
-                        } else {
-                            // update position
-
-                            const newCoords = L.latLng(location.latitude, location.longitude);
-                            // TODO emit only if newCoords are "major change"
-                            // let emit = this.walk.getCurrentWalkCoords() != newCoords;
-                            let emit = true;
-
-                            // update coords and marker
-                            this.walk.updateCurrentWalkCoords(newCoords, emit);
-                            this.marker.setLatLng(newCoords);
-                        }
-
-                        // IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
-                        // and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
-                        // IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
-                        BackgroundGeolocation.finish(); // FOR IOS ONLY
-                    })
-                    .catch((err) => {
-                        this.geolocalizationErrorCb(err);
-                    });
-
-                // update walks markers
-                this.walksSubscriber = this.walk.walks$.subscribe((walks:Array<Walk>) => {
-                    walks.forEach((walk:Walk) => {
-                        if (walk.id !== this.walk.currentWalk.id) {
-                            // if walk already on the map
-                            if (this.markers[walk.id]) {
-                                // move marker
-                                this.markers[walk.id].setLatLng(walk.coords);
-                            } else {
-                                // marker popup text
-                                let popupText = `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${CommonService.getAge(walk.pet.birthday)}<br>Out with ${walk.user.name}`;
-
-                                // Add new marker to the map
-                                let marker = L.marker(walk.coords, {
-                                    icon: new UserIcon({ iconUrl: `${walk.pet.pic || this.config.get('defaultPetImage')}` })
-                                }).addTo(this.map).bindPopup(popupText);
-
-                                // save
-                                marker['_id'] = walk.id;
-                                this.markers[walk.id] = marker;
-                            }
-                        }
-                    });
-                });
-                this.watchWalks();
-
-            } else {
-                this.geolocalizationErrorCb();
-            }
-        }, (err) => {
-            this.geolocalizationErrorCb(err);
-        });
-    }
+    // private initBackgroundGeolocation() {
+    //     BackgroundGeolocation.isLocationEnabled().then((enabled) => {
+    //         if (enabled) {
+    //             this.GEOaccess = true;
+    //
+    //             // https://github.com/mauron85/cordova-plugin-background-geolocation
+    //             BackgroundGeolocation
+    //                 .configure({
+    //                     desiredAccuracy: 10,
+    //                     stationaryRadius: 20,
+    //                     distanceFilter: 30,
+    //                     debug: true, //  enable this hear sounds for background-geolocation life-cycle.
+    //                     stopOnTerminate: false, // enable this to clear background location settings when the app terminates
+    //                 })
+    //                 .then((location) => {
+    //                     this.GEOaccess = true;
+    //                     console.log('[js] BackgroundGeolocation callback:  ' + location.latitude + ',' + location.longitude);
+    //
+    //                     if (!this.walk.currentWalk.started) {
+    //                         // start walk
+    //                         let myPosition = L.latLng(location.latitude, location.longitude);
+    //
+    //                         // init map
+    //                         this.map = L.map('map', { zoomControl: false }).setView(myPosition, 16);
+    //
+    //                         // use OSM
+    //                         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    //                             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    //                         }).addTo(this.map);
+    //
+    //                         // add my marker
+    //                         this.marker = L.marker(myPosition, {
+    //                             icon: new UserIcon({ iconUrl: `${this.auth.user.pic || 'build/img/default_user.gif'}` })
+    //                         }).addTo(this.map);
+    //
+    //                         this.walk.init(myPosition, this.marker);
+    //
+    //                     } else {
+    //                         // update position
+    //
+    //                         const newCoords = L.latLng(location.latitude, location.longitude);
+    //                         // TODO emit only if newCoords are "major change"
+    //                         // let emit = this.walk.getCurrentWalkCoords() != newCoords;
+    //                         let emit = true;
+    //
+    //                         // update coords and marker
+    //                         this.walk.updateCurrentWalkCoords(newCoords, emit);
+    //                         this.marker.setLatLng(newCoords);
+    //                     }
+    //
+    //                     // IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
+    //                     // and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
+    //                     // IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
+    //                     BackgroundGeolocation.finish(); // FOR IOS ONLY
+    //                 })
+    //                 .catch((err) => {
+    //                     this.geolocalizationErrorCb(err);
+    //                 });
+    //
+    //             // update walks markers
+    //             this.walksSubscriber = this.walk.walks$.subscribe((walks:Array<Walk>) => {
+    //                 walks.forEach((walk:Walk) => {
+    //                     if (walk.id !== this.walk.currentWalk.id) {
+    //                         // if walk already on the map
+    //                         if (this.markers[walk.id]) {
+    //                             // move marker
+    //                             this.markers[walk.id].setLatLng(walk.coords);
+    //                         } else {
+    //                             // marker popup text
+    //                             let popupText = `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${CommonService.getAge(walk.pet.birthday)}<br>Out with ${walk.user.name}`;
+    //
+    //                             // Add new marker to the map
+    //                             let marker = L.marker(walk.coords, {
+    //                                 icon: new UserIcon({ iconUrl: `${walk.pet.pic || this.config.get('defaultPetImage')}` })
+    //                             }).addTo(this.map).bindPopup(popupText);
+    //
+    //                             // save
+    //                             marker['_id'] = walk.id;
+    //                             this.markers[walk.id] = marker;
+    //                         }
+    //                     }
+    //                 });
+    //             });
+    //             this.watchWalks();
+    //
+    //         } else {
+    //             this.geolocalizationErrorCb();
+    //         }
+    //     }, (err) => {
+    //         this.geolocalizationErrorCb(err);
+    //     });
+    // }
 
     ionViewWillUnload() {
         if (this.positionSubscriber) {

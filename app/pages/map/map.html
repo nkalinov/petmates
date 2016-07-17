@@ -19,7 +19,6 @@
 </ion-header>
 
 <ion-content class="map-page">
-<!--<ion-content class="map-page" [fullscreen]="true">-->
     <h5 class="no-geo-access" padding text-center *ngIf="!GEOaccess">
         To use the Map feature, you must allow access to your device location.
     </h5>
@@ -27,13 +26,13 @@
 </ion-content>
 
 <ion-footer *ngIf="GEOaccess">
-    <ion-toolbar>
+    <ion-toolbar no-border-top>
         <p *ngIf="walk.currentWalk.started">
             Out with {{walk.currentWalk.pet.name}}
         </p>
         <ion-buttons end *ngIf="!walk.currentWalk.started">
             <button secondary (click)="openWalkModal()">
-                Go for a walk
+                Start walk
                 <ion-icon name="paw"></ion-icon>
             </button>
         </ion-buttons>

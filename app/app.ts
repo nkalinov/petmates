@@ -41,9 +41,9 @@ class PetMatesApp {
 
     openPage(page) {
         if (!page.active) {
-            // reset active state
-            this.pages.forEach((page:Page) => page.active = false);
-
+            if (this.pages) {
+                this.pages.forEach((page:Page) => page.active = false);
+            }
             // Reset the content nav to have just this page
             // we wouldn't want the back button to show in this scenario
             this.nav.setRoot(page.component);
@@ -52,16 +52,6 @@ class PetMatesApp {
     }
 
     private initializeApp() {
-        this.subscribeToEvents();
-
-        this.auth.init().then((user) => {
-            this.loggedIn();
-        }, (err) => {
-            this.loggedOut();
-        });
-    }
-
-    private subscribeToEvents() {
         this.events.subscribe('user:login', () => {
             this.loggedIn();
         });
@@ -74,8 +64,11 @@ class PetMatesApp {
         this.events.subscribe('alert:info', (msg) => {
             this.showAlert(msg, 'Info');
         });
-        this.mates.pending$.subscribe((count) => {
-            this.newRequests = count;
+
+        this.auth.init().then((user) => {
+            this.loggedIn();
+        }, (err) => {
+            this.loggedOut();
         });
     }
 
@@ -87,6 +80,11 @@ class PetMatesApp {
         this.openPage(page);
 
         this.mates.sortMatesByStatus();
+        this.mates.pending$.subscribe((count) => {
+            this.newRequests = count;
+        });
+
+        // todo get conversations list and show badge in menu on unread msgs
 
         // register socket events handlers
         this.sockets.init().then((socket) => {
@@ -97,12 +95,9 @@ class PetMatesApp {
     }
 
     private loggedOut() {
-        this.pages = CommonService.getMenu();
+        this.pages = null;
         this.sockets.disconnect();
-
-        // show auth page
-        let page = this.pages.find((page:Page) => page.component === AuthModal);
-        this.openPage(page);
+        this.openPage({component: AuthModal, active: false});
     }
 
     private showAlert(msg, title:string = 'Error!') {
@@ -129,8 +124,8 @@ ionicBootstrap(PetMatesApp, [
     tabbarPlacement: 'bottom',
     // prodMode: true,
     // API: 'http://79.124.64.127:3001',
-    API: 'http://192.168.0.104:3001',
-    // API: 'http://127.0.0.1:3001',
+    // API: 'http://192.168.0.104:3001',
+    API: 'http://127.0.0.1:3001',
     emitCoordsIntervalMs: 15 * 1000,
     deleteInactiveIntervalMs: 30 * 1000,
     defaultPetImage: 'build/img/default_pet.jpg',

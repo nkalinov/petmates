@@ -1,4 +1,6 @@
-require('../bower_components/leaflet');
+import 'leaflet';
+import 'leaflet.markercluster';
+require('./leaflet.featuregroup.subgroup');
 
 import { Events, Alert, Nav, ionicBootstrap, Platform } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
@@ -12,25 +14,26 @@ import { MatesService } from './services/mates.service';
 import { ChatService } from './services/chat.service';
 import { MapPage } from './pages/map/map';
 import { Page } from './models/page.interface';
+import { PlacesService } from './services/places.service';
 
 @Component({
     templateUrl: 'build/app.html',
 })
 
 class PetMatesApp {
-    @ViewChild(Nav) nav:Nav;
-    rootPage:any;
-    pages:Array<Page>;
-    newRequests:number;
-    private defaultRootPage:any = MapPage;
+    @ViewChild(Nav) nav: Nav;
+    rootPage: any;
+    pages: Array<Page>;
+    newRequests: number;
+    private defaultRootPage: any = MapPage;
 
-    constructor(public auth:AuthService,
-                public walk:WalkService,
-                private platform:Platform,
-                private events:Events,
-                private sockets:SocketService,
-                private mates:MatesService,
-                private chat:ChatService) {
+    constructor(public auth: AuthService,
+                public walk: WalkService,
+                private platform: Platform,
+                private events: Events,
+                private sockets: SocketService,
+                private mates: MatesService,
+                private chat: ChatService) {
         this.platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.
@@ -42,7 +45,7 @@ class PetMatesApp {
     openPage(page) {
         if (!page.active) {
             if (this.pages) {
-                this.pages.forEach((page:Page) => page.active = false);
+                this.pages.forEach((page: Page) => page.active = false);
             }
             // Reset the content nav to have just this page
             // we wouldn't want the back button to show in this scenario
@@ -76,7 +79,7 @@ class PetMatesApp {
         this.pages = CommonService.getMenu(true); // set logged in menu
 
         // open default logged in page
-        let page = this.pages.find((page:Page) => page.component === this.defaultRootPage);
+        let page = this.pages.find((page: Page) => page.component === this.defaultRootPage);
         this.openPage(page);
 
         this.mates.sortMatesByStatus();
@@ -97,10 +100,10 @@ class PetMatesApp {
     private loggedOut() {
         this.pages = null;
         this.sockets.disconnect();
-        this.openPage({component: AuthModal, active: false});
+        this.openPage({ component: AuthModal, active: false });
     }
 
-    private showAlert(msg, title:string = 'Error!') {
+    private showAlert(msg, title: string = 'Error!') {
         this.nav.present(Alert.create({
             title: title,
             subTitle: msg,
@@ -119,7 +122,8 @@ ionicBootstrap(PetMatesApp, [
     WalkService,
     SocketService,
     MatesService,
-    ChatService
+    ChatService,
+    PlacesService
 ], {
     tabbarPlacement: 'bottom',
     // prodMode: true,

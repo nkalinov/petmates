@@ -1,59 +1,80 @@
-import {NavController, Modal, Config} from 'ionic-angular';
-import {Geolocation} from 'ionic-native';
-import {Component} from '@angular/core';
-import {Subscription} from 'rxjs/Subscription';
-import {AuthService} from '../../services/auth.service';
-import {WalkService, UserIcon} from '../../services/walk.service';
-import {WalkModal} from './walk-modal/walk-modal';
-import {Walk} from '../../models/walk.model';
-import {CommonService} from '../../services/common.service';
-import {PlacesService, Place} from '../../services/places.service';
+import { NavController, Modal, Config } from 'ionic-angular';
+import { Geolocation } from 'ionic-native';
+import { Component } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
+import { AuthService } from '../../services/auth.service';
+import { WalkService, UserIcon } from '../../services/walk.service';
+import { WalkModal } from './walk-modal/walk-modal';
+import { Walk } from '../../models/walk.model';
+import { CommonService } from '../../services/common.service';
+import { PlacesService, Place } from '../../services/places.service';
+L.Icon.Default.imagePath = 'build/img/leaflet';
 
 @Component({
     templateUrl: 'build/pages/map/map.html'
 })
 
 export class MapPage {
-    map:L.Map;
-    marker:L.Marker;
-    markers = {};
-    GEOaccess:boolean = true;
+    map: L.Map;
+    marker: L.Marker;
+    walks = {}; // saved walk markers by _id
+    parentGroup = L.markerClusterGroup();
+    GEOaccess: boolean = true;
 
-    private positionSubscriber:Subscription;
-    private walksSubscriber:Subscription;
-    private clearInactiveInterval:number;
+    private positionSubscriber: Subscription;
+    private walksSubscriber: Subscription;
+    private clearInactiveInterval: number;
 
-    constructor(private auth:AuthService,
-                public walk:WalkService,
-                private nav:NavController,
-                private places:PlacesService,
-                private config:Config) {
-        // init map
-        this.map = L.map('map', {zoomControl: false});
+    constructor(private auth: AuthService,
+                public walk: WalkService,
+                private nav: NavController,
+                private places: PlacesService,
+                private config: Config) {
+    }
 
-        // use OSM
+    ionViewDidEnter() {
+        this.map = L.map('map-container', { zoomControl: false });
+
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(this.map);
 
-        // add public markers
-        this.addPlacesMarkers();
+        this.initGeolocation().then(() => {
+            this.populate();
+            this.addPlacesMarkers();
+            this.map.addLayer(this.parentGroup);
+        });
+    }
 
-        // geolocalize me
-        this.initGeolocation();
+    ionViewDidLeave() {
+        if (this.positionSubscriber) {
+            // todo track position even when not on this page
+            this.positionSubscriber.unsubscribe();
+        }
+        if (this.walksSubscriber) {
+            this.walksSubscriber.unsubscribe();
+        }
+        if (this.clearInactiveInterval) {
+            clearInterval(this.clearInactiveInterval);
+        }
+    }
+
+    openWalkModal() {
+        this.nav.present(Modal.create(WalkModal));
     }
 
     private initGeolocation() {
-        Geolocation.getCurrentPosition({timeout: 10000, enableHighAccuracy: true}).then((data) => {
+        return Geolocation.getCurrentPosition({
+            timeout: 10000,
+            enableHighAccuracy: true
+        }).then((data) => {
             this.GEOaccess = true;
-            let position = L.latLng(data.coords.latitude, data.coords.longitude);
-
-            // center map
+            const position = L.latLng(data.coords.latitude, data.coords.longitude);
             this.map.setView(position, 16);
 
             // add my marker
             this.marker = L.marker(position, {
-                icon: new UserIcon({iconUrl: `${this.auth.user.pic || this.config.get('defaultMateImage')}`})
+                icon: new UserIcon({ iconUrl: `${this.auth.user.pic || this.config.get('defaultMateImage')}` })
             }).addTo(this.map);
 
             // init currentWalk object
@@ -62,7 +83,7 @@ export class MapPage {
             // watch position
             this.positionSubscriber = Geolocation.watchPosition().subscribe(
                 (data) => {
-                    let newCoords = L.latLng(data.coords.latitude, data.coords.longitude);
+                    const newCoords = L.latLng(data.coords.latitude, data.coords.longitude);
                     // TODO emit only if newCoords are "major change"
                     // let emit = this.walk.getCurrentWalkCoords() != newCoords;
                     let emit = true;
@@ -82,63 +103,81 @@ export class MapPage {
         });
     }
 
-    ionViewWillUnload() {
-        if (this.positionSubscriber) {
-            this.positionSubscriber.unsubscribe();
-        }
-        if (this.walksSubscriber) {
-            this.walksSubscriber.unsubscribe();
-        }
-        if (this.clearInactiveInterval) {
-            clearInterval(this.clearInactiveInterval);
-        }
-    }
-
-    openWalkModal() {
-        this.nav.present(Modal.create(WalkModal));
-    }
-
     private watchWalks() {
-        // watch public walks and update markers
-        this.walksSubscriber = this.walk.walks$.subscribe((walks:Array<Walk>) => {
-            walks.forEach((walk:Walk) => {
+        // watch public walks and update walks
+        this.walksSubscriber = this.walk.walks$.subscribe((walks: Array<Walk>) => {
+            walks.forEach((walk: Walk) => {
                 if (walk.id !== this.walk.currentWalk.id) {
-                    // if walk already on the map
-                    if (this.markers[walk.id]) {
-                        // move marker
-                        this.markers[walk.id].setLatLng(walk.coords);
+                    if (this.walks[walk.id]) {
+                        // if marker already on the map -> move it
+                        this.walks[walk.id].setLatLng(walk.coords);
                     } else {
-                        // Add new marker to the map
                         let marker = L.marker(walk.coords, {
-                            icon: new UserIcon({iconUrl: `${walk.pet.pic || this.config.get('defaultPetImage')}`})
-                        }).addTo(this.map).bindPopup(
+                            icon: new UserIcon({
+                                iconUrl: `${walk.pet.pic || this.config.get('defaultPetImage')}`
+                            })
+                        }).bindPopup(
                             `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${CommonService.getAge(walk.pet.birthday)}<br>Out with ${walk.user.name}`
                         );
 
                         // save
-                        marker['_id'] = walk.id;
-                        this.markers[walk.id] = marker;
+                        // marker['_id'] = walk.id;
+                        this.walks[walk.id] = marker;
+
+                        // add to parent group
+                        this.parentGroup.addLayer(marker); // todo test dynamic add
                     }
                 }
             });
 
             /**
-             * Remove markers of inactive users (stopped walk) every deleteInactiveIntervalMs interval
+             * Remove walks of inactive users (stopped walk) every deleteInactiveIntervalMs interval
              */
             this.clearInactiveInterval = setInterval(() => {
-                for (let uid in this.markers) {
-                    if (this.markers.hasOwnProperty(uid)) {
+                for (let uid in this.walks) {
+                    if (this.walks.hasOwnProperty(uid)) {
                         let key = uid;
-                        let find = this.walk.walks.find((walk:Walk) => {
+                        let find = this.walk.walks.find((walk: Walk) => {
                             return walk.id === key;
                         });
                         if (!find) {
-                            this.map.removeLayer(this.markers[uid]);
-                            delete this.markers[uid];
+                            this.map.removeLayer(this.walks[uid]);
+                            delete this.walks[uid];
                         }
                     }
                 }
             }, this.config.get('deleteInactiveIntervalMs'));
+        });
+    }
+
+    private addPlacesMarkers() {
+        const shops = new L.featureGroup.subGroup(this.parentGroup),
+            vets = new L.featureGroup.subGroup(this.parentGroup),
+            control = L.control.layers(null, null, { collapsed: false });
+
+        this.places.getPlaces().then((places) => {
+            places.vets.forEach((place: Place) => {
+                L.marker(place.coords)
+                    .bindPopup(
+                        `<b>${place.name}</b><br>Tel: ${place.phone}<br>Open: ${place.hours}`
+                    )
+                    .addTo(vets);
+            });
+
+            places.shops.forEach((place: Place) => {
+                L.marker(place.coords)
+                    .bindPopup(
+                        `<b>${place.name}</b><br>Tel: ${place.phone}<br>Open: ${place.hours}`
+                    )
+                    .addTo(shops);
+            });
+
+            control.addOverlay(shops, 'Animal shops');
+            control.addOverlay(vets, 'Vets');
+            control.addTo(this.map);
+
+            shops.addTo(this.map);
+            vets.addTo(this.map);
         });
     }
 
@@ -150,32 +189,23 @@ export class MapPage {
         this.GEOaccess = false;
     }
 
-    private addPlacesMarkers() {
-        const shops = new L.LayerGroup();
-        const vets = new L.LayerGroup();
+    private populate() {
+        for (let i = 0; i < 50; i++) {
+            const m = new L.Marker(this.getRandomLatLng(this.map));
+            // markersList.push(m);
+            this.parentGroup.addLayer(m);
+        }
+        return false;
+    }
 
-        this.places.getPlaces().then((places) => {
-
-            places.vets.forEach((place:Place) => {
-                L.marker(place.coords)
-                    .bindPopup(
-                        `<b>${place.name}</b><br>Tel: ${place.phone}<br>Open: ${place.hours}`
-                    )
-                    .addTo(vets);
-            });
-
-            places.shops.forEach((place:Place) => {
-                L.marker(place.coords)
-                    .bindPopup(
-                        `<b>${place.name}</b><br>Tel: ${place.phone}<br>Open: ${place.hours}`
-                    )
-                    .addTo(shops);
-            });
-
-            L.control.layers({
-                'Vets': vets,
-                'Shops': shops
-            }).addTo(this.map);
-        });
+    private getRandomLatLng(map) {
+        const bounds = map.getBounds(),
+            southWest = bounds.getSouthWest(),
+            northEast = bounds.getNorthEast(),
+            lngSpan = northEast.lng - southWest.lng,
+            latSpan = northEast.lat - southWest.lat;
+        return new L.LatLng(
+            southWest.lat + latSpan * Math.random(),
+            southWest.lng + lngSpan * Math.random());
     }
 }

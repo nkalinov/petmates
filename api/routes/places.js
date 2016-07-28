@@ -10,8 +10,8 @@ router.get('/', passport.authenticate('jwt', { session: false }), function (req,
         data: {
             vets: [
                 {
-                    name: 'Central VET Clinic',
-                    coords: [],
+                    name: 'Централна ветеринарна клиника',
+                    coords: [42.657809, 23.334503],
                     phone: '+359 897 599 991',
                     hours: 'Mon-Fri / 9:00-20:00'
                 }
@@ -20,3 +20,5 @@ router.get('/', passport.authenticate('jwt', { session: false }), function (req,
         }
     });
 });
+
+module.exports = router;

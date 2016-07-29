@@ -15,10 +15,17 @@ L.Icon.Default.imagePath = 'build/img/leaflet';
 })
 
 export class MapPage {
+    walks = {}; // saved walk markers by _id
     map: L.Map;
     marker: L.Marker;
-    walks = {}; // saved walk markers by _id
-    parentGroup = L.markerClusterGroup();
+    mcgLayerSupportGroup = L.markerClusterGroup.layerSupport();
+    control = L.control.layers(null, null, { collapsed: false });
+    layers = {
+        walks: L.layerGroup(),
+        shops: L.layerGroup(),
+        vets:  L.layerGroup()
+    };
+
     GEOaccess: boolean = true;
 
     private positionSubscriber: Subscription;
@@ -39,10 +46,13 @@ export class MapPage {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(this.map);
 
+        this.control.addTo(this.map);
+
         this.initGeolocation().then(() => {
+            // this.map.addLayer(this.mcgLayerSupportGroup);
             this.populate();
             this.addPlacesMarkers();
-            this.map.addLayer(this.parentGroup);
+            this.mcgLayerSupportGroup.addTo(this.map);
         });
     }
 
@@ -125,7 +135,7 @@ export class MapPage {
                         this.walks[walk.id] = marker;
 
                         // add to parent group
-                        this.parentGroup.addLayer(marker); // todo test dynamic add
+                        this.mcgLayerSupportGroup.addLayer(marker); // todo test dynamic add
                     }
                 }
             });
@@ -151,33 +161,26 @@ export class MapPage {
     }
 
     private addPlacesMarkers() {
-        const shops = new L.featureGroup.subGroup(this.parentGroup),
-            vets = new L.featureGroup.subGroup(this.parentGroup),
-            control = L.control.layers(null, null, { collapsed: false });
-
-        this.places.getPlaces().then((places) => {
+        return this.places.getPlaces().then((places) => {
             places.vets.forEach((place: Place) => {
                 L.marker(place.coords)
                     .bindPopup(
-                        `<b>${place.name}</b><br>Tel: ${place.phone}<br>Open: ${place.hours}`
+                        `<b>${place.name}</b><br>${place.phone}<br>${place.hours}`
                     )
-                    .addTo(vets);
+                    .addTo(this.layers.vets);
             });
 
             places.shops.forEach((place: Place) => {
                 L.marker(place.coords)
                     .bindPopup(
-                        `<b>${place.name}</b><br>Tel: ${place.phone}<br>Open: ${place.hours}`
+                        `<b>${place.name}</b><br>${place.phone}<br>${place.hours}`
                     )
-                    .addTo(shops);
+                    .addTo(this.layers.shops);
             });
 
-            control.addOverlay(shops, 'Animal shops');
-            control.addOverlay(vets, 'Vets');
-            control.addTo(this.map);
-
-            shops.addTo(this.map);
-            vets.addTo(this.map);
+            this.mcgLayerSupportGroup.checkIn([this.layers.shops, this.layers.vets]);
+            this.control.addOverlay(this.layers.shops, 'Animal shops');
+            this.control.addOverlay(this.layers.vets, 'Vets');
         });
     }
 
@@ -192,10 +195,10 @@ export class MapPage {
     private populate() {
         for (let i = 0; i < 50; i++) {
             const m = new L.Marker(this.getRandomLatLng(this.map));
-            // markersList.push(m);
-            this.parentGroup.addLayer(m);
+            this.layers.walks.addLayer(m);
         }
-        return false;
+        this.mcgLayerSupportGroup.checkIn(this.layers.walks);
+        this.control.addOverlay(this.layers.walks, 'Walks');
     }
 
     private getRandomLatLng(map) {

@@ -1,6 +1,6 @@
 import 'leaflet';
 import 'leaflet.markercluster';
-require('./leaflet.featuregroup.subgroup');
+import './leaflet.markercluster.layersupport-src';
 
 import { Events, Alert, Nav, ionicBootstrap, Platform } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';

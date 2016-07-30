@@ -1,10 +1,10 @@
-import {Storage, LocalStorage, Events, Config} from 'ionic-angular';
-import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
-import {Pet} from '../models/pet.model';
-import {Observable} from 'rxjs/Rx';
-import {User} from '../models/user.model';
-import {Facebook} from 'ionic-native';
+import { Storage, LocalStorage, Events, Config } from 'ionic-angular';
+import { Injectable } from '@angular/core';
+import { Http, Headers, Response } from '@angular/http';
+import { Pet } from '../models/pet.model';
+import { Observable } from 'rxjs/Rx';
+import { User } from '../models/user.model';
+import { Facebook } from 'ionic-native';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +26,7 @@ export class AuthService {
                 // check token validity and that user still exists in db
                 let headers = new Headers();
                 headers.append('Authorization', token);
-                return this.http.post(`${this.config.get('API')}/user/check`, null, {headers: headers}).toPromise();
+                return this.http.post(`${this.config.get('API')}/user/check`, null, { headers: headers }).toPromise();
             }
             return new Error('Token missing');
         }).then(
@@ -50,12 +50,12 @@ export class AuthService {
         this.http.post(`${this.config.get('API')}/auth`, JSON.stringify({
             name: name,
             password: password
-        }), {headers: headers}).subscribe(
+        }), { headers: headers }).subscribe(
             (res:any) => {
                 res = res.json();
                 if (res.success) {
                     let token = res.data.token;
-                    
+
                     this.local.set('id_token', token);
                     this.user = this.parseUser(res.data.profile);
                     this.token = token;
@@ -72,19 +72,43 @@ export class AuthService {
 
     loginFacebook() {
         Facebook.login(['public_profile', 'email']).then((res) => {
-            console.log('Facebook.login', res);
+                console.log('Facebook.login', res);
+
+                if (res.status === 'connected') {
+                    // the user is logged in and has authenticated your
+                    // app, and response.authResponse supplies
+                    // the user's ID, a valid access token, a signed
+                    // request, and the time the access token
+                    // and signed request each expire
+                    const uid = res.authResponse.userID;
+                    const accessToken = res.authResponse.accessToken;
+                    return Facebook.api('me?fields=id,email,name,picture', null);
+
+                } else if (res.status === 'not_authorized') {
+                    // the user is logged in to Facebook,
+                    // but has not authenticated your app
+                    throw new Error('You must authorize PetMates app.');
+                } else {
+                    // the user isn't logged in to Facebook.
+                    throw new Error('Please login to Facebook.');
+                }
+            }
+        ).then((profile) => {
+            console.log(`Facebook.api('me?fields=id,email,name,picture'`, JSON.stringify(profile));
 
             /**
              * TODO
              * /api/check {name}
+             * or
+             * /api/auth {uid || email}
              * | true -> login
              * | false -> me?fields...then(signup).then(login)
              */
-            Facebook.api('me?fields=id,email,name,picture', null).then((profile) => {
-                console.log(`Facebook.api('me?fields=id,email,name,picture'`, JSON.stringify(profile));
-            });
 
-        }, (err) => console.error(err));
+        }, (err) => {
+            this.events.publish('alert:error', err);
+            console.error(err);
+        });
     }
 
     signup(data) {
@@ -92,7 +116,7 @@ export class AuthService {
         headers.append('Content-Type', 'application/json');
         this.http.post(`${this.config.get('API')}/auth/signup`,
             JSON.stringify(data),
-            {headers: headers}
+            { headers: headers }
         ).subscribe(
             (res:any) => {
                 res = res.json();
@@ -116,7 +140,7 @@ export class AuthService {
         return new Observable((observer) => {
             this.http.put(`${this.config.get('API')}/user`,
                 JSON.stringify(user),
-                {headers: headers}
+                { headers: headers }
             ).subscribe(
                 (res:any) => {
                     res = res.json();
@@ -143,7 +167,7 @@ export class AuthService {
         headers.append('Authorization', this.token);
         this.http
             .delete(`${this.config.get('API')}/user`,
-                {headers: headers}
+                { headers: headers }
             )
             .subscribe(
                 (res:any) => {
@@ -175,8 +199,8 @@ export class AuthService {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         this.http.post(`${this.config.get('API')}/auth/forgot`,
-            JSON.stringify({email: email}),
-            {headers: headers}
+            JSON.stringify({ email: email }),
+            { headers: headers }
         ).subscribe(
             (res:any) => {
                 res = res.json();
@@ -218,8 +242,8 @@ export class AuthService {
 
         return new Observable(observer => {
             this.http.post(`${this.config.get('API')}/auth/reset/${token}`,
-                JSON.stringify({password: password}),
-                {headers: headers}
+                JSON.stringify({ password: password }),
+                { headers: headers }
             ).subscribe(
                 (res:any) => {
                     res = res.json();

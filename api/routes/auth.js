@@ -3,13 +3,11 @@ var router = express.Router();
 var User = require('../models/user');
 var jwt = require('jsonwebtoken');
 var auth = require('../config/auth');
-var upload = require('../config/upload');
 var email = require('../config/email');
 var helpers = require('../helpers');
 var async = require('async');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
-var mg = require('nodemailer-mailgun-transport');
 var passport = require('passport');
 
 // login

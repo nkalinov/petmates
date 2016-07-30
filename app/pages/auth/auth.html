@@ -1,7 +1,7 @@
 <ion-content class="auth-page">
     <h4 class="title" text-center>
-        <ion-icon name="paw" primary></ion-icon>
-        <span secondary>PetMates</span>
+        <!--<ion-icon name="paw" primary></ion-icon>-->
+        <span secondary>PET MATES</span>
     </h4>
 
     <ion-segment padding [(ngModel)]="mode">
@@ -12,9 +12,18 @@
             Create account
         </ion-segment-button>
     </ion-segment>
-    <div [ngSwitch]="mode" padding>
+    <div [ngSwitch]="mode" padding-horizontal>
         <form (ngSubmit)="login()" *ngSwitchCase="'login'">
+            <div padding-bottom class="fb">
+                <button small type="button" facebook block (click)="auth.loginFacebook()">
+                    <ion-icon name="logo-facebook"></ion-icon>
+                    Login with Facebook
+                </button>
+            </div>
             <ion-list>
+                <!--<ion-list-header>-->
+                    <!--Or with your email or username-->
+                <!--</ion-list-header>-->
                 <ion-item>
                     <ion-input required type="text" [(ngModel)]="name" placeholder="Username / Email"></ion-input>
                 </ion-item>
@@ -22,21 +31,22 @@
                     <ion-input required type="password" [(ngModel)]="password" placeholder="Password"></ion-input>
                 </ion-item>
             </ion-list>
-            <button block>Login</button>
-            <div padding-vertical>
-                <button type="button" (click)="openForgotForm()" small light block>
-                    Forgot password?
-                </button>
-            </div>
-            <div padding>
-                <button facebook block (click)="auth.loginFacebook()">
-                    <ion-icon name="logo-facebook"></ion-icon>
-                    Facebook login
-                </button>
-            </div>
+            <button type="submit" block>Login</button>
+            <button type="button" (click)="openForgotForm()" small light block>
+                Forgot password?
+            </button>
         </form>
         <form (ngSubmit)="signup()" *ngSwitchCase="'sign-up'">
+            <div padding-bottom>
+                <button small type="button" facebook block (click)="auth.loginFacebook()">
+                    <ion-icon name="logo-facebook"></ion-icon>
+                    Sign-up with Facebook
+                </button>
+            </div>
             <ion-list>
+                <!--<ion-list-header>-->
+                    <!--Or sign-up with email-->
+                <!--</ion-list-header>-->
                 <ion-item>
                     <ion-input required type="text" [(ngModel)]="name" placeholder="Username"></ion-input>
                 </ion-item>
@@ -48,7 +58,7 @@
                 </ion-item>
             </ion-list>
             <div padding-horizontal>
-                <button block>Submit</button>
+                <button type="submit" block>Submit</button>
             </div>
         </form>
     </div>

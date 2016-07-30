@@ -4,8 +4,12 @@ $auth-input-placeholder-color: #fafafa;
   background: #fff url('../img/menu.jpg') bottom center;
 
   .title {
+    margin-top: 20px;
+
     & > span {
+      font-family: $font-primary;
       color: #fff;
+      font-size: 30px;
     }
   }
 

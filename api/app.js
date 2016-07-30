@@ -36,7 +36,7 @@ app.use('/mates', mates);
 app.use('/conversations', conversations);
 
 // connect db
-require('./config/database');
+require('./config/database')();
 
 // pass passport for configuration
 require('./config/passport')(passport);

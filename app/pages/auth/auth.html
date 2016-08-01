@@ -15,15 +15,15 @@
     <div [ngSwitch]="mode" padding-horizontal>
         <form (ngSubmit)="login()" *ngSwitchCase="'login'">
             <div padding-bottom class="fb">
-                <button small type="button" facebook block (click)="auth.loginFacebook()">
+                <button small type="button" facebook block (click)="loginFacebook()">
                     <ion-icon name="logo-facebook"></ion-icon>
                     Login with Facebook
                 </button>
             </div>
             <ion-list>
-                <!--<ion-list-header>-->
-                    <!--Or with your email or username-->
-                <!--</ion-list-header>-->
+                <ion-list-header>
+                    Or with your email
+                </ion-list-header>
                 <ion-item>
                     <ion-input required type="text" [(ngModel)]="name" placeholder="Username / Email"></ion-input>
                 </ion-item>
@@ -38,15 +38,15 @@
         </form>
         <form (ngSubmit)="signup()" *ngSwitchCase="'sign-up'">
             <div padding-bottom>
-                <button small type="button" facebook block (click)="auth.loginFacebook()">
+                <button small type="button" facebook block (click)="loginFacebook()">
                     <ion-icon name="logo-facebook"></ion-icon>
                     Sign-up with Facebook
                 </button>
             </div>
             <ion-list>
-                <!--<ion-list-header>-->
-                    <!--Or sign-up with email-->
-                <!--</ion-list-header>-->
+                <ion-list-header>
+                    Or with your email
+                </ion-list-header>
                 <ion-item>
                     <ion-input required type="text" [(ngModel)]="name" placeholder="Username"></ion-input>
                 </ion-item>

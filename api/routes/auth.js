@@ -1,28 +1,46 @@
-var express = require('express');
-var router = express.Router();
-var User = require('../models/user');
-var jwt = require('jsonwebtoken');
-var auth = require('../config/auth');
-var email = require('../config/email');
-var helpers = require('../helpers');
-var async = require('async');
-var crypto = require('crypto');
-var nodemailer = require('nodemailer');
-var passport = require('passport');
+const express = require('express');
+const router = express.Router();
+const User = require('../models/user');
+const jwt = require('jsonwebtoken');
+const auth = require('../config/auth');
+const email = require('../config/email');
+const helpers = require('../helpers');
+const async = require('async');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const mg = require('nodemailer-mailgun-transport');
+const passport = require('passport');
+
+// send Facebook users an endless local JWT token
+router.get('/facebook',
+    passport.authenticate('facebook-token', {session: false}),
+    (req, res) => {
+        var token = jwt.sign({_id: req.user._id}, auth.Jwt.secretOrKey);
+
+        // return the information including token as JSON
+        return res.json({
+            success: true,
+            data: {
+                token: 'JWT ' + token,
+                profile: req.user
+            }
+        });
+    }
+);
 
 // login
-router.post('/', function (req, res) {
+router.post('/', (req, res) => {
     User.findOne({
         $or: [
             {name: req.body.name},
             {email: req.body.name}
         ]
-    }, function (err, user) {
+    }, (err, user) => {
         if (err) {
             throw err;
         }
         if (!user) {
-            res.json({success: false, msg: 'Authentication failed. User not found.'});
+            return res.json({success: false, msg: 'Authentication failed. User not found.'});
         } else {
             // check if password matches
             user.comparePassword(req.body.password, function (err, isMatch) {
@@ -31,7 +49,7 @@ router.post('/', function (req, res) {
                     var token = jwt.sign({_id: user._id}, auth.Jwt.secretOrKey);
 
                     // return the information including token as JSON
-                    res.json({
+                    return res.json({
                         success: true,
                         data: {
                             token: 'JWT ' + token,
@@ -39,7 +57,7 @@ router.post('/', function (req, res) {
                         }
                     });
                 } else {
-                    res.send({success: false, msg: 'Authentication failed. Wrong password.'});
+                    return res.send({success: false, msg: 'Authentication failed. Wrong password.'});
                 }
             });
         }
@@ -115,7 +133,12 @@ router.post('/forgot', function (req, res, next) {
 
 // check reset token
 router.get('/reset/:token', function (req, res) {
-    User.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}}, function (err, user) {
+    User.findOne({
+        resetPasswordToken: req.params.token,
+        resetPasswordExpires: {
+            $gt: Date.now()
+        }
+    }, function (err, user) {
         if (!user) {
             return res.json({success: false, msg: 'Password reset token is invalid or has expired.'});
         }
@@ -125,7 +148,12 @@ router.get('/reset/:token', function (req, res) {
 
 // change password
 router.post('/reset/:token', function (req, res) {
-    User.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}}, function (err, user) {
+    User.findOne({
+        resetPasswordToken: req.params.token,
+        resetPasswordExpires: {
+            $gt: Date.now()
+        }
+    }, function (err, user) {
         if (!user) {
             return res.json({success: false, msg: 'Password reset token is invalid or has expired.'});
         }

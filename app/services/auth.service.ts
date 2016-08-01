@@ -8,39 +8,39 @@ import { Facebook } from 'ionic-native';
 
 @Injectable()
 export class AuthService {
-    local:Storage = new Storage(LocalStorage);
-    user:User;
-    token:string;
+    local: Storage = new Storage(LocalStorage);
+    user: User;
+    token: string;
 
-    constructor(private http:Http,
-                private events:Events,
-                private config:Config) {
+    constructor(private http: Http,
+                private events: Events,
+                private config: Config) {
     }
 
     init() {
-        let myToken:string = null;
-
-        return this.local.get('id_token').then((token) => {
-            if (token) {
-                myToken = token;
-                // check token validity and that user still exists in db
-                let headers = new Headers();
-                headers.append('Authorization', token);
-                return this.http.post(`${this.config.get('API')}/user/check`, null, { headers: headers }).toPromise();
-            }
-            return new Error('Token missing');
-        }).then(
-            (res:any) => {
-                res = res.json();
-                if (res.success) {
-                    this.user = this.parseUser(res.data);
-                    this.token = myToken;
-                    return this.user;
+        return new Promise((resolve, reject) => {
+            this.local.get('id_token').then((token) => {
+                if (token) {
+                    // check token validity and that user still exists in db
+                    let headers = new Headers();
+                    headers.append('Authorization', token);
+                    this.http.post(`${this.config.get('API')}/user/check`, null, {
+                        headers: headers
+                    }).map(res => res.json()).subscribe((res: any) => {
+                        if (res.success) {
+                            this.user = this.parseUser(res.data);
+                            this.token = token;
+                            resolve(this.user);
+                        } else {
+                            this.cleanUser();
+                            reject('User not found');
+                        }
+                    }, err => reject(err));
+                } else {
+                    reject('Token missing');
                 }
-                this.cleanUser();
-                return new Error('User not found');
-            }
-        );
+            });
+        });
     }
 
     login(name, password) {
@@ -48,67 +48,60 @@ export class AuthService {
         headers.append('Content-Type', 'application/json');
 
         this.http.post(`${this.config.get('API')}/auth`, JSON.stringify({
-            name: name,
-            password: password
+            name,
+            password
         }), { headers: headers }).subscribe(
-            (res:any) => {
-                res = res.json();
-                if (res.success) {
-                    let token = res.data.token;
-
-                    this.local.set('id_token', token);
-                    this.user = this.parseUser(res.data.profile);
-                    this.token = token;
-                    this.events.publish('user:login');
-                } else {
-                    this.events.publish('alert:error', res.msg);
-                }
+            (res: any) => {
+                this.parseLoginResponse(res.json());
             },
-            (err:Response) => {
+            (err: Response) => {
                 this.events.publish('alert:error', err.text());
             }
         );
     }
 
-    loginFacebook() {
-        Facebook.login(['public_profile', 'email']).then((res) => {
-                console.log('Facebook.login', res);
+    loginFacebook(): Promise<any> {
+        return Facebook.login([
+            'public_profile',
+            'email'
+        ]).then((res) => {
+            if (res.status === 'connected') {
+                const accessToken = res.authResponse.accessToken;
 
-                if (res.status === 'connected') {
-                    // the user is logged in and has authenticated your
-                    // app, and response.authResponse supplies
-                    // the user's ID, a valid access token, a signed
-                    // request, and the time the access token
-                    // and signed request each expire
-                    const uid = res.authResponse.userID;
-                    const accessToken = res.authResponse.accessToken;
-                    return Facebook.api('me?fields=id,email,name,picture', null);
+                return this.http.get(`${this.config.get('API')}/auth/facebook?access_token=${accessToken}`)
+                    .toPromise()
+                    .then(
+                        (res: Response) => this.parseLoginResponse(res.json()),
+                        (err: Response) => {
+                            this.events.publish('alert:error', err.text());
+                            // return err;
+                        });
 
-                } else if (res.status === 'not_authorized') {
-                    // the user is logged in to Facebook,
-                    // but has not authenticated your app
-                    throw new Error('You must authorize PetMates app.');
-                } else {
-                    // the user isn't logged in to Facebook.
-                    throw new Error('Please login to Facebook.');
-                }
+            } else if (res.status === 'not_authorized') {
+                // the user is logged in to Facebook,
+                // but has not authenticated your app
+                throw new Error('You must authorize PetMates app.');
+            } else {
+                // the user isn't logged in to Facebook.
+                throw new Error('Please login to Facebook.');
             }
-        ).then((profile) => {
-            console.log(`Facebook.api('me?fields=id,email,name,picture'`, JSON.stringify(profile));
-
-            /**
-             * TODO
-             * /api/check {name}
-             * or
-             * /api/auth {uid || email}
-             * | true -> login
-             * | false -> me?fields...then(signup).then(login)
-             */
-
-        }, (err) => {
+        }).catch(err => {
             this.events.publish('alert:error', err);
-            console.error(err);
         });
+    }
+
+    private parseLoginResponse(res) {
+        if (res.success) {
+            let token = res.data.token;
+
+            this.local.set('id_token', token);
+            this.user = this.parseUser(res.data.profile);
+            this.token = token;
+            this.events.publish('user:login');
+        } else {
+            this.events.publish('alert:error', res.msg);
+            return new Error(res.msg);
+        }
     }
 
     signup(data) {
@@ -118,7 +111,7 @@ export class AuthService {
             JSON.stringify(data),
             { headers: headers }
         ).subscribe(
-            (res:any) => {
+            (res: any) => {
                 res = res.json();
                 if (res.success) {
                     this.login(data.name, data.password);
@@ -142,7 +135,7 @@ export class AuthService {
                 JSON.stringify(user),
                 { headers: headers }
             ).subscribe(
-                (res:any) => {
+                (res: any) => {
                     res = res.json();
                     if (res.success) {
                         this.user = this.parseUser(res.data);
@@ -170,7 +163,7 @@ export class AuthService {
                 { headers: headers }
             )
             .subscribe(
-                (res:any) => {
+                (res: any) => {
                     res = res.json();
                     if (res.success) {
                         this.logout();
@@ -178,7 +171,7 @@ export class AuthService {
                         this.events.publish('alert:error', res.msg);
                     }
                 },
-                (err:Response) => {
+                (err: Response) => {
                     this.events.publish('alert:error', err.text());
                 }
             );
@@ -189,20 +182,20 @@ export class AuthService {
         this.events.publish('user:logout');
     }
 
-    getPetIndexById(id:string) {
+    getPetIndexById(id: string) {
         return this.user.pets.findIndex((el) => {
             return el._id === id;
         });
     }
 
-    submitForgotRequest(email:string) {
+    submitForgotRequest(email: string) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         this.http.post(`${this.config.get('API')}/auth/forgot`,
             JSON.stringify({ email: email }),
             { headers: headers }
         ).subscribe(
-            (res:any) => {
+            (res: any) => {
                 res = res.json();
                 if (res.success) {
                     this.events.publish('alert:info', res.msg);
@@ -216,10 +209,10 @@ export class AuthService {
         );
     }
 
-    checkResetToken(token:string):Observable {
+    checkResetToken(token: string): Observable {
         return new Observable(observer => {
             this.http.get(`${this.config.get('API')}/auth/reset/${token}`).subscribe(
-                (res:any) => {
+                (res: any) => {
                     res = res.json();
                     if (!res.success) {
                         this.events.publish('alert:error', res.msg);
@@ -236,7 +229,7 @@ export class AuthService {
         });
     }
 
-    changePassword(token:string, password:string):Observable {
+    changePassword(token: string, password: string): Observable {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
@@ -245,7 +238,7 @@ export class AuthService {
                 JSON.stringify({ password: password }),
                 { headers: headers }
             ).subscribe(
-                (res:any) => {
+                (res: any) => {
                     res = res.json();
                     if (res.success) {
                         this.events.publish('alert:info', res.msg);

@@ -1,4 +1,6 @@
-require('../bower_components/leaflet');
+import 'leaflet';
+import 'leaflet.markercluster';
+import './leaflet.markercluster.layersupport-src';
 
 import { Events, Alert, Nav, ionicBootstrap, Platform } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
@@ -12,6 +14,7 @@ import { MatesService } from './services/mates.service';
 import { ChatService } from './services/chat.service';
 import { MapPage } from './pages/map/map';
 import { Page } from './models/page.interface';
+import { PlacesService } from './services/places.service';
 
 @Component({
     templateUrl: 'build/app.html',
@@ -119,7 +122,8 @@ ionicBootstrap(PetMatesApp, [
     WalkService,
     SocketService,
     MatesService,
-    ChatService
+    ChatService,
+    PlacesService
 ], {
     tabbarPlacement: 'bottom',
     // prodMode: true,

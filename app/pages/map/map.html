@@ -19,10 +19,10 @@
 </ion-header>
 
 <ion-content class="map-page">
+    <div id="map-container" *ngIf="GEOaccess"></div>
     <h5 class="no-geo-access" padding text-center *ngIf="!GEOaccess">
         To use the Map feature, you must allow access to your device location.
     </h5>
-    <div id="map" *ngIf="GEOaccess"></div>
 </ion-content>
 
 <ion-footer *ngIf="GEOaccess">

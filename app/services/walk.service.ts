@@ -14,27 +14,26 @@ export const UserIcon = L.Icon.extend({
         iconSize: [40, 40], // size of the icon
         iconAnchor: [20, 30], // point of the icon which will correspond to marker's location
         shadowAnchor: [4, 62],  // the same for the shadow
-
     }
 });
 
 @Injectable()
 export class WalkService {
-    walks:Array<Walk> = [];
-    walks$:any = new BehaviorSubject([]);
-    currentWalk:Walk = new Walk();
+    walks: Array<Walk> = [];
+    walks$: any = new BehaviorSubject([]);
+    currentWalk: Walk = new Walk();
 
-    private currentWalkMarker:L.Marker;
-    private mustEmitCoords:boolean = true;
-    private emitCoordsInterval:any;
+    private currentWalkMarker: L.Marker;
+    private mustEmitCoords: boolean = true;
+    private emitCoordsInterval: any;
 
-    constructor(private config:Config,
-                private auth:AuthService,
-                private mates:MatesService,
-                private sockets:SocketService) {
+    constructor(private config: Config,
+                private auth: AuthService,
+                private mates: MatesService,
+                private sockets: SocketService) {
     }
 
-    init(coords:L.LatLngExpression, marker:L.Marker):void {
+    init(coords: L.LatLngExpression, marker: L.Marker): void {
         this.currentWalk.user = {
             _id: this.auth.user._id,
             name: this.auth.user.name
@@ -47,9 +46,9 @@ export class WalkService {
      * Start new walk
      * @param petId
      */
-    start(petId:string) {
+    start(petId: string) {
         // map pet
-        let pet:Pet = this.auth.user.pets.find((p:Pet) => p._id === petId);
+        let pet: Pet = this.auth.user.pets.find((p: Pet) => p._id === petId);
         this.currentWalk.start({
             name: pet.name,
             birthday: pet.birthday,
@@ -85,20 +84,20 @@ export class WalkService {
         }
     }
 
-    getCurrentWalkCoords():L.LatLngExpression {
+    getCurrentWalkCoords(): L.LatLngExpression {
         return this.currentWalk.coords;
     }
 
-    updateCurrentWalkCoords(coords:L.LatLngExpression, emit:boolean = false):void {
+    updateCurrentWalkCoords(coords: L.LatLngExpression, emit: boolean = false): void {
         this.currentWalk.coords = coords;
         this.mustEmitCoords = emit;
     }
 
     registerSocketEvents(socket) {
         // see if one of my mates.accepted is going out for a walk
-        socket.on('walk:start', (data:Walk) => {
+        socket.on('walk:start', (data: Walk) => {
             console.info('walk:start', data);
-            let find = this.mates.mates.accepted.find((f:Friendship) => f.friend._id === data.user._id);
+            let find = this.mates.mates.accepted.find((f: Friendship) => f.friend._id === data.user._id);
             if (find) {
                 LocalNotifications.schedule({
                     id: 1,
@@ -107,7 +106,7 @@ export class WalkService {
             }
         });
 
-        socket.on('walks', (data:Array<Walk> = []) => {
+        socket.on('walks', (data: Array<Walk> = []) => {
             if (this.currentWalk.started || this.walks.length === 0) {
                 console.info('walks', data);
                 this.walks = data.map((w) => new Walk(w));

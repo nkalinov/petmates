@@ -9,6 +9,7 @@ const mates = require('./routes/mates');
 const conversations = require('./routes/conversations');
 const pets = require('./routes/pets');
 const breeds = require('./routes/breeds');
+const places = require('./routes/places');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -34,6 +35,7 @@ app.use('/user', users);
 app.use('/pets', pets);
 app.use('/mates', mates);
 app.use('/conversations', conversations);
+app.use('/places', places);
 
 // connect db
 require('./config/database')();

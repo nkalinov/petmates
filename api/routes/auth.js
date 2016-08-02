@@ -65,17 +65,18 @@ router.post('/', (req, res) => {
 });
 
 // create
-router.post('/signup', function (req, res) {
+router.post('/signup', (req, res) => {
     if (!req.body.name || !req.body.password) {
         res.json({success: false, msg: 'Please pass name and password.'});
     } else {
+        const {name, password, email} = req.body;
         var newUser = new User({
-            name: req.body.name,
-            password: req.body.password,
-            email: req.body.email
+            name,
+            password,
+            email
         });
         // save the user
-        newUser.save(function (err) {
+        newUser.save(err => {
             if (err) {
                 return res.json({success: false, msg: err});
             }
@@ -85,7 +86,7 @@ router.post('/signup', function (req, res) {
 });
 
 // reset password request
-router.post('/forgot', function (req, res, next) {
+router.post('/forgot', (req, res, next) => {
     async.waterfall([
         function (done) {
             crypto.randomBytes(20, function (err, buf) {
@@ -126,9 +127,7 @@ router.post('/forgot', function (req, res, next) {
                 done(err, 'done');
             });
         }
-    ], function (err) {
-        if (err) return next(err);
-    });
+    ], (err) => err ? next(err) : '');
 });
 
 // check reset token

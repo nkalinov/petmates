@@ -19,7 +19,7 @@ router.get('/search', passport.authenticate('jwt', {session: false}), function (
                 $nin: req.user.mates.map((m) => m.friend._id).concat(req.user._id)
             }
         }
-        User.find(findOptions).select('_id name picture').limit(20).exec(function (err, data) {
+        User.find(findOptions).select('_id name picture city country location.coordinates').limit(20).exec(function (err, data) {
             if (err)
                 return res.json({success: false, msg: err});
             return res.json({success: true, data: data});

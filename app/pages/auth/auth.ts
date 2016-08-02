@@ -11,6 +11,15 @@ export class AuthModal {
     mode: string = 'login';
     name: string;
     email: string;
+    location: {
+        city: string,
+        country: string,
+        coordinates?: Array<Number>
+    } = {
+        city: '',
+        country: ''
+    };
+    locationModel: string;
     password: string;
 
     constructor(public auth: AuthService,
@@ -36,8 +45,18 @@ export class AuthModal {
         this.auth.signup({
             name: this.name,
             email: this.email,
-            password: this.password
+            password: this.password,
+            location: this.location
         });
+    }
+
+    geoLocalizeMe() {
+        if (!this.location.coordinates) {
+            this.auth.getLocation().then(location => {
+                this.location = location;
+                this.locationModel = this.location.city + ', ' + this.location.country;
+            });
+        }
     }
 
     openForgotForm() {

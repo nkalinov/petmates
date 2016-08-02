@@ -69,13 +69,17 @@ router.post('/signup', (req, res) => {
     if (!req.body.name || !req.body.password) {
         res.json({success: false, msg: 'Please pass name and password.'});
     } else {
-        const {name, password, email} = req.body;
+        const {name, password, email, location} = req.body;
+
         var newUser = new User({
             name,
             password,
-            email
+            email,
+            city: location.city,
+            country: location.country
         });
-        // save the user
+        newUser.location.coordinates = location.coordinates;
+
         newUser.save(err => {
             if (err) {
                 return res.json({success: false, msg: err});

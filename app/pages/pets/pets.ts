@@ -1,12 +1,13 @@
-import {Modal, NavController} from 'ionic-angular';
-import {Component, forwardRef} from '@angular/core';
-import {AuthService} from '../../services/auth.service';
-import {PetEditPage} from './edit/pet.edit';
-import {GenderInfo} from '../../common/gender';
-import {AgeInfo} from '../../common/age';
-import {PetImage} from '../../common/pet-image';
+import { Modal, NavController } from 'ionic-angular';
+import { Component, forwardRef } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
+import { PetEditPage } from './edit/pet.edit';
+import { GenderInfo } from '../../common/gender';
+import { AgeInfo } from '../../common/age';
+import { PetImage } from '../../common/pet-image';
 
 @Component({
+    selector: 'pets-list',
     templateUrl: 'build/pages/pets/pets.html',
     directives: [
         forwardRef(() => GenderInfo),
@@ -15,12 +16,12 @@ import {PetImage} from '../../common/pet-image';
     ]
 })
 export class PetsPage {
-    constructor(private nav:NavController,
-                public auth:AuthService) {
+    constructor(private nav: NavController,
+                public auth: AuthService) {
     }
 
     public petEdit(pet) {
-        this.nav.push(PetEditPage, {pet: pet});
+        this.nav.push(PetEditPage, { pet: pet });
     }
 
     public petCreateModal() {

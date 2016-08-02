@@ -17,12 +17,8 @@
         <p>You have no mates.</p>
         <h6>Add your mates to:</h6>
         <ul>
-            <li>
-                Chat with them
-            </li>
-            <li>
-                Be notified instantly when they are going out for a walk
-            </li>
+            <li>Chat with them</li>
+            <li>Be notified instantly when they are going out for a walk</li>
         </ul>
     </div>
     <ion-list>
@@ -32,6 +28,9 @@
                     <mate-image [image]="mate.friend.pic"></mate-image>
                 </ion-avatar>
                 <h2>{{mate.friend.name}}</h2>
+                <p *ngIf="mate.friend.city">
+                    {{ mate.friend.distance }} away - {{ mate.friend.city }}
+                </p>
             </button>
             <ion-item-options>
                 <button danger (click)="removeMate(mate)">

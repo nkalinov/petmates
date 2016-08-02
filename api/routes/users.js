@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
-var passport = require('passport');
-var upload = require('../config/upload');
-var fs = require('fs');
-var Jimp = require('jimp');
-var User = require('../models/user');
+const express = require('express');
+const router = express.Router();
+const passport = require('passport');
+const upload = require('../config/upload');
+const fs = require('fs');
+const Jimp = require('jimp');
+const User = require('../models/user');
 
 // check token validity and that user exists
 router.post('/check', passport.authenticate('jwt', {session: false}), (req, res) => res.json({
@@ -13,12 +13,13 @@ router.post('/check', passport.authenticate('jwt', {session: false}), (req, res)
 }));
 
 // delete
-router.delete('/', passport.authenticate('jwt', {session: false}), function (req, res) {
+router.delete('/', passport.authenticate('jwt', {session: false}), (req, res) => {
     var user = req.user;
 
-    req.user.remove(function (err) {
-        if (err)
+    req.user.remove(err => {
+        if (err) {
             return res.json({success: false, msg: err});
+        }
 
         // deletion OK, continue in the background...
         res.json({success: true});
@@ -48,21 +49,33 @@ router.delete('/', passport.authenticate('jwt', {session: false}), function (req
 
 // update
 router.put('/', passport.authenticate('jwt', {session: false}), function (req, res) {
-    if (req.body.name !== req.user.name) {
-        req.user.name = req.body.name;
+    const {name, email, location, password} = req.body;
+
+    if (name && name !== req.user.name) {
+        req.user.name = name;
     }
-    if (req.body.email !== req.user.email) {
-        req.user.email = req.body.email;
+    if (email && email !== req.user.email) {
+        req.user.email = email;
     }
-    if (req.body.password) {
-        req.user.password = req.body.password;
+    if (location.coordinates && location.coordinates !== req.user.location.coordinates) {
+        req.user.location.coordinates = location.coordinates;
+        req.user.city = location.city;
+        req.user.country = location.country;
     }
-    req.user.save(function (err, user) {
-        if (err) {
-            return res.json({success: false, msg: err.message});
-        }
-        return res.json({success: true, data: user});
-    });
+    if (password) {
+        req.user.password = password;
+    }
+
+    if (req.user.isModified()) {
+        req.user.save(function (err, data) {
+            if (err) {
+                return res.json({success: false, msg: err.message});
+            }
+            return res.json({success: true, data});
+        });
+    } else {
+        return res.json({success: true});
+    }
 });
 
 // upload picture
@@ -137,5 +150,7 @@ router.post('/upload', passport.authenticate('jwt', {session: false}), function 
         }
     });
 });
+
+// todo upload/tmp (creation pages)
 
 module.exports = router;

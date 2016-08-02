@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import { MatesPage } from '../pages/mates/mates.ts';
 import { PetsPage } from '../pages/pets/pets';
 import { MapPage } from '../pages/map/map';
@@ -8,12 +7,30 @@ import { HelpPage } from '../pages/help/help';
 import { ConversationsListPage } from '../pages/chat/conversations.list.ts';
 import { Page } from '../models/page.interface';
 
-@Injectable()
+function deg2rad(deg) {
+    return deg * (Math.PI / 180);
+}
+
 export class CommonService {
 
-    static getMenu(auth?:boolean = false):Array<Page> {
+    // todo why can't use in user.model.ts / WTF ?
+    // static getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    //     const R = 6371; // Radius of the earth in km
+    //     const dLat = deg2rad(lat2 - lat1);  // deg2rad below
+    //     const dLon = deg2rad(lon2 - lon1);
+    //     const a =
+    //             Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    //             Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    //             Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    //         ;
+    //     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    //     return R * c; // Distance in km
+    // }
+
+    static getMenu(auth: boolean = false): Array<Page> {
         let commonPages = [
             // {title: 'Help', component: HelpPage}
+            // {title: 'Donate', component: DonatePage} // todo
         ];
         let publicPages = [
             { title: 'Login / sign-up', component: AuthModal }
@@ -22,14 +39,13 @@ export class CommonService {
             { title: 'Map', component: MapPage },
             { title: 'Chats', component: ConversationsListPage },
             { title: 'My mates', component: MatesPage, id: 'mates' },
-            { title: 'My pets', component: PetsPage },
-            { title: 'Account', component: ProfilePage }
+            { title: 'My profile', component: ProfilePage }
         ];
         return auth ? loggedInPages.concat(commonPages) : publicPages.concat(commonPages);
     }
 
     static getTimeAgo(date) {
-        let result:string;
+        let result: string;
         // current time
         let now = new Date().getTime();
 
@@ -54,15 +70,15 @@ export class CommonService {
         return result;
     }
 
-    static getAge(fromdate, todate?) {
+    static getAge(fromdate, todate) {
         if (todate) {
             todate = new Date(todate);
         } else {
             todate = new Date();
         }
+        fromdate = new Date(fromdate);
 
         let age = [],
-            fromdate = new Date(fromdate),
             y = [todate.getFullYear(), fromdate.getFullYear()],
             ydiff = y[0] - y[1],
             m = [todate.getMonth(), fromdate.getMonth()],
@@ -102,9 +118,9 @@ export class CommonService {
      * @param fieldName
      * @returns {Promise<R>|Promise<T>|Promise}
      */
-    static makeFileRequest(url:string, file:File, token?:string, fieldName:string = 'picture') {
+    static makeFileRequest(url: string, file: File, token?: string, fieldName: string = 'picture') {
         return new Promise((resolve, reject) => {
-            let formData:any = new FormData();
+            let formData: any = new FormData();
             let xhr = new XMLHttpRequest();
             formData.append(fieldName, file, file.name);
             xhr.onreadystatechange = function () {

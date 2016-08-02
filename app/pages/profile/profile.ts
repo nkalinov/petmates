@@ -1,17 +1,18 @@
-import {ActionSheet, NavController, Alert, Modal} from 'ionic-angular';
-import {Component} from '@angular/core';
-import {AuthService} from '../../services/auth.service';
-import {ProfileEdit} from './edit/profile.edit';
-import {MateImage} from '../../common/mate-image';
+import { ActionSheet, NavController, Alert, Modal } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
+import { ProfileEdit } from './edit/profile.edit';
+import { MateImage } from '../../common/mate-image';
+import { PetsPage } from '../pets/pets';
 
 @Component({
     templateUrl: 'build/pages/profile/profile.html',
-    directives: [MateImage]
+    directives: [MateImage, PetsPage]
 })
 export class ProfilePage {
 
-    constructor(public auth:AuthService,
-                private nav:NavController) {
+    constructor(public auth: AuthService,
+                private nav: NavController) {
     }
 
     public editModal() {

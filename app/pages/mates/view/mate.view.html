@@ -12,12 +12,16 @@
             <mate-image [image]="friendship.friend.pic"></mate-image>
         </ion-col>
     </ion-row>
+    <p text-center *ngIf="friendship.friend.city && friendship.friend.country">
+        {{ friendship.friend.city + ', ' + friendship.friend.country }}
+        <!--Distance: {{ friendship.friend.distance }} away-->
+    </p>
     <div *ngIf="friendship.friend.pets.length===0">
         <p text-center>{{friendship.friend.name}} haven't added his pets.</p>
     </div>
     <ion-list *ngIf="friendship.friend.pets.length > 0">
         <ion-list-header>
-            {{friendship.friend.name}}'s pets
+            Pets
         </ion-list-header>
         <ion-item *ngFor="let d of friendship.friend.pets">
             <ion-thumbnail item-left>

@@ -21,17 +21,14 @@
                 </button>
             </div>
             <ion-list>
-                <!--<ion-list-header>-->
-                    <!--Or with your email-->
-                <!--</ion-list-header>-->
                 <ion-item>
                     <ion-input required type="text" [(ngModel)]="name" placeholder="Username / Email"></ion-input>
                 </ion-item>
                 <ion-item>
                     <ion-input required type="password" [(ngModel)]="password" placeholder="Password"></ion-input>
                 </ion-item>
+                <button ion-item type="submit" [disabled]="!name || !password">Login</button>
             </ion-list>
-            <button type="submit" block>Login</button>
             <button type="button" (click)="openForgotForm()" small light block>
                 Forgot password?
             </button>
@@ -44,9 +41,6 @@
                 </button>
             </div>
             <ion-list>
-                <!--<ion-list-header>-->
-                    <!--Or with your email-->
-                <!--</ion-list-header>-->
                 <ion-item>
                     <ion-input required type="text" [(ngModel)]="name" placeholder="Username"></ion-input>
                 </ion-item>
@@ -56,10 +50,15 @@
                 <ion-item>
                     <ion-input required type="password" [(ngModel)]="password" placeholder="Password"></ion-input>
                 </ion-item>
+                <ion-item (click)="geoLocalizeMe()">
+                    <ion-icon item-left name="locate"></ion-icon>
+                    <ion-input readonly required type="text" placeholder="Click to get your location"
+                               [(ngModel)]="locationModel"></ion-input>
+                </ion-item>
+                <button ion-item type="submit"
+                        [disabled]="!location.coordinates || !name || !password || !email">Submit
+                </button>
             </ion-list>
-            <div padding-horizontal>
-                <button type="submit" block>Submit</button>
-            </div>
         </form>
     </div>
 </ion-content>

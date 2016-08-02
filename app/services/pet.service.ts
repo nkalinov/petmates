@@ -8,13 +8,13 @@ import { CommonService } from './common.service';
 
 @Injectable()
 export class PetService {
-    constructor(private http:Http,
-                private config:Config,
-                public events:Events,
-                public auth:AuthService) {
+    constructor(private http: Http,
+                private config: Config,
+                public events: Events,
+                public auth: AuthService) {
     }
 
-    save(pet:Pet):Observable<any> {
+    save(pet: Pet): Observable<any> {
         let headers = new Headers();
         let req;
         headers.append('Authorization', this.auth.token);
@@ -72,7 +72,7 @@ export class PetService {
             this.http.delete(`${this.config.get('API')}/pets/${pet._id}`,
                 { headers: headers }
             ).subscribe(
-                (res:any) => {
+                (res: any) => {
                     res = res.json();
                     if (res.success) {
                         // remove from user.pets
@@ -86,7 +86,7 @@ export class PetService {
                         this.events.publish('alert:error', res.msg);
                     }
                 },
-                (err:Response) => {
+                (err: Response) => {
                     this.events.publish('alert:error', err.text());
                     observer.next(err);
                     observer.complete();
@@ -95,23 +95,26 @@ export class PetService {
         });
     }
 
-    upload(picture, pet:Pet) {
-        CommonService.makeFileRequest(`${this.config.get('API')}/pets/${pet._id}/upload`, picture, this.auth.token)
-            .then(
-                (res:any) => {
-                    if (res.response.success) {
-                        pet.pic = res.response.file.url;
-                        // replace
-                        let index = this.auth.getPetIndexById(pet._id);
-                        if (index > -1) {
-                            this.auth.user.pets[index] = pet;
-                        }
-                    } else {
-                        this.events.publish('alert:error', res.response.msg);
+    upload(picture, pet: Pet) {
+        CommonService.makeFileRequest(
+            `${this.config.get('API')}/pets/${pet._id}/upload`,
+            picture,
+            this.auth.token
+        ).then(
+            (res: any) => {
+                if (res.response.success) {
+                    pet.pic = res.response.file.url;
+                    // replace
+                    let index = this.auth.getPetIndexById(pet._id);
+                    if (index > -1) {
+                        this.auth.user.pets[index] = pet;
                     }
-                },
-                (error) => {
-                    this.events.publish('alert:error', error);
-                });
+                } else {
+                    this.events.publish('alert:error', res.response.msg);
+                }
+            },
+            (error) => {
+                this.events.publish('alert:error', error);
+            });
     }
 }

@@ -1,4 +1,4 @@
-$auth-input-placeholder-color: #fafafa;
+$auth-input-placeholder-color: #666;
 
 .auth-page {
   background: #fff url('../img/menu.jpg') bottom center;
@@ -18,25 +18,26 @@ $auth-input-placeholder-color: #fafafa;
   }
 
   ion-list {
+    background: rgba(255,255,255,0.7);
+
     ion-item {
       background: none;
-      color: #fafafa;
 
       ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
         color: $auth-input-placeholder-color;
-        opacity: .8;
+        opacity: .9;
       }
       :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
         color: $auth-input-placeholder-color;
-        opacity: .8;
+        opacity: .9;
       }
       ::-moz-placeholder { /* Mozilla Firefox 19+ */
         color: $auth-input-placeholder-color;
-        opacity: .8;
+        opacity: .9;
       }
       :-ms-input-placeholder { /* Internet Explorer 10-11 */
         color: $auth-input-placeholder-color;
-        opacity: .8;
+        opacity: .9;
       }
     }
   }

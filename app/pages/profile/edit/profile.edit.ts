@@ -12,27 +12,38 @@ import { MateImage } from '../../../common/mate-image';
 })
 
 export class ProfileEdit {
-    user:User;
-    picture:any;
+    user: User;
+    picture: any;
+    locationModel: string;
 
-    constructor(private viewCtrl:ViewController,
-                private auth:AuthService,
-                private config:Config,
-                private events:Events) {
-        this.user = JSON.parse(JSON.stringify(this.auth.user)); // clone
+    constructor(private viewCtrl: ViewController,
+                private auth: AuthService,
+                private config: Config,
+                private events: Events) {
+        this.user = Object.assign({}, this.auth.user);
+        if (this.user.location.coordinates.length > 0) {
+            this.locationModel = this.user.city + ', ' + this.user.country;
+        }
     }
 
-    public cancel() {
+    cancel() {
         this.viewCtrl.dismiss();
     }
 
-    public save() {
-        this.auth.update(this.user).subscribe(() => {
+    geoLocalizeMe() {
+        this.auth.getLocation().then(location => {
+            this.user.location = location;
+            this.locationModel = location.city + ', ' + location.country;
+        });
+    }
+
+    save() {
+        this.auth.update(this.user).then(() => {
             this.viewCtrl.dismiss();
         });
     }
 
-    public changePicture() {
+    changePicture() {
         ImagePicker.getPictures({
             // max images to be selected, defaults to 15. If this is set to 1, upon
             // selection of a single image, the plugin will return it.
@@ -60,7 +71,7 @@ export class ProfileEdit {
                 };
                 const ft = new FileTransfer();
                 ft.upload(images[0], encodeURI(`${this.config.get('API')}/user/upload`),
-                    (res:any) => {
+                    (res: any) => {
                         res.response = JSON.parse(res.response);
 
                         if (res.response.success) {
@@ -81,7 +92,7 @@ export class ProfileEdit {
     }
 
     // dev
-    public fileChangeEvent(fileInput:any) {
+    fileChangeEvent(fileInput: any) {
         this.picture = <Array<File>> fileInput.target.files[0];
         this.upload();
     }
@@ -89,7 +100,7 @@ export class ProfileEdit {
     // dev
     private upload() {
         CommonService.makeFileRequest(`${this.config.get('API')}/user/upload`, this.picture, this.auth.token).then(
-            (res:any) => {
+            (res: any) => {
                 if (res.response.success) {
                     this.user.pic = res.response.file.url;
                     this.auth.user.pic = this.user.pic;

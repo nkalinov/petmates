@@ -5,6 +5,7 @@ import { Pet } from '../models/pet.model';
 import { Observable } from 'rxjs/Rx';
 import { User } from '../models/user.model';
 import { Facebook } from 'ionic-native';
+import { Geolocation } from 'ionic-native';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +31,7 @@ export class AuthService {
                         if (res.success) {
                             this.user = this.parseUser(res.data);
                             this.token = token;
+                            this.checkAndUpdateLocation();
                             resolve(this.user);
                         } else {
                             this.cleanUser();
@@ -74,7 +76,7 @@ export class AuthService {
                         (res: Response) => this.parseLoginResponse(res.json()),
                         (err: Response) => {
                             this.events.publish('alert:error', err.text());
-                            // return err;
+                            return err;
                         });
 
             } else if (res.status === 'not_authorized') {
@@ -88,20 +90,6 @@ export class AuthService {
         }).catch(err => {
             this.events.publish('alert:error', err);
         });
-    }
-
-    private parseLoginResponse(res) {
-        if (res.success) {
-            let token = res.data.token;
-
-            this.local.set('id_token', token);
-            this.user = this.parseUser(res.data.profile);
-            this.token = token;
-            this.events.publish('user:login');
-        } else {
-            this.events.publish('alert:error', res.msg);
-            return new Error(res.msg);
-        }
     }
 
     signup(data) {
@@ -125,32 +113,57 @@ export class AuthService {
         );
     }
 
-    update(user) {
+    getLocation(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            Geolocation.getCurrentPosition({
+                enableHighAccuracy: true
+            }).then((data) => {
+                this.http.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${data.coords.latitude},${data.coords.longitude}&key=AIzaSyCInsRcxf6Y6zI7xkYA5VWDjEH9asjPP3g`)
+                    .map(res => res.json())
+                    .subscribe(res => {
+                        const addr = res.results[0]['address_components'];
+                        resolve({
+                            coordinates: [data.coords.longitude, data.coords.latitude],
+                            city: addr[addr.length - 3]['long_name'],
+                            country: addr[addr.length - 2]['long_name']
+                        });
+                    }, err => {
+                        // LIMIT probably reached
+                        resolve({
+                            coordinates: [data.coords.longitude, data.coords.latitude]
+                        });
+                    });
+            }, (err) => {
+                this.events.publish('alert:error', err.text());
+                reject(err.text());
+            });
+        });
+    }
+
+    update(data) {
         let headers = new Headers();
         headers.append('Authorization', this.token);
         headers.append('Content-Type', 'application/json');
 
-        return new Observable((observer) => {
+        return new Promise((resolve, reject) => {
             this.http.put(`${this.config.get('API')}/user`,
-                JSON.stringify(user),
+                JSON.stringify(data),
                 { headers: headers }
             ).subscribe(
                 (res: any) => {
                     res = res.json();
                     if (res.success) {
                         this.user = this.parseUser(res.data);
-                        this.user.password = ''; // reset password field
-                        observer.next();
+                        resolve(this.user);
                     } else {
-                        this.events.publish('alert:error', 'Username or email already registered');
-                        observer.error(res.msg);
+                        this.events.publish('alert:error', res.msg);
+                        reject(res.msg);
                     }
                 },
                 (err) => {
                     this.events.publish('alert:error', err.text());
-                    observer.error(err.text());
-                },
-                () => observer.complete()
+                    reject(err.text());
+                }
             );
         });
     }
@@ -243,8 +256,7 @@ export class AuthService {
                     if (res.success) {
                         this.events.publish('alert:info', res.msg);
                         this.login(res.data.name, password);
-                    }
-                    else {
+                    } else {
                         this.events.publish('alert:error', res.msg);
                     }
                     observer.next(res);
@@ -259,21 +271,49 @@ export class AuthService {
         });
     }
 
+    private parseLoginResponse(res) {
+        if (res.success) {
+            const token = res.data.token;
+            this.local.set('id_token', token);
+            this.user = this.parseUser(res.data.profile);
+            this.token = token;
+            this.checkAndUpdateLocation();
+            this.events.publish('user:login');
+        } else {
+            this.events.publish('alert:error', res.msg);
+            return new Error(res.msg);
+        }
+    }
+
+    private checkAndUpdateLocation() {
+        if (this.user.location.coordinates.length === 0 || !this.user.country || !this.user.city) {
+            this.getLocation().then(location => {
+                this.update({ location });
+            });
+        }
+    }
+
     private cleanUser() {
         this.local.remove('id_token');
         this.user = null;
         this.token = null;
     }
 
-    private parseUser(user) {
+    private parseUser(user: any): User {
         if (user) {
-            delete user.password;
+            user = new User(user);
+            user.password = '';
 
             if (user.pets) {
                 user.pets.forEach((pet) => new Pet(pet));
             }
+
             if (!user.mates) {
                 user.mates = [];
+            } else {
+                user.mates.forEach(mate => {
+                    mate.friend = new User(mate.friend, user.location.coordinates);
+                });
             }
         }
         return user;

@@ -1,29 +1,18 @@
-<ion-header>
-    <ion-navbar>
-        <button menuToggle>
-            <ion-icon name="menu"></ion-icon>
-        </button>
-        <ion-title>My pets</ion-title>
-        <ion-buttons end>
-            <button secondary (click)="petCreateModal()">
-                <ion-icon name="add"></ion-icon>
-            </button>
-        </ion-buttons>
-    </ion-navbar>
-</ion-header>
-
-<ion-content>
-    <div *ngIf="auth.user.pets.length===0">
-        <p text-center>No pets? You should adopt one!</p>
-    </div>
-    <ion-list *ngIf="auth.user.pets.length > 0">
-        <button ion-item *ngFor="let d of auth.user.pets" (click)="petEdit(d)">
-            <ion-thumbnail item-left>
-                <pet-image [image]="d.pic"></pet-image>
-            </ion-thumbnail>
-            <h2>{{d.name}}</h2>
-            <h3>{{d.breed.name}}</h3>
-            <p><span [gender]="d.sex"></span>, <span [age]="d.birthday"></span></p>
-        </button>
-    </ion-list>
-</ion-content>
+<ion-list>
+    <ion-list-header>Pets</ion-list-header>
+    <button ion-item type="button" (click)="petCreateModal()">
+        <ion-icon name="add"></ion-icon>
+        Add new pet
+    </button>
+    <button type="button" ion-item *ngFor="let d of auth.user.pets" (click)="petEdit(d)">
+        <ion-thumbnail item-left>
+            <pet-image [image]="d.pic"></pet-image>
+        </ion-thumbnail>
+        <h2>{{d.name}}</h2>
+        <h3>{{d.breed.name}}</h3>
+        <p><span [gender]="d.sex"></span>, <span [age]="d.birthday"></span></p>
+    </button>
+</ion-list>
+<div *ngIf="auth.user.pets.length===0">
+    <p text-center>No pets? You should adopt one!</p>
+</div>

@@ -15,6 +15,7 @@ import { ChatService } from './services/chat.service';
 import { MapPage } from './pages/map/map';
 import { Page } from './models/page.interface';
 import { PlacesService } from './services/places.service';
+import { MatesPage } from "./pages/mates/mates";
 
 @Component({
     templateUrl: 'build/app.html',
@@ -25,7 +26,7 @@ class PetMatesApp {
     rootPage: any;
     pages: Array<Page>;
     newRequests: number;
-    private defaultRootPage: any = MapPage;
+    private defaultRootPage: any = MatesPage;
 
     constructor(public auth: AuthService,
                 public walk: WalkService,
@@ -82,17 +83,17 @@ class PetMatesApp {
         let page = this.pages.find((page: Page) => page.component === this.defaultRootPage);
         this.openPage(page);
 
-        this.mates.sortMatesByStatus();
         this.mates.pending$.subscribe((count) => {
             this.newRequests = count;
         });
+        this.mates.sortMatesByStatus();
 
         // todo get conversations list and show badge in menu on unread msgs
 
         // register socket events handlers
         this.sockets.init().then((socket) => {
             this.mates.registerSocketEvents(socket);
-            this.chat.registerChatEvents(socket);
+            this.chat.registerSocketEvents(socket);
             this.walk.registerSocketEvents(socket);
         });
     }
@@ -118,9 +119,9 @@ class PetMatesApp {
 // http://ionicframework.com/docs/v2/api/config/Config/
 ionicBootstrap(PetMatesApp, [
     AuthService,
+    SocketService,
     BreedService,
     WalkService,
-    SocketService,
     MatesService,
     ChatService,
     PlacesService

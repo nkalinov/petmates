@@ -13,16 +13,16 @@ import { LocalNotifications } from 'ionic-native';
 @Injectable()
 export class ChatService {
     conversations$ = new BehaviorSubject([]);
-    conversations:Array<Conversation> = [];
+    conversations: Array<Conversation> = [];
 
-    constructor(private http:Http,
-                private sockets:SocketService,
-                private events:Events,
-                private config:Config,
-                private auth:AuthService) {
+    constructor(private http: Http,
+                private sockets: SocketService,
+                private events: Events,
+                private config: Config,
+                private auth: AuthService) {
     }
 
-    createConversation(c:Conversation) {
+    createConversation(c: Conversation) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', this.auth.token);
@@ -32,7 +32,7 @@ export class ChatService {
                 name: c.name,
                 members: c.members.map((f) => f._id)
             }), { headers: headers }).subscribe(
-                (res:any) => {
+                (res: any) => {
                     res = res.json();
                     if (res.success) {
                         let newConversation = new Conversation(res.data);
@@ -59,7 +59,7 @@ export class ChatService {
      * @param c - deep copy of the conversation
      * @returns {Observable}
      */
-    updateConversation(c:Conversation) {
+    updateConversation(c: Conversation) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', this.auth.token);
@@ -69,7 +69,7 @@ export class ChatService {
                 name: c.name,
                 members: c.members.map((f) => f._id)
             }), { headers: headers }).subscribe(
-                (res:any) => {
+                (res: any) => {
                     res = res.json();
                     if (res.success) {
                         let index = this.conversations.findIndex((sc) => sc._id === c._id);
@@ -94,14 +94,14 @@ export class ChatService {
         });
     }
 
-    leaveConversation(c:Conversation) {
+    leaveConversation(c: Conversation) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', this.auth.token);
 
         return new Observable((observer) => {
             this.http.delete(`${this.config.get('API')}/conversations/${c._id}`, { headers: headers }).subscribe(
-                (res:any) => {
+                (res: any) => {
                     res = res.json();
                     if (res.success) {
                         let index = this.conversations.findIndex((sc) => sc._id === c._id);
@@ -128,7 +128,7 @@ export class ChatService {
         let headers = new Headers();
         headers.append('Authorization', this.auth.token);
         this.http.get(`${this.config.get('API')}/conversations`, { headers: headers }).subscribe(
-            (res:any) => {
+            (res: any) => {
                 res = res.json();
                 if (res.success) {
                     let newConversations = res.data.map((data) => new Conversation(data));
@@ -136,7 +136,7 @@ export class ChatService {
                         // get messages from saved conversations
                         this.conversations.forEach((c) => {
                             if (c.messages.length > 0) {
-                                let find = newConversations.find((nc:Conversation) => nc._id === c._id);
+                                let find = newConversations.find((nc: Conversation) => nc._id === c._id);
                                 if (find) {
                                     find.messages = c.messages;
                                 }
@@ -155,13 +155,13 @@ export class ChatService {
         );
     }
 
-    getMessages(conversation:Conversation) {
+    getMessages(conversation: Conversation) {
         let headers = new Headers();
         headers.append('Authorization', this.auth.token);
 
         return new Observable((observer) => {
             this.http.get(`${this.config.get('API')}/conversations/${conversation._id}`, { headers: headers }).subscribe(
-                (res:any) => {
+                (res: any) => {
                     res = res.json();
                     if (res.success) {
                         conversation.messages = (<any>res.data).map((msg) => {
@@ -198,7 +198,7 @@ export class ChatService {
         });
     }
 
-    send(message:Message, conversation:Conversation) {
+    send(message: Message, conversation: Conversation) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', this.auth.token);
@@ -207,7 +207,7 @@ export class ChatService {
             this.http.post(`${this.config.get('API')}/conversations/${conversation._id}`, JSON.stringify({
                 msg: message.msg
             }), { headers: headers }).subscribe(
-                (res:any) => {
+                (res: any) => {
                     res = res.json();
                     if (res.success) {
                         message.added = new Date();
@@ -229,14 +229,14 @@ export class ChatService {
         });
     }
 
-    registerChatEvents(socket) {
+    registerSocketEvents(socket) {
         // update conversations members last activity
         socket.on('users', (data) => {
             console.info('users', data);
             if (data && data !== {}) {
-                this.conversations.forEach((c:Conversation) => {
+                this.conversations.forEach((c: Conversation) => {
                     // todo make this more "global" information
-                    c.members.forEach((m:User) => {
+                    c.members.forEach((m: User) => {
                         if (data[m._id]) {
                             // if online
                             m.lastActive = new Date(data[m._id]);
@@ -253,13 +253,13 @@ export class ChatService {
         });
 
         // new message in conversation
-        socket.on('chat:receive', (message:Message, cid:string) => {
+        socket.on('chat:receive', (message: Message, cid: string) => {
             LocalNotifications.schedule({
                 id: 1,
                 text: `${message.author.name}: ${message.msg}`
             });
 
-            let c:Conversation = this.conversations.find((c) => c._id === cid);
+            let c: Conversation = this.conversations.find((c) => c._id === cid);
             if (c) {
                 // add to conversation
                 c.messages.push(message);
@@ -270,24 +270,24 @@ export class ChatService {
         });
     }
 
-    getConversationTitle(c:Conversation) {
+    getConversationTitle(c: Conversation) {
         if (c.name) {
             return c.name;
         }
         if (c.members.length === 2) {
             return c.members
-                .filter((m:User) => m._id !== this.auth.user._id)[0].name;
+                .filter((m: User) => m._id !== this.auth.user._id)[0].name;
         }
         return c.members
-            .filter((m:User) => m._id !== this.auth.user._id)
-            .map((m:User) => m.name)
+            .filter((m: User) => m._id !== this.auth.user._id)
+            .map((m: User) => m.name)
             .join(', ');
     }
 
-    getMembersPic(c:Conversation) {
+    getMembersPic(c: Conversation) {
         if (c.members.length === 2) {
             return c.members
-                .filter((m:User) => m._id !== this.auth.user._id)[0].pic;
+                .filter((m: User) => m._id !== this.auth.user._id)[0].pic;
         }
         return 'group';
     }

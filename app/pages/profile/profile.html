@@ -14,17 +14,21 @@
     </ion-toolbar>
 </ion-header>
 
-<ion-content padding *ngIf="auth.user">
+<ion-content>
     <ion-card>
         <ion-item>
             <ion-avatar item-left>
                 <mate-image [image]="auth.user.pic"></mate-image>
             </ion-avatar>
             <h2>{{ auth.user.name }}</h2>
+            <p *ngIf="auth.user.city && auth.user.country">
+                {{ auth.user.city + ', ' + auth.user.country }}
+            </p>
             <p>{{ auth.user.email }} (private)</p>
         </ion-item>
         <ion-item>
             <button primary clear item-left (click)="editModal()">Edit</button>
         </ion-item>
     </ion-card>
+    <pets-list></pets-list>
 </ion-content>

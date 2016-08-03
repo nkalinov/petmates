@@ -1,5 +1,5 @@
 import {Directive, ElementRef, Input, OnInit} from '@angular/core';
-import {CommonService} from '../services/common.service';
+import { getAge } from '../services/common.service';
 
 @Directive({
     selector: '[age]'
@@ -12,6 +12,6 @@ export class AgeInfo implements OnInit {
     }
 
     ngOnInit() {
-        this.el.nativeElement.textContent = CommonService.getAge(this.age);
+        this.el.nativeElement.textContent = getAge(this.age);
     }
 }

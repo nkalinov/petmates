@@ -4,7 +4,7 @@ import { Http, Headers, Response } from '@angular/http';
 import { Pet } from '../models/pet.model';
 import { Observable } from 'rxjs/Rx';
 import { User } from '../models/user.model';
-import { Facebook } from 'ionic-native';
+import { Facebook, FacebookLoginResponse } from 'ionic-native';
 import { Geolocation } from 'ionic-native';
 
 @Injectable()
@@ -62,7 +62,7 @@ export class AuthService {
         );
     }
 
-    loginFacebook(): Promise<any> {
+    loginFacebook(): Promise<FacebookLoginResponse> {
         return Facebook.login([
             'public_profile',
             'email'

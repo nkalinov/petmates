@@ -58,9 +58,8 @@ export class MatesService {
             this.http.post(`${this.config.get('API')}/mates`,
                 JSON.stringify({ mate: friend._id }),
                 { headers: headers }
-            ).subscribe(
+            ).map(res => res.json()).subscribe(
                 (res: any) => {
-                    res = res.json();
                     if (res.success) {
                         if (res.data) {
                             // "populate"
@@ -96,35 +95,33 @@ export class MatesService {
         });
     }
 
-    remove(friendship: Friendship): Observable<any> {
+    remove(friendshipId: string): Promise<any> {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', this.auth.token);
 
-        return new Observable((observer) => {
-            this.http.delete(`${this.config.get('API')}/mates/${friendship._id}`, { headers: headers }).subscribe(
-                (res: any) => {
-                    res = res.json();
+        return new Promise((resolve, reject) => {
+            this.http.delete(`${this.config.get('API')}/mates/${friendshipId}`, {
+                headers: headers
+            }).map(res => res.json()).subscribe((res: any) => {
                     if (res.success) {
                         let index = this.auth.user.mates.findIndex((f: Friendship) => {
-                            return f._id === friendship._id;
+                            return f._id === friendshipId;
                         });
                         if (index > -1) {
                             this.auth.user.mates.splice(index, 1);
                             this.sockets.socket.emit('mate:', 'remove', res.data);
                             this.sortMatesByStatus();
-                            observer.next(res);
                         }
+                        resolve(res);
                     } else {
                         this.events.publish('alert:error', res.msg);
-                        observer.error(res.msg);
+                        reject(res.msg);
                     }
-                },
-                (err) => {
+                }, (err) => {
                     this.events.publish('alert:error', err.text());
-                    observer.error(err.text());
-                },
-                () => observer.complete()
+                    reject(err.text());
+                }
             );
         });
     }

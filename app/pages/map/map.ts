@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { WalkService, UserIcon } from '../../services/walk.service';
 import { WalkModal } from './walk-modal/walk-modal';
 import { Walk } from '../../models/walk.model';
-import { CommonService } from '../../services/common.service';
+import { getAge } from '../../services/common.service';
 import { PlacesService, Place } from '../../services/places.service';
 L.Icon.Default.imagePath = 'build/img/leaflet';
 
@@ -23,7 +23,7 @@ export class MapPage {
     layers = {
         walks: L.layerGroup(),
         shops: L.layerGroup(),
-        vets:  L.layerGroup()
+        vets: L.layerGroup()
     };
 
     GEOaccess: boolean = true;
@@ -127,7 +127,7 @@ export class MapPage {
                                 iconUrl: `${walk.pet.pic || this.config.get('defaultPetImage')}`
                             })
                         }).bindPopup(
-                            `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${CommonService.getAge(walk.pet.birthday)}<br>Out with ${walk.user.name}`
+                            `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${getAge(walk.pet.birthday)}<br>Out with ${walk.user.name}`
                         );
 
                         // save

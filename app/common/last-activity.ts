@@ -1,8 +1,8 @@
-import {Component, Input, OnDestroy, OnChanges} from '@angular/core';
-import {Conversation} from '../models/conversation.model';
-import {User} from '../models/user.model';
-import {AuthService} from '../services/auth.service';
-import {CommonService} from '../services/common.service';
+import { Component, Input, OnDestroy } from '@angular/core';
+import { Conversation } from '../models/conversation.model';
+import { User } from '../models/user.model';
+import { AuthService } from '../services/auth.service';
+import { getTimeAgo } from '../services/common.service';
 
 @Component({
     selector: 'last-activity',
@@ -13,12 +13,12 @@ import {CommonService} from '../services/common.service';
 })
 
 export class LastActivity implements OnDestroy {
-    @Input() chat:Conversation;
-    @Input() prefix:string;
-    time:string;
+    @Input() chat: Conversation;
+    @Input() prefix: string;
+    time: string;
     private interval;
 
-    constructor(private auth:AuthService) {
+    constructor(private auth: AuthService) {
         this.startInterval();
         setTimeout(() => {
             this.calcLastActivity();
@@ -32,12 +32,12 @@ export class LastActivity implements OnDestroy {
     calcLastActivity() {
         if (this.chat && this.chat.members && this.chat.members.length === 2) {
             let lastActive = this.chat.members
-                .filter((m:User) => m._id !== this.auth.user._id)[0]
+                .filter((m: User) => m._id !== this.auth.user._id)[0]
                 .lastActive;
 
             if (lastActive) {
                 setTimeout(() => {
-                    this.time = CommonService.getTimeAgo(lastActive);
+                    this.time = getTimeAgo(lastActive);
                 }, 1000);
             }
         }

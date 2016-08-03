@@ -3,7 +3,7 @@ import { ViewController, Events, Config } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { User } from '../../../models/user.model';
-import { CommonService } from '../../../services/common.service';
+import { makeFileRequest } from '../../../services/common.service';
 import { MateImage } from '../../../common/mate-image';
 
 @Component({
@@ -99,7 +99,7 @@ export class ProfileEdit {
 
     // dev
     private upload() {
-        CommonService.makeFileRequest(`${this.config.get('API')}/user/upload`, this.picture, this.auth.token).then(
+        makeFileRequest(`${this.config.get('API')}/user/upload`, this.picture, this.auth.token).then(
             (res: any) => {
                 if (res.response.success) {
                     this.user.pic = res.response.file.url;

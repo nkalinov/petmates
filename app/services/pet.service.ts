@@ -4,7 +4,7 @@ import { Events, Config } from 'ionic-angular';
 import { AuthService } from './auth.service';
 import { Pet } from '../models/pet.model';
 import { Observable } from 'rxjs/Observable';
-import { CommonService } from './common.service';
+import { makeFileRequest } from './common.service';
 
 @Injectable()
 export class PetService {
@@ -96,7 +96,7 @@ export class PetService {
     }
 
     upload(picture, pet: Pet) {
-        CommonService.makeFileRequest(
+        makeFileRequest(
             `${this.config.get('API')}/pets/${pet._id}/upload`,
             picture,
             this.auth.token

@@ -1,9 +1,7 @@
 import { Pet } from './pet.model';
 import { Friendship } from './friendship.interface.ts';
 
-function deg2rad(deg) {
-    return deg * (Math.PI / 180);
-}
+const deg2rad = (deg) => deg * (Math.PI / 180);
 
 export class User {
     _id: string;

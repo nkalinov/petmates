@@ -72,7 +72,7 @@ class PetMatesApp {
         this.auth.init().then((user) => {
             this.loggedIn();
         }, (err) => {
-            this.loggedOut();
+            this.loggedOut(err);
         });
     }
 
@@ -98,7 +98,7 @@ class PetMatesApp {
         });
     }
 
-    private loggedOut() {
+    private loggedOut(err?) {
         this.pages = null;
         this.sockets.disconnect();
         this.openPage({ component: AuthModal, active: false });

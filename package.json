@@ -41,9 +41,15 @@
       "id": "cordova-plugin-whitelist"
     },
     "de.appplant.cordova.plugin.local-notification",
-    "cordova-plugin-network-information",
-    "cordova-plugin-mauron85-background-geolocation",
-    "cordova-plugin-geolocation"
+    "cordova-plugin-geolocation",
+    {
+      "variables": {
+        "APP_ID": "123456789",
+        "APP_NAME": "myApplication"
+      },
+      "locator": "cordova-plugin-facebook4",
+      "id": "cordova-plugin-facebook4"
+    }
   ],
   "cordovaPlatforms": [
     "ios",

@@ -26,5 +26,10 @@
   <feature name="StatusBar">
     <param name="ios-package" onload="true" value="CDVStatusBar"/>
   </feature>
+    <plugin name="cordova-plugin-geolocation" spec="~2.2.0" />
   <plugin name="cordova-plugin-file-transfer" spec="~1.5.0"/>
+    <plugin name="cordova-plugin-facebook4" spec="~1.7.1">
+        <variable name="APP_ID" value="1144937372229433" />
+        <variable name="APP_NAME" value="PetMates" />
+    </plugin>
 </widget>

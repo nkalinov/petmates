@@ -164,7 +164,7 @@ export class ChatService {
                 (res:any) => {
                     res = res.json();
                     if (res.success) {
-                        conversation.messages = res.data.map((msg) => {
+                        conversation.messages = (<any>res.data).map((msg) => {
                             let parsed = new Message(msg);
                             if (<string>parsed.author === this.auth.user._id) {
                                 parsed.author = this.auth.user;
@@ -290,13 +290,5 @@ export class ChatService {
                 .filter((m:User) => m._id !== this.auth.user._id)[0].pic;
         }
         return 'group';
-    }
-
-    getMembersLastActivity(c:Conversation) {
-        if (c.members.length === 2) {
-            return c.members
-                .filter((m:User) => m._id !== this.auth.user._id)[0].lastActive;
-        }
-        return null;
     }
 }

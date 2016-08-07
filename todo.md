@@ -1,2 +1,5 @@
 - dog events nearby
-- vets on the map
+- wall (activities)
+- custom vets/shops icons
+- loader (photo upload)
+- donate

@@ -2,7 +2,7 @@ import 'leaflet';
 import 'leaflet.markercluster';
 import './leaflet.markercluster.layersupport-src';
 
-import { Events, Alert, Nav, ionicBootstrap, Platform } from 'ionic-angular';
+import { Events, Nav, ionicBootstrap, Platform, AlertController } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
 import { AuthModal } from './pages/auth/auth';
 import { AuthService } from './services/auth.service';
@@ -33,7 +33,8 @@ class PetMatesApp {
                 private events: Events,
                 private sockets: SocketService,
                 private mates: MatesService,
-                private chat: ChatService) {
+                private chat: ChatService,
+                private alertCtrl: AlertController) {
         this.platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.
@@ -104,11 +105,11 @@ class PetMatesApp {
     }
 
     private showAlert(msg, title: string = 'Error!') {
-        this.nav.present(Alert.create({
+        this.alertCtrl.create({
             title: title,
             subTitle: msg,
             buttons: ['OK']
-        }));
+        }).present();
     }
 }
 
@@ -133,5 +134,5 @@ ionicBootstrap(PetMatesApp, [
     emitCoordsIntervalMs: 15 * 1000,
     deleteInactiveIntervalMs: 30 * 1000,
     defaultPetImage: 'build/img/default_pet.jpg',
-    defaultMateImage: 'build/img/default_user.gif',
+    defaultMateImage: 'build/img/default_user.gif'
 });

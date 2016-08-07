@@ -3,11 +3,12 @@ import { Geolocation } from 'ionic-native';
 import { Component } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import { AuthService } from '../../services/auth.service';
-import { WalkService, UserIcon } from '../../services/walk.service';
+import { WalkService } from '../../services/walk.service';
 import { WalkModal } from './walk-modal/walk-modal';
 import { Walk } from '../../models/walk.model';
 import { CommonService } from '../../services/common.service';
 import { PlacesService, Place } from '../../services/places.service';
+import { vetIcon, CustomIcon } from '../../common/icons';
 L.Icon.Default.imagePath = 'build/img/leaflet';
 
 @Component({
@@ -18,12 +19,14 @@ export class MapPage {
     walks = {}; // saved walk markers by _id
     map: L.Map;
     marker: L.Marker;
-    mcgLayerSupportGroup = L.markerClusterGroup.layerSupport();
+    mcgLayerSupportGroup = L.markerClusterGroup.layerSupport({
+        showCoverageOnHover: false
+    });
     control = L.control.layers(null, null, { collapsed: false });
     layers = {
         walks: L.layerGroup(),
         shops: L.layerGroup(),
-        vets:  L.layerGroup()
+        vets: L.layerGroup()
     };
 
     GEOaccess: boolean = true;
@@ -40,19 +43,21 @@ export class MapPage {
     }
 
     ionViewDidEnter() {
-        this.map = L.map('map-container', { zoomControl: false });
-
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        const tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(this.map);
+        });
 
-        this.control.addTo(this.map);
+        this.map = L.map('map-container', {
+            zoomControl: false,
+            layers: [tiles]
+        });
+
+        this.mcgLayerSupportGroup.addTo(this.map);
 
         this.initGeolocation().then(() => {
-            // this.map.addLayer(this.mcgLayerSupportGroup);
             this.populate();
             this.addPlacesMarkers();
-            this.mcgLayerSupportGroup.addTo(this.map);
+            this.control.addTo(this.map);
         });
     }
 
@@ -84,7 +89,7 @@ export class MapPage {
 
             // add my marker
             this.marker = L.marker(position, {
-                icon: new UserIcon({ iconUrl: `${this.auth.user.pic || this.config.get('defaultMateImage')}` })
+                icon: new CustomIcon({ iconUrl: `${this.auth.user.pic || this.config.get('defaultMateImage')}` })
             }).addTo(this.map);
 
             // init currentWalk object
@@ -108,6 +113,7 @@ export class MapPage {
             );
 
             this.watchWalks();
+
         }, (err) => {
             this.geolocalizationErrorCb(err);
         });
@@ -119,55 +125,57 @@ export class MapPage {
             walks.forEach((walk: Walk) => {
                 if (walk.id !== this.walk.currentWalk.id) {
                     if (this.walks[walk.id]) {
-                        // if marker already on the map -> move it
+                        // move
                         this.walks[walk.id].setLatLng(walk.coords);
                     } else {
+                        // new
                         let marker = L.marker(walk.coords, {
-                            icon: new UserIcon({
+                            icon: new CustomIcon({
                                 iconUrl: `${walk.pet.pic || this.config.get('defaultPetImage')}`
                             })
                         }).bindPopup(
                             `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${CommonService.getAge(walk.pet.birthday)}<br>Out with ${walk.user.name}`
                         );
 
-                        // save
-                        // marker['_id'] = walk.id;
                         this.walks[walk.id] = marker;
-
-                        // add to parent group
-                        this.mcgLayerSupportGroup.addLayer(marker); // todo test dynamic add
+                        this.layers.walks.addLayer(marker);
+                        this.mcgLayerSupportGroup.refreshClusters(this.layers.walks);
                     }
                 }
             });
+        });
 
-            /**
-             * Remove walks of inactive users (stopped walk) every deleteInactiveIntervalMs interval
-             */
-            this.clearInactiveInterval = setInterval(() => {
-                for (let uid in this.walks) {
-                    if (this.walks.hasOwnProperty(uid)) {
-                        let key = uid;
-                        let find = this.walk.walks.find((walk: Walk) => {
-                            return walk.id === key;
-                        });
-                        if (!find) {
-                            this.map.removeLayer(this.walks[uid]);
-                            delete this.walks[uid];
-                        }
+        // cluster walks
+        this.mcgLayerSupportGroup.checkIn(this.layers.walks);
+        this.control.addOverlay(this.layers.walks, 'Walks');
+        this.layers.walks.addTo(this.mcgLayerSupportGroup);
+
+        // Remove inactive walks interval
+        this.clearInactiveInterval = setInterval(() => {
+            for (let uid in this.walks) {
+                if (this.walks.hasOwnProperty(uid)) {
+                    let key = uid;
+                    let find = this.walk.walks.find((walk: Walk) => {
+                        return walk.id === key;
+                    });
+                    if (!find) {
+                        this.layers.walks.removeLayer(this.walks[uid]);
+                        this.mcgLayerSupportGroup.refreshClusters(this.layers.walks);
+                        delete this.walks[uid];
                     }
                 }
-            }, this.config.get('deleteInactiveIntervalMs'));
-        });
+            }
+        }, this.config.get('deleteInactiveIntervalMs'));
     }
 
     private addPlacesMarkers() {
         return this.places.getPlaces().then((places) => {
             places.vets.forEach((place: Place) => {
-                L.marker(place.coords)
-                    .bindPopup(
-                        `<b>${place.name}</b><br>${place.phone}<br>${place.hours}`
-                    )
-                    .addTo(this.layers.vets);
+                L.marker(place.coords, {
+                    icon: vetIcon()
+                }).bindPopup(
+                    `<b>${place.name}</b><br>${place.phone}<br>${place.hours}`
+                ).addTo(this.layers.vets);
             });
 
             places.shops.forEach((place: Place) => {
@@ -179,6 +187,7 @@ export class MapPage {
             });
 
             this.mcgLayerSupportGroup.checkIn([this.layers.shops, this.layers.vets]);
+            this.mcgLayerSupportGroup.addLayers([this.layers.shops, this.layers.vets]);
             this.control.addOverlay(this.layers.shops, 'Animal shops');
             this.control.addOverlay(this.layers.vets, 'Vets');
         });
@@ -194,11 +203,12 @@ export class MapPage {
 
     private populate() {
         for (let i = 0; i < 50; i++) {
-            const m = new L.Marker(this.getRandomLatLng(this.map));
-            this.layers.walks.addLayer(m);
+            new L.Marker(this.getRandomLatLng(this.map), {
+                icon: new CustomIcon({
+                    iconUrl: `${this.config.get('defaultPetImage')}`
+                })
+            }).addTo(this.layers.walks);
         }
-        this.mcgLayerSupportGroup.checkIn(this.layers.walks);
-        this.control.addOverlay(this.layers.walks, 'Walks');
     }
 
     private getRandomLatLng(map) {

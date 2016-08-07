@@ -8,14 +8,7 @@ import { SocketService } from './socket.service';
 import { LocalNotifications } from 'ionic-native';
 import { MatesService } from './mates.service';
 import { Friendship } from '../models/friendship.interface';
-
-export const UserIcon = L.Icon.extend({
-    options: {
-        iconSize: [40, 40], // size of the icon
-        iconAnchor: [20, 30], // point of the icon which will correspond to marker's location
-        shadowAnchor: [4, 62],  // the same for the shadow
-    }
-});
+import { CustomIcon, vetIcon } from '../common/icons';
 
 @Injectable()
 export class WalkService {
@@ -62,7 +55,7 @@ export class WalkService {
         this.sockets.socket.emit('walk:start', this.currentWalk);
 
         // change my marker's icon
-        this.currentWalkMarker.setIcon(new UserIcon({
+        this.currentWalkMarker.setIcon(new CustomIcon({
             iconUrl: `${this.currentWalk.pet.pic || this.config.get('defaultPetImage')}`
         }));
 
@@ -76,7 +69,7 @@ export class WalkService {
         if (this.currentWalk.started) {
             this.currentWalk.pet = null;
             this.sockets.socket.emit('walk:stop');
-            this.currentWalkMarker.setIcon(new UserIcon({
+            this.currentWalkMarker.setIcon(new CustomIcon({
                 iconUrl: `${this.auth.user.pic || this.config.get('defaultMateImage')}`
             }));
             clearInterval(this.emitCoordsInterval);

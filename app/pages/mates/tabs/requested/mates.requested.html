@@ -21,7 +21,7 @@
     </div>
     <ion-list *ngIf="mates.mates.requested.length > 0">
         <ion-item-sliding *ngFor="let mate of mates.mates.requested">
-            <button ion-item>
+            <button ion-item (click)="viewMate(mate)">
                 <ion-avatar item-left>
                     <mate-image [image]="mate.friend.pic"></mate-image>
                 </ion-avatar>

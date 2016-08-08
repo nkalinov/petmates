@@ -100,8 +100,8 @@ export class WalkService {
         });
 
         socket.on('walks', (data: Array<Walk> = []) => {
+            console.info('walks', data);
             if (this.currentWalk.started || this.walks.length === 0) {
-                console.info('walks', data);
                 this.walks = data.map((w) => new Walk(w));
                 this.walks$.next(this.walks);
             }
@@ -111,6 +111,7 @@ export class WalkService {
     private emitCoords() {
         if (this.mustEmitCoords) {
             this.sockets.socket.emit('walk:move', this.currentWalk.coords);
+            console.info('emit walks:move', this.currentWalk.coords);
             this.mustEmitCoords = false;
         }
     }

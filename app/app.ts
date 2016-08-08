@@ -8,13 +8,13 @@ import { AuthModal } from './pages/auth/auth';
 import { AuthService } from './services/auth.service';
 import { BreedService } from './services/breed.service';
 import { WalkService } from './services/walk.service.ts';
-import { CommonService } from './services/common.service';
+import { getMenu } from './services/common.service';
 import { SocketService } from './services/socket.service';
 import { MatesService } from './services/mates.service';
 import { ChatService } from './services/chat.service';
-import { MapPage } from './pages/map/map';
 import { Page } from './models/page.interface';
 import { PlacesService } from './services/places.service';
+import { NearbyPage } from './pages/nearby/nearby';
 
 @Component({
     templateUrl: 'build/app.html',
@@ -25,7 +25,7 @@ class PetMatesApp {
     rootPage: any;
     pages: Array<Page>;
     newRequests: number;
-    private defaultRootPage: any = MapPage;
+    private defaultRootPage: any = NearbyPage;
 
     constructor(public auth: AuthService,
                 public walk: WalkService,
@@ -77,23 +77,23 @@ class PetMatesApp {
     }
 
     private loggedIn() {
-        this.pages = CommonService.getMenu(true); // set logged in menu
+        this.pages = getMenu(true); // set logged in menu
 
         // open default logged in page
         let page = this.pages.find((page: Page) => page.component === this.defaultRootPage);
         this.openPage(page);
 
-        this.mates.sortMatesByStatus();
         this.mates.pending$.subscribe((count) => {
             this.newRequests = count;
         });
+        this.mates.sortMatesByStatus();
 
         // todo get conversations list and show badge in menu on unread msgs
 
         // register socket events handlers
         this.sockets.init().then((socket) => {
             this.mates.registerSocketEvents(socket);
-            this.chat.registerChatEvents(socket);
+            this.chat.registerSocketEvents(socket);
             this.walk.registerSocketEvents(socket);
         });
     }
@@ -119,9 +119,9 @@ class PetMatesApp {
 // http://ionicframework.com/docs/v2/api/config/Config/
 ionicBootstrap(PetMatesApp, [
     AuthService,
+    SocketService,
     BreedService,
     WalkService,
-    SocketService,
     MatesService,
     ChatService,
     PlacesService

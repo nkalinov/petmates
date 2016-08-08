@@ -1,9 +1,10 @@
 import { Component, forwardRef } from '@angular/core';
-import { ViewController } from 'ionic-angular';
+import { ViewController, NavController } from 'ionic-angular';
 import { MatesService } from '../../../services/mates.service';
 import { MateImage } from '../../../common/mate-image';
 import { User } from '../../../models/user.model';
 import { Subscription } from 'rxjs/Subscription';
+import { MateViewPage } from '../view/mate.view';
 
 @Component({
     templateUrl: 'build/pages/mates/search/mates.search.html',
@@ -12,27 +13,34 @@ import { Subscription } from 'rxjs/Subscription';
     ]
 })
 export class MatesSearchPage {
-    searchQuery:string = '';
-    searchResults:Array<User> = [];
-    private searchResults$:Subscription;
+    searchQuery: string = '';
+    searchResults: Array<User> = [];
+    private searchResults$: Subscription;
 
-    constructor(public mates:MatesService,
-                public viewCtrl:ViewController) {
+    constructor(public mates: MatesService,
+                public viewCtrl: ViewController,
+                private nav: NavController) {
 
         this.searchResults$ = mates.search$.subscribe((res) => {
             this.searchResults = res;
         });
     }
 
-    public addMate(mate) {
-        this.mates.add(mate).subscribe((res:any) => {
+    viewMate(user: User) {
+        this.nav.push(MateViewPage, {
+            mate: user
+        });
+    }
+
+    addMate(mate) {
+        this.mates.add(mate).subscribe((res: any) => {
             if (res.success && res.data) {
                 this.searchResults.splice(this.searchResults.indexOf(mate), 1);
             }
         });
     }
 
-    ionViewWillUnload() {
+    ionViewWillLeave() {
         this.searchResults$.unsubscribe();
     }
 }

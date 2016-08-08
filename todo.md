@@ -3,3 +3,4 @@
 - custom vets/shops icons
 - loader (photo upload)
 - donate
+- users nearby

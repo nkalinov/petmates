@@ -1,4 +1,4 @@
-const config = require('../config/database');
+const config = require('../config/auth');
 const walk = require('./walk');
 const SocketIoJwt = require('socketio-jwt');
 
@@ -19,9 +19,9 @@ var SocketsModule = (function () {
     };
 
     return {
-        io: io,
-        init: init,
-        connections: connections
+        io,
+        init,
+        connections
     };
 
     /**
@@ -33,7 +33,7 @@ var SocketsModule = (function () {
 
         // set authorization for socket.io
         io.sockets.on('connection', SocketIoJwt.authorize({
-            secret: config.secret,
+            secret: config.Jwt.secretOrKey,
             timeout: 15000 // 15 seconds to send the authentication message
         })).on('authenticated', onSocketAuthenticated);
 

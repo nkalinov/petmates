@@ -6,7 +6,7 @@ import { Friendship } from '../../../../models/friendship.interface';
 import { MatesService } from '../../../../services/mates.service';
 import { MessageTimePipe } from '../../../../pipes/message.time.pipe';
 import { AuthService } from '../../../../services/auth.service';
-import { MatesSearchPage } from "../../search/mates.search";
+import { MatesSearchPage } from '../../search/mates.search';
 
 @Component({
     directives: [forwardRef(() => MateImage)],
@@ -15,25 +15,26 @@ import { MatesSearchPage } from "../../search/mates.search";
 })
 
 export class MatesAcceptedPage {
-    constructor(public mates:MatesService,
-                public auth:AuthService,
-                private nav:NavController) {
+    constructor(public mates: MatesService,
+                public auth: AuthService,
+                private nav: NavController) {
     }
 
     searchMateModal() {
         this.nav.present(Modal.create(MatesSearchPage));
     }
 
-    viewMate(friendship:Friendship) {
+    viewMate(friendship: Friendship) {
         this.nav.push(MateViewPage, {
-            mate: friendship
+            mate: friendship.friend,
+            friendshipId: friendship._id
         });
     }
 
-    removeMate(mate:Friendship) {
+    removeMate(friendship: Friendship) {
         let alert = Alert.create({
             title: 'Remove mate',
-            message: `Are you sure you want to remove ${mate.friend.name} from you mates?`,
+            message: `Are you sure you want to remove ${friendship.friend.name} from you mates?`,
             buttons: [
                 {
                     text: 'Cancel',
@@ -42,10 +43,7 @@ export class MatesAcceptedPage {
                 {
                     text: 'Remove',
                     role: 'destructive',
-                    handler: () => {
-                        this.mates.remove(mate).subscribe(() => {
-                        });
-                    }
+                    handler: () => this.mates.remove(friendship._id)
                 }
             ]
         });

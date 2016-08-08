@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { WalkService } from '../../services/walk.service';
 import { WalkModal } from './walk-modal/walk-modal';
 import { Walk } from '../../models/walk.model';
-import { CommonService } from '../../services/common.service';
+import { getAge } from '../../services/common.service';
 import { PlacesService, Place } from '../../services/places.service';
 import { vetIcon, CustomIcon } from '../../common/icons';
 L.Icon.Default.imagePath = 'build/img/leaflet';
@@ -134,7 +134,7 @@ export class MapPage {
                                 iconUrl: `${walk.pet.pic || this.config.get('defaultPetImage')}`
                             })
                         }).bindPopup(
-                            `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${CommonService.getAge(walk.pet.birthday)}<br>Out with ${walk.user.name}`
+                            `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${getAge(walk.pet.birthday)}<br>Out with ${walk.user.name}`
                         );
 
                         this.walks[walk.id] = marker;

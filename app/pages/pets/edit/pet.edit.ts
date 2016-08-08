@@ -1,11 +1,11 @@
-import {ViewController, NavParams, Alert, NavController, Config, App} from 'ionic-angular';
-import {ImagePicker} from 'ionic-native';
-import {FormBuilder, ControlGroup, Validators} from '@angular/common';
-import {forwardRef, Component} from '@angular/core';
-import {BreedService} from '../../../services/breed.service';
-import {PetService} from '../../../services/pet.service';
-import {Pet} from '../../../models/pet.model';
-import {PetImage} from '../../../common/pet-image';
+import { ViewController, NavParams, Alert, NavController, Config, App } from 'ionic-angular';
+import { ImagePicker } from 'ionic-native';
+import { FormBuilder, ControlGroup, Validators } from '@angular/common';
+import { forwardRef, Component } from '@angular/core';
+import { BreedService } from '../../../services/breed.service';
+import { PetService } from '../../../services/pet.service';
+import { Pet } from '../../../models/pet.model';
+import { PetImage } from '../../../common/pet-image';
 
 @Component({
     providers: [PetService],
@@ -15,21 +15,21 @@ import {PetImage} from '../../../common/pet-image';
     templateUrl: 'build/pages/pets/edit/pet.edit.html'
 })
 export class PetEditPage {
-    pet:Pet;
-    petForm:ControlGroup;
-    isNew:boolean = true;
-    breeds:Array<any> = [];
-    picture:any;
+    pet: Pet;
+    petForm: ControlGroup;
+    isNew: boolean = true;
+    breeds: Array<any> = [];
+    picture: any;
 
-    private nav:NavController;
+    private nav: NavController;
 
-    constructor(public viewCtrl:ViewController,
-                private pets:PetService,
-                private breedService:BreedService,
-                navParams:NavParams,
-                fb:FormBuilder,
-                private config:Config,
-                private app:App) {
+    constructor(public viewCtrl: ViewController,
+                private pets: PetService,
+                private breedService: BreedService,
+                navParams: NavParams,
+                fb: FormBuilder,
+                private config: Config,
+                private app: App) {
         this.nav = this.app.getActiveNav();
         let petParams = navParams.get('pet');
 
@@ -50,7 +50,7 @@ export class PetEditPage {
         breedService.getAll();
     }
 
-    save():void {
+    save(): void {
         if (this.petForm.valid) {
             this.pets.save(this.pet).subscribe(() => {
                 if (this.nav.canGoBack()) {
@@ -62,7 +62,7 @@ export class PetEditPage {
         }
     }
 
-    remove():void {
+    remove(): void {
         if (!this.isNew) {
             let alert = Alert.create({
                 title: 'Removing ' + this.pet.name,
@@ -89,7 +89,7 @@ export class PetEditPage {
         }
     }
 
-    onSelectBreed(breedId:string):void {
+    onSelectBreed(breedId: string): void {
         let newBreed = this.breedService.findBreedById(breedId);
         if (newBreed) {
             this.pet.breed.name = newBreed.name;
@@ -144,7 +144,7 @@ export class PetEditPage {
     }
 
     // dev
-    public fileChangeEvent(fileInput:any) {
+    public fileChangeEvent(fileInput: any) {
         this.picture = <Array<File>> fileInput.target.files[0];
         this.pets.upload(this.picture, this.pet);
     }

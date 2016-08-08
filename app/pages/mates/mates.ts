@@ -31,7 +31,7 @@ export class MatesPage implements AfterViewInit {
         });
     }
 
-    ionViewWillUnload() {
+    ionViewWillLeave() {
         this.pendingRequestsBadgeSubscription.unsubscribe();
     }
 }

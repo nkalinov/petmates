@@ -5,10 +5,10 @@ import * as io from 'socket.io-client';
 
 @Injectable()
 export class SocketService {
-    socket:any;
+    socket: any;
 
-    constructor(private config:Config,
-                private auth:AuthService) {
+    constructor(private config: Config,
+                private auth: AuthService) {
     }
 
     disconnect() {
@@ -25,6 +25,7 @@ export class SocketService {
                 let socket = io.connect(`${this.config.get('API')}`);
                 socket.on('connect', () => {
                     socket.on('authenticated', () => {
+                        console.info('socket authenticated');
                         this.socket = socket;
                         // global socket event handlers
 

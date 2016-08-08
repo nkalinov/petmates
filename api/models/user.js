@@ -1,10 +1,10 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var bcrypt = require('bcryptjs');
-var helpers = require('../helpers');
-var autopopulate = require('mongoose-autopopulate');
-var Friendship = require('./friendship');
-var Pet = require('./pet');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const bcrypt = require('bcryptjs');
+const helpers = require('../helpers');
+const autopopulate = require('mongoose-autopopulate');
+const Friendship = require('./friendship');
+const Pet = require('./pet');
 
 // set up a mongoose model
 var UserSchema = new Schema({
@@ -23,6 +23,15 @@ var UserSchema = new Schema({
         unique: true,
         required: true
     },
+    city: String,
+    country: String,
+    location: {
+        type: {
+            type: String,
+            default: 'Point'
+        },
+        coordinates: [Number]
+    },
     picture: String,
     pets: [Pet],
     mates: [Friendship.Schema],
@@ -36,6 +45,8 @@ var UserSchema = new Schema({
         virtuals: true
     }
 });
+
+UserSchema.index({location: '2dsphere'});
 
 UserSchema.virtual('pic').get(function () {
     return helpers.uploadPath(this.picture);

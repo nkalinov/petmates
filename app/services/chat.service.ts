@@ -95,11 +95,11 @@ export class ChatService {
     }
 
     leaveConversation(c: Conversation) {
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        headers.append('Authorization', this.auth.token);
+        return new Promise((resolve, reject) => {
+            let headers = new Headers();
+            headers.append('Content-Type', 'application/json');
+            headers.append('Authorization', this.auth.token);
 
-        return new Observable((observer) => {
             this.http.delete(`${this.config.get('API')}/conversations/${c._id}`, { headers: headers }).subscribe(
                 (res: any) => {
                     res = res.json();
@@ -109,17 +109,16 @@ export class ChatService {
                             this.conversations.splice(index, 1);
                         }
                         this.conversations$.next(this.conversations);
-                        observer.next();
+                        resolve();
                     } else {
                         this.events.publish('alert:error', res.msg);
-                        observer.error(res.msg);
+                        reject(res.msg);
                     }
                 },
                 (err) => {
                     this.events.publish('alert:error', err.text());
-                    observer.error(err.text());
-                },
-                () => observer.complete()
+                    reject(err.text());
+                }
             );
         });
     }
@@ -156,13 +155,15 @@ export class ChatService {
     }
 
     getMessages(conversation: Conversation) {
-        let headers = new Headers();
-        headers.append('Authorization', this.auth.token);
+        return new Promise((resolve, reject) => {
+            let headers = new Headers();
+            headers.append('Authorization', this.auth.token);
 
-        return new Observable((observer) => {
-            this.http.get(`${this.config.get('API')}/conversations/${conversation._id}`, { headers: headers }).subscribe(
+            this.http.get(
+                `${this.config.get('API')}/conversations/${conversation._id}`,
+                { headers: headers }
+            ).map(res => res.json()).subscribe(
                 (res: any) => {
-                    res = res.json();
                     if (res.success) {
                         conversation.messages = (<any>res.data).map((msg) => {
                             let parsed = new Message(msg);
@@ -183,48 +184,45 @@ export class ChatService {
                             }
                             return parsed;
                         });
-                        observer.next(conversation.messages);
+                        resolve(conversation.messages);
                     } else {
                         this.events.publish('alert:error', res.msg);
-                        observer.error(res.msg);
+                        reject(res.msg);
                     }
                 },
                 (err) => {
                     this.events.publish('alert:error', err.text());
-                    observer.error(err);
-                },
-                () => observer.complete()
+                    reject(err.text());
+                }
             );
         });
     }
 
     send(message: Message, conversation: Conversation) {
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        headers.append('Authorization', this.auth.token);
+        return new Promise((resolve, reject) => {
+            let headers = new Headers();
+            headers.append('Content-Type', 'application/json');
+            headers.append('Authorization', this.auth.token);
 
-        return new Observable((observer) => {
             this.http.post(`${this.config.get('API')}/conversations/${conversation._id}`, JSON.stringify({
                 msg: message.msg
-            }), { headers: headers }).subscribe(
+            }), { headers: headers }).map(res => res.json()).subscribe(
                 (res: any) => {
-                    res = res.json();
                     if (res.success) {
                         message.added = new Date();
                         conversation.messages.push(message);
                         conversation.lastMessage = message;
                         this.sockets.socket.emit('chat:send', message, conversation);
-                        observer.next(res);
+                        resolve(res);
                     } else {
                         this.events.publish('alert:error', res.msg);
-                        observer.error(res.msg);
+                        reject(res.msg);
                     }
                 },
                 (err) => {
                     this.events.publish('alert:error', err.text());
-                    observer.error(err);
-                },
-                () => observer.complete()
+                    reject(err.text());
+                }
             );
         });
     }

@@ -1,25 +1,25 @@
-import {Page, ViewController} from 'ionic-angular';
-import {Component} from '@angular/core';
-import {AuthService} from '../../../services/auth.service';
+import { ViewController } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
     templateUrl: 'build/pages/auth/forgot/forgot.form.html'
 })
 
 export class ForgotForm {
-    mode:string = 'request';
-    email:string = '';
-    token:string = '';
+    mode: string = 'request';
+    email: string = '';
+    token: string = '';
     tokenValid = false;
-    password:string = '';
-    password2:string = '';
+    password: string = '';
+    password2: string = '';
 
-    constructor(public viewCtrl:ViewController,
-                public auth:AuthService) {
+    constructor(public viewCtrl: ViewController,
+                public auth: AuthService) {
     }
 
     checkResetToken() {
-        this.auth.checkResetToken(this.token).subscribe((res:any) => {
+        this.auth.checkResetToken(this.token).subscribe((res: any) => {
             this.tokenValid = !!res.success;
             if (!this.tokenValid) {
                 this.token = '';
@@ -29,11 +29,11 @@ export class ForgotForm {
 
     changePassword() {
         this.auth.changePassword(this.token, this.password).subscribe(
-            (res:any) => {
-                if(res.success) {
+            (res: any) => {
+                if (res.success) {
                     this.viewCtrl.dismiss();
                 }
             }
-        )
+        );
     }
 }

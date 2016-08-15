@@ -13,15 +13,15 @@ import { Subscription } from 'rxjs/Subscription';
 
 export class MatesPage implements AfterViewInit {
     @ViewChildren(Tab)
-    tabs:QueryList<Tab>;
-    tabAccepted:MatesAcceptedPage = MatesAcceptedPage;
-    tabRequested:MatesRequestedPage = MatesRequestedPage;
-    tabNew:MatesPendingPage = MatesPendingPage;
+    tabs: QueryList<Tab>;
+    tabAccepted: MatesAcceptedPage = MatesAcceptedPage;
+    tabRequested: MatesRequestedPage = MatesRequestedPage;
+    tabNew: MatesPendingPage = MatesPendingPage;
 
-    private pendingRequestsBadgeSubscription:Subscription;
+    private pendingRequestsBadgeSubscription: Subscription;
 
-    constructor(public auth:AuthService,
-                private mates:MatesService) {
+    constructor(public auth: AuthService,
+                private mates: MatesService) {
     }
 
     ngAfterViewInit() {

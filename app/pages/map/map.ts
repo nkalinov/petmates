@@ -1,4 +1,4 @@
-import { NavController, Modal, Config } from 'ionic-angular';
+import { ModalController, Config } from 'ionic-angular';
 import { Geolocation } from 'ionic-native';
 import { Component } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
@@ -8,7 +8,7 @@ import { WalkModal } from './walk-modal/walk-modal';
 import { Walk } from '../../models/walk.model';
 import { getAge } from '../../services/common.service';
 import { PlacesService, Place } from '../../services/places.service';
-import { vetIcon, CustomIcon } from '../../common/icons';
+import { vetIcon, UserIcon } from '../../common/icons';
 L.Icon.Default.imagePath = 'build/img/leaflet';
 
 @Component({
@@ -37,8 +37,8 @@ export class MapPage {
 
     constructor(private auth: AuthService,
                 public walk: WalkService,
-                private nav: NavController,
                 private places: PlacesService,
+                private modalCtrl: ModalController,
                 private config: Config) {
     }
 
@@ -75,7 +75,7 @@ export class MapPage {
     }
 
     openWalkModal() {
-        this.nav.present(Modal.create(WalkModal));
+        this.modalCtrl.create(WalkModal).present();
     }
 
     private initGeolocation() {
@@ -89,7 +89,10 @@ export class MapPage {
 
             // add my marker
             this.marker = L.marker(position, {
-                icon: new CustomIcon({ iconUrl: `${this.auth.user.pic || this.config.get('defaultMateImage')}` })
+                icon: new UserIcon({
+                    iconUrl: `${this.auth.user.pic || this.config.get('defaultMateImage')}`,
+                    className: 'my-marker'
+                })
             }).addTo(this.map);
 
             // init currentWalk object
@@ -130,7 +133,7 @@ export class MapPage {
                     } else {
                         // new
                         let marker = L.marker(walk.coords, {
-                            icon: new CustomIcon({
+                            icon: new UserIcon({
                                 iconUrl: `${walk.pet.pic || this.config.get('defaultPetImage')}`
                             })
                         }).bindPopup(
@@ -204,7 +207,7 @@ export class MapPage {
     private populate() {
         for (let i = 0; i < 50; i++) {
             new L.Marker(this.getRandomLatLng(this.map), {
-                icon: new CustomIcon({
+                icon: new UserIcon({
                     iconUrl: `${this.config.get('defaultPetImage')}`
                 })
             }).addTo(this.layers.walks);

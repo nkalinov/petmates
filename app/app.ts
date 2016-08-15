@@ -15,6 +15,7 @@ import { ChatService } from './services/chat.service';
 import { Page } from './models/page.interface';
 import { PlacesService } from './services/places.service';
 import { NearbyPage } from './pages/nearby/nearby';
+import { MatesPage } from './pages/mates/mates';
 
 @Component({
     templateUrl: 'build/app.html',
@@ -25,7 +26,7 @@ class PetMatesApp {
     rootPage: any;
     pages: Array<Page>;
     newRequests: number;
-    private defaultRootPage: any = NearbyPage;
+    private defaultRootPage: any = MatesPage;
 
     constructor(public auth: AuthService,
                 public walk: WalkService,
@@ -126,7 +127,7 @@ ionicBootstrap(PetMatesApp, [
     ChatService,
     PlacesService
 ], {
-    tabbarPlacement: 'bottom',
+    tabsPlacement: 'bottom',
     // prodMode: true,
     // API: 'http://79.124.64.127:3001',
     // API: 'http://192.168.0.104:3001',

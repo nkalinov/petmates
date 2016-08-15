@@ -1,4 +1,4 @@
-import { NavController, Modal, Loading } from 'ionic-angular';
+import { ModalController, LoadingController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { ForgotForm } from './forgot/forgot.form';
@@ -23,7 +23,8 @@ export class AuthModal {
     password: string;
 
     constructor(public auth: AuthService,
-                private nav: NavController) {
+                private modalCtrl: ModalController,
+                private loadingCtrl: LoadingController) {
     }
 
     login() {
@@ -31,14 +32,17 @@ export class AuthModal {
     }
 
     loginFacebook() {
-        let loading = Loading.create({
+        const loading = this.loadingCtrl.create({
             content: 'Logging via Facebook...'
         });
-
-        this.nav.present(loading);
-        this.auth
-            .loginFacebook()
-            .then(() => loading.dismiss(), () => loading.dismiss());
+        loading.present().then(() => {
+            this.auth
+                .loginFacebook()
+                .then(
+                    () => loading.dismiss(),
+                    () => loading.dismiss()
+                );
+        });
     }
 
     signup() {
@@ -60,6 +64,6 @@ export class AuthModal {
     }
 
     openForgotForm() {
-        this.nav.present(Modal.create(ForgotForm));
+        this.modalCtrl.create(ForgotForm).present();
     }
 }

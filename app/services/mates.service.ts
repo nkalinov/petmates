@@ -1,5 +1,5 @@
 import { LocalNotifications } from 'ionic-native';
-import { Events, Config } from 'ionic-angular';
+import { Events, Config, ModalController } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { Subject } from 'rxjs/Subject';
@@ -9,6 +9,7 @@ import { Observable } from 'rxjs/Observable';
 import { Friendship, STATUS_REQUESTED, STATUS_ACCEPTED, STATUS_PENDING } from '../models/friendship.interface';
 import { SocketService } from './socket.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { MatesSearchPage } from '../pages/mates/search/mates.search';
 
 @Injectable()
 export class MatesService {
@@ -24,7 +25,12 @@ export class MatesService {
                 private events: Events,
                 private config: Config,
                 private auth: AuthService,
+                private modalCtrl: ModalController,
                 private sockets: SocketService) {
+    }
+
+    openSearchMateModal() {
+        this.modalCtrl.create(MatesSearchPage).present();
     }
 
     search(event): void {
@@ -95,12 +101,12 @@ export class MatesService {
         });
     }
 
-    remove(friendshipId: string): Promise<any> {
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        headers.append('Authorization', this.auth.token);
-
+    remove(friendshipId: string) {
         return new Promise((resolve, reject) => {
+            let headers = new Headers();
+            headers.append('Content-Type', 'application/json');
+            headers.append('Authorization', this.auth.token);
+
             this.http.delete(`${this.config.get('API')}/mates/${friendshipId}`, {
                 headers: headers
             }).map(res => res.json()).subscribe((res: any) => {

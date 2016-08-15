@@ -1,4 +1,4 @@
-import { NavParams, NavController, Content, Modal } from 'ionic-angular';
+import { NavParams, NavController, Content, ModalController } from 'ionic-angular';
 import { forwardRef, ViewChild, Component } from '@angular/core';
 import { ChatService } from '../../../services/chat.service';
 import { AuthService } from '../../../services/auth.service';
@@ -22,13 +22,14 @@ export class ConversationPage {
 
     constructor(public auth: AuthService,
                 public chats: ChatService,
-                private nav: NavController,
+                private modalCtrl: ModalController,
+                nav: NavController,
                 navParams: NavParams) {
         this.conversation = navParams.get('conversation');
         this.newMessage();
 
         // load conversation messages
-        this.chats.getMessages(this.conversation).subscribe(() => {
+        this.chats.getMessages(this.conversation).then(() => {
             this.scrollToBottom(0);
         }, () => nav.pop());
     }
@@ -38,11 +39,11 @@ export class ConversationPage {
     }
 
     editConversation() {
-        let modal = Modal.create(ConversationEditPage, {
+        const modal = this.modalCtrl.create(ConversationEditPage, {
             conversation: this.conversation
         });
-        this.nav.present(modal);
-        modal.onDismiss(updatedConversation => {
+        modal.present();
+        modal.onDidDismiss(updatedConversation => {
             if (updatedConversation) {
                 this.conversation = updatedConversation;
             }
@@ -50,7 +51,7 @@ export class ConversationPage {
     }
 
     sendMessage() {
-        this.chats.send(this.message, this.conversation).subscribe((res: any) => {
+        this.chats.send(this.message, this.conversation).then((res: any) => {
             if (res.success) {
                 this.newMessage();
                 this.scrollToBottom();

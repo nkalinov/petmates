@@ -26,27 +26,26 @@
         </ion-col>
     </ion-row>
 
-    <form (submit)="save()" [ngFormModel]="petForm">
+    <form (submit)="save()">
         <ion-list>
             <ion-item>
                 <ion-label>Name</ion-label>
-                <ion-input required type="text" ngControl="name" [(ngModel)]="pet.name"></ion-input>
+                <ion-input name="name" required type="text" ngControl="name" [(ngModel)]="pet.name"></ion-input>
             </ion-item>
             <ion-item>
                 <ion-label>Birthday</ion-label>
-                <ion-datetime
-                        [(ngModel)]="pet.birthday"></ion-datetime>
+                <ion-datetime name="birthday" [(ngModel)]="pet.birthday"></ion-datetime>
             </ion-item>
             <ion-item>
                 <ion-label>Gender</ion-label>
-                <ion-select [(ngModel)]="pet.sex">
+                <ion-select name="gender" [(ngModel)]="pet.sex">
                     <ion-option value="m">Male</ion-option>
                     <ion-option value="f">Female</ion-option>
                 </ion-select>
             </ion-item>
             <ion-item>
                 <ion-label>Breed</ion-label>
-                <ion-select required ngControl="breed" [(ngModel)]="pet.breed._id"
+                <ion-select name="breed" required ngControl="breed" [(ngModel)]="pet.breed._id"
                             (change)="onSelectBreed($event)">
                     <ion-option *ngFor="let b of breeds" value="{{b._id}}">
                         {{b.name}}

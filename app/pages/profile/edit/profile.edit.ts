@@ -14,16 +14,12 @@ import { MateImage } from '../../../common/mate-image';
 export class ProfileEdit {
     user: User;
     picture: any;
-    locationModel: string;
 
     constructor(private viewCtrl: ViewController,
                 private auth: AuthService,
                 private config: Config,
                 private events: Events) {
-        this.user = Object.assign({}, this.auth.user);
-        if (this.user.location.coordinates.length > 0) {
-            this.locationModel = this.user.city + ', ' + this.user.country;
-        }
+        this.user = new User(this.auth.user);
     }
 
     cancel() {
@@ -32,8 +28,9 @@ export class ProfileEdit {
 
     geoLocalizeMe() {
         this.auth.getLocation().then(location => {
-            this.user.location = location;
-            this.locationModel = location.city + ', ' + location.country;
+            this.user.location.coordinates = location.coordinates;
+            this.user.city = location.city;
+            this.user.country = location.country;
         });
     }
 

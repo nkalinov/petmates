@@ -1,4 +1,4 @@
-import { ViewController, NavParams, Alert, NavController, Config, App } from 'ionic-angular';
+import { ViewController, NavParams, AlertController, NavController, Config, App } from 'ionic-angular';
 import { ImagePicker } from 'ionic-native';
 import { FormBuilder, ControlGroup, Validators } from '@angular/common';
 import { forwardRef, Component } from '@angular/core';
@@ -29,13 +29,13 @@ export class PetEditPage {
                 navParams: NavParams,
                 fb: FormBuilder,
                 private config: Config,
-                private app: App) {
+                private app: App,
+                private alertCtrl: AlertController) {
         this.nav = this.app.getActiveNav();
         let petParams = navParams.get('pet');
 
         if (petParams) {
-            this.pet = petParams;
-            this.pet = Object.assign({}, petParams);
+            this.pet = new Pet(petParams);
             this.isNew = false;
         } else {
             this.pet = new Pet();
@@ -44,6 +44,8 @@ export class PetEditPage {
         this.petForm = fb.group({
             name: ['', Validators.required],
             breed: ['', Validators.required],
+            birthday: [''],
+            gender: ['']
         });
 
         breedService.breeds$.subscribe((breeds) => this.breeds = breeds);
@@ -64,7 +66,7 @@ export class PetEditPage {
 
     remove(): void {
         if (!this.isNew) {
-            let alert = Alert.create({
+            const alert = this.alertCtrl.create({
                 title: 'Removing ' + this.pet.name,
                 message: 'Are you sure?',
                 buttons: [
@@ -76,16 +78,16 @@ export class PetEditPage {
                         text: 'Delete',
                         role: 'destructive',
                         handler: () => {
-                            this.pets.deletePet(this.pet).subscribe(() => {
-                                setTimeout(() => {
+                            this.pets.deletePet(this.pet).then(() => {
+                                alert.dismiss().then(() => {
                                     this.nav.pop();
-                                }, 1000);
+                                });
                             });
                         }
                     }
                 ]
             });
-            this.nav.present(alert);
+            alert.present();
         }
     }
 

@@ -153,7 +153,9 @@ export class AuthService {
                 (res: any) => {
                     res = res.json();
                     if (res.success) {
-                        this.user = this.parseUser(res.data);
+                        if (res.data) {
+                            this.user = this.parseUser(res.data);
+                        }
                         resolve(this.user);
                     } else {
                         this.events.publish('alert:error', res.msg);

@@ -1,4 +1,4 @@
-import { ActionSheet, NavController, Alert, Modal } from 'ionic-angular';
+import { AlertController, ActionSheetController, ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { ProfileEdit } from './edit/profile.edit';
@@ -12,42 +12,44 @@ import { PetsPage } from '../pets/pets';
 export class ProfilePage {
 
     constructor(public auth: AuthService,
-                private nav: NavController) {
+                private modalCtrl: ModalController,
+                private alertCtrl: AlertController,
+                private actionSheetCtrl: ActionSheetController) {
     }
 
     public editModal() {
-        let modal = Modal.create(ProfileEdit);
-        this.nav.present(modal);
+        this.modalCtrl.create(ProfileEdit).present();
     }
 
     /**
      * Settings button
      */
     public openDangerSheet() {
-        let actionSheet = ActionSheet.create({
+        const actionSheet = this.actionSheetCtrl.create({
             buttons: [
                 {
                     text: 'Delete profile',
                     role: 'destructive',
                     handler: () => {
-                        let alert = Alert.create({
-                            title: 'Confirm profile deletion',
-                            message: 'Are you sure?',
-                            buttons: [
-                                {
-                                    text: 'Cancel',
-                                    role: 'cancel'
-                                },
-                                {
-                                    text: 'Delete',
-                                    role: 'destructive',
-                                    handler: () => {
-                                        this.auth.deleteProfile();
+                        actionSheet.dismiss().then(() => {
+                            const alert = this.alertCtrl.create({
+                                title: 'Confirm profile deletion',
+                                message: 'Are you sure?',
+                                buttons: [
+                                    {
+                                        text: 'Cancel',
+                                        role: 'cancel'
+                                    },
+                                    {
+                                        text: 'Delete',
+                                        handler: () => {
+                                            this.auth.deleteProfile();
+                                        }
                                     }
-                                }
-                            ]
+                                ]
+                            });
+                            alert.present();
                         });
-                        this.nav.present(alert);
                     }
                 },
                 {
@@ -62,6 +64,6 @@ export class ProfilePage {
                 }
             ]
         });
-        this.nav.present(actionSheet);
+        actionSheet.present();
     }
 }

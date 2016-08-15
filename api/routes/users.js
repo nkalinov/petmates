@@ -49,7 +49,7 @@ router.delete('/', passport.authenticate('jwt', {session: false}), (req, res) =>
 
 // update
 router.put('/', passport.authenticate('jwt', {session: false}), function (req, res) {
-    const {name, email, location, password} = req.body;
+    const {name, email, location, password, city, country} = req.body;
 
     if (name && name !== req.user.name) {
         req.user.name = name;
@@ -59,8 +59,12 @@ router.put('/', passport.authenticate('jwt', {session: false}), function (req, r
     }
     if (location.coordinates && location.coordinates !== req.user.location.coordinates) {
         req.user.location.coordinates = location.coordinates;
-        req.user.city = location.city;
-        req.user.country = location.country;
+    }
+    if (city && city !== req.user.city) {
+        req.user.city = city;
+    }
+    if (country && country !== req.user.country) {
+        req.user.country = country;
     }
     if (password) {
         req.user.password = password;

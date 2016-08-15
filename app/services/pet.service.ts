@@ -64,32 +64,30 @@ export class PetService {
         });
     }
 
-    deletePet(pet) {
+    deletePet(pet): Promise<any> {
         let headers = new Headers();
         headers.append('Authorization', this.auth.token);
 
-        return new Observable((observer) => {
+        return new Promise((resolve, reject) => {
             this.http.delete(`${this.config.get('API')}/pets/${pet._id}`,
                 { headers: headers }
-            ).subscribe(
+            ).map(res => res.json()).subscribe(
                 (res: any) => {
-                    res = res.json();
                     if (res.success) {
                         // remove from user.pets
                         let index = this.auth.getPetIndexById(pet._id);
                         if (index > -1) {
                             this.auth.user.pets.splice(index, 1);
                         }
-                        observer.next(res);
-                        observer.complete();
+                        resolve(res);
                     } else {
                         this.events.publish('alert:error', res.msg);
+                        reject(res.msg);
                     }
                 },
                 (err: Response) => {
                     this.events.publish('alert:error', err.text());
-                    observer.next(err);
-                    observer.complete();
+                    reject(err.text());
                 }
             );
         });

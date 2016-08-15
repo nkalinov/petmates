@@ -8,7 +8,9 @@ button[disabled] {
 }
 
 #main-menu {
-  background: #fff url('../img/menu.jpg') bottom center;
+  .menu-inner {
+    background: #fff url('../img/menu.jpg') bottom center;
+  }
 
   ion-title {
     padding: 0 70px 1px;

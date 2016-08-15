@@ -1,4 +1,4 @@
-import { Modal, NavController } from 'ionic-angular';
+import { ModalController, NavController } from 'ionic-angular';
 import { Component, forwardRef } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { PetEditPage } from './edit/pet.edit';
@@ -17,14 +17,15 @@ import { PetImage } from '../../common/pet-image';
 })
 export class PetsPage {
     constructor(private nav: NavController,
-                public auth: AuthService) {
+                public auth: AuthService,
+                private modalCtrl: ModalController) {
     }
 
     public petEdit(pet) {
-        this.nav.push(PetEditPage, { pet: pet });
+        this.nav.push(PetEditPage, { pet });
     }
 
     public petCreateModal() {
-        this.nav.present(Modal.create(PetEditPage));
+        this.modalCtrl.create(PetEditPage).present();
     }
 }

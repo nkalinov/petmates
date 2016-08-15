@@ -8,7 +8,7 @@ import { SocketService } from './socket.service';
 import { LocalNotifications } from 'ionic-native';
 import { MatesService } from './mates.service';
 import { Friendship } from '../models/friendship.interface';
-import { CustomIcon, vetIcon } from '../common/icons';
+import { UserIcon, vetIcon } from '../common/icons';
 
 @Injectable()
 export class WalkService {
@@ -55,8 +55,9 @@ export class WalkService {
         this.sockets.socket.emit('walk:start', this.currentWalk);
 
         // change my marker's icon
-        this.currentWalkMarker.setIcon(new CustomIcon({
-            iconUrl: `${this.currentWalk.pet.pic || this.config.get('defaultPetImage')}`
+        this.currentWalkMarker.setIcon(new UserIcon({
+            iconUrl: `${this.currentWalk.pet.pic || this.config.get('defaultPetImage')}`,
+            className: 'my-marker'
         }));
 
         // start emitting my coordinates
@@ -69,8 +70,9 @@ export class WalkService {
         if (this.currentWalk.started) {
             this.currentWalk.pet = null;
             this.sockets.socket.emit('walk:stop');
-            this.currentWalkMarker.setIcon(new CustomIcon({
-                iconUrl: `${this.auth.user.pic || this.config.get('defaultMateImage')}`
+            this.currentWalkMarker.setIcon(new UserIcon({
+                iconUrl: `${this.auth.user.pic || this.config.get('defaultMateImage')}`,
+                className: 'my-marker'
             }));
             clearInterval(this.emitCoordsInterval);
             this.currentWalk.stop();

@@ -1,10 +1,9 @@
-import {Page, ViewController, NavParams, NavController, Modal, App, Alert} from 'ionic-angular';
-import {Component} from '@angular/core';
-import {MateImage} from '../../../common/mate-image';
-import {Conversation} from '../../../models/conversation.model';
-import {ChatService} from '../../../services/chat.service';
-import {ConversationEditMembersPage} from './conversation.edit.members';
-import {ConversationsListPage} from '../conversations.list';
+import { ViewController, NavParams, ModalController, App, AlertController } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { MateImage } from '../../../common/mate-image';
+import { Conversation } from '../../../models/conversation.model';
+import { ChatService } from '../../../services/chat.service';
+import { ConversationEditMembersPage } from './conversation.edit.members';
 
 @Component({
     directives: [MateImage],
@@ -12,13 +11,14 @@ import {ConversationsListPage} from '../conversations.list';
 })
 
 export class ConversationEditPage {
-    conversation:Conversation;
+    conversation: Conversation;
 
-    constructor(public viewCtrl:ViewController,
-                private chat:ChatService,
-                private nav:NavController,
-                private app:App,
-                navParams:NavParams) {
+    constructor(public viewCtrl: ViewController,
+                private chat: ChatService,
+                private modalCtrl: ModalController,
+                private alertCtrl: AlertController,
+                private app: App,
+                navParams: NavParams) {
         this.conversation = new Conversation(navParams.get('conversation'));
     }
 
@@ -35,13 +35,13 @@ export class ConversationEditPage {
     }
 
     addMatesModal() {
-        this.nav.present(Modal.create(ConversationEditMembersPage, {
+        this.modalCtrl.create(ConversationEditMembersPage, {
             conversation: this.conversation
-        }));
+        }).present();
     }
 
     leaveConversation() {
-        let alert = Alert.create({
+        const alert = this.alertCtrl.create({
             title: 'Leave conversation ' + (this.conversation.name || '') + '?',
             message: 'Are you sure?',
             buttons: [
@@ -53,17 +53,14 @@ export class ConversationEditPage {
                     text: 'Delete',
                     role: 'destructive',
                     handler: () => {
-                        this.chat.leaveConversation(this.conversation).subscribe(() => {
-                            setTimeout(() => {
-                                this.viewCtrl.dismiss();
-                                let nav:NavController = this.app.getRootNav();
-                                nav.setRoot(ConversationsListPage);
-                            }, 1000);
-                        });
+                        this.chat.leaveConversation(this.conversation)
+                            .then(() => alert.dismiss())
+                            .then(() => this.viewCtrl.dismiss())
+                            .then(() => this.app.getActiveNav().pop());
                     }
                 }
             ]
         });
-        this.nav.present(alert);
+        alert.present();
     }
 }

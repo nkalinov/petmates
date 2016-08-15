@@ -1,8 +1,9 @@
-export const CustomIcon = L.Icon.extend({
+export const UserIcon = L.Icon.extend({
     options: {
         iconSize: [35, 35], // size of the icon
         iconAnchor: [18, 20], // point of the icon which will correspond to marker's location
-        shadowAnchor: [4, 62],  // the same for the shadow
+        shadowAnchor: [4, 62],  // the same for the shadow,
+        className: 'user-marker'
     }
 });
 
@@ -14,4 +15,4 @@ const VetIcon = L.Icon.extend({
     }
 });
 
-export const vetIcon = () => new VetIcon({ iconUrl: 'build/img/hospital_marker.png' });
+export const vetIcon = (customIcon?) => new VetIcon({ iconUrl: customIcon || 'build/img/hospital_marker.png' });

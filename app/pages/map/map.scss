@@ -1,6 +1,6 @@
 @import 'leaflet';
 
-ion-content{
+ion-content {
   &.map-page {
     background: transparent url('../img/map-page.jpg') no-repeat center center;
     background-size: cover;
@@ -24,10 +24,17 @@ ion-content{
 
     .leaflet-marker-pane {
       & > img {
-        width: 100%;
-        border-radius: 100%;
-        border: 2px solid rgba(255, 255, 255, 1);
-        box-shadow: 3px 6px 10px rgba(0, 0, 0, 0.5);
+        &.my-marker,
+        &.user-marker {
+          width: 100%;
+          border-radius: 100%;
+          border: 2px solid rgba(255, 255, 255, 1);
+          box-shadow: 3px 6px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        &.my-marker {
+          border-color: map_get($colors, primary);
+        }
       }
     }
   }

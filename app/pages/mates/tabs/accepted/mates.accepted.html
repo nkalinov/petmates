@@ -5,7 +5,7 @@
         </button>
         <ion-title>Mates</ion-title>
         <ion-buttons end>
-            <button secondary (click)="mates.openSearchMateModal()">
+            <button secondary (click)="openSearchMateModal()">
                 <ion-icon name="search"></ion-icon>
             </button>
         </ion-buttons>
@@ -22,18 +22,18 @@
         </ul>
     </div>
     <ion-list>
-        <ion-item-sliding *ngFor="let mate of mates.mates.accepted">
-            <button ion-item (click)="viewMate(mate)">
+        <ion-item-sliding *ngFor="let friendship of mates.mates.accepted">
+            <button ion-item (click)="viewMate(friendship)">
                 <ion-avatar item-left>
-                    <mate-image [image]="mate.friend.pic"></mate-image>
+                    <mate-image [image]="friendship.friend.pic"></mate-image>
                 </ion-avatar>
-                <h2>{{mate.friend.name}}</h2>
-                <p *ngIf="mate.friend.distance">
-                    {{ mate.friend.distance }} away - {{ mate.friend.city }}
+                <h2>{{friendship.friend.name}}</h2>
+                <p *ngIf="friendship.friend.distance">
+                    {{ friendship.friend.distance }} away - {{ friendship.friend.city }}
                 </p>
             </button>
             <ion-item-options>
-                <button danger (click)="removeMate(mate)">
+                <button danger (click)="removeMate(friendship)">
                     <ion-icon name="close"></ion-icon>
                     Remove
                 </button>

@@ -1,9 +1,10 @@
 import { forwardRef, Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, ModalController } from 'ionic-angular';
 import { MateImage } from '../../../../common/mate-image';
 import { MatesService } from '../../../../services/mates.service';
 import { Friendship } from '../../../../models/friendship.interface';
 import { MateViewPage } from '../../view/mate.view';
+import { MatesSearchPage } from '../../search/mates.search';
 
 @Component({
     directives: [forwardRef(() => MateImage)],
@@ -12,6 +13,7 @@ import { MateViewPage } from '../../view/mate.view';
 
 export class MatesPendingPage {
     constructor(public mates: MatesService,
+                private modalCtrl: ModalController,
                 private nav: NavController) {
     }
 
@@ -22,12 +24,7 @@ export class MatesPendingPage {
         });
     }
 
-    acceptRequest(friendship: Friendship) {
-        this.mates.add(friendship.friend).subscribe(() => {
-        });
-    }
-
-    cancelRequest(friendship: Friendship) {
-        this.mates.remove(friendship._id);
+    openSearchMateModal() {
+        this.modalCtrl.create(MatesSearchPage).present();
     }
 }

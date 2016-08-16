@@ -1,13 +1,4 @@
-<ion-header>
-    <ion-navbar>
-        <button menuToggle>
-            <ion-icon name="menu"></ion-icon>
-        </button>
-        <ion-title>Nearby</ion-title>
-    </ion-navbar>
-</ion-header>
-
-
-<ion-content padding>
-
-</ion-content>
+<ion-tabs>
+    <ion-tab [root]="tab1Root" tabTitle="People" tabIcon="star"></ion-tab>
+    <ion-tab [root]="tab2Root" tabTitle="Places" tabIcon="star"></ion-tab>
+</ion-tabs>

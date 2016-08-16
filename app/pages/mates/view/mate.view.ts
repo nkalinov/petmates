@@ -1,4 +1,4 @@
-import { App, NavParams, NavController, Alert } from 'ionic-angular';
+import { App, NavParams, NavController, AlertController } from 'ionic-angular';
 import { Component, forwardRef } from '@angular/core';
 import { AgeInfo } from '../../../common/age';
 import { GenderInfo } from '../../../common/gender';
@@ -33,7 +33,9 @@ export class MateViewPage {
     constructor(app: App,
                 navParams: NavParams,
                 private mates: MatesService,
-                private auth: AuthService) {
+                private auth: AuthService,
+                private alertCtrl: AlertController) {
+
         this.nav = app.getActiveNav();
         this.mate = navParams.get('mate');
         this.friendshipId = navParams.get('friendshipId');
@@ -48,36 +50,28 @@ export class MateViewPage {
     }
 
     addMate() {
-        this.mates.add(this.mate).subscribe((res: any) => {
-            if (res.success) {
-                this.friendshipStatus = STATUS_REQUESTED;
-                const friendship = this.auth.user.mates.find(friendship => friendship.friend._id === this.mate._id);
-                if (friendship) {
-                    this.friendshipId = friendship._id;
-                }
+        this.mates.add(this.mate).then(() => {
+            this.friendshipStatus = STATUS_REQUESTED;
+            const friendship = this.auth.user.mates.find(friendship => friendship.friend._id === this.mate._id);
+            if (friendship) {
+                this.friendshipId = friendship._id;
             }
         });
     }
 
     approveMate() {
-        this.mates.add(this.mate).subscribe((res: any) => {
-            if (res.success) {
-                this.friendshipStatus = STATUS_ACCEPTED;
-            }
-        });
+        this.mates.add(this.mate).then(() => this.friendshipStatus = STATUS_ACCEPTED);
     }
 
     cancelMate() {
-        this.mates.remove(this.friendshipId).then((res: any) => {
-            if (res.success) {
-                this.friendshipStatus = null;
-                this.friendshipId = null;
-            }
+        this.mates.remove(this.friendshipId).then(() => {
+            this.friendshipStatus = null;
+            this.friendshipId = null;
         });
     }
 
     removeMate() {
-        let alert = Alert.create({
+        const alert = this.alertCtrl.create({
             title: 'Remove mate',
             message: `Are you sure you want to remove ${this.mate.name} from you mates?`,
             buttons: [
@@ -89,17 +83,17 @@ export class MateViewPage {
                     text: 'Remove',
                     role: 'destructive',
                     handler: () => {
-                        this.mates.remove(this.friendshipId).then((res: any) => {
-                            if (res.success) {
-                                setTimeout(() => {
-                                    this.nav.pop();
-                                }, 1000);
-                            }
-                        });
+                        this.mates.remove(this.friendshipId)
+                            .then((res: any) => {
+                                if (res.success) {
+                                    return alert.dismiss();
+                                }
+                            })
+                            .then(() => this.nav.pop());
                     }
                 }
             ]
         });
-        this.nav.present(alert);
+        alert.present();
     }
 }

@@ -1,5 +1,5 @@
 import { LocalNotifications } from 'ionic-native';
-import { Events, Config, ModalController } from 'ionic-angular';
+import { Events, Config } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { Subject } from 'rxjs/Subject';
@@ -25,12 +25,7 @@ export class MatesService {
                 private events: Events,
                 private config: Config,
                 private auth: AuthService,
-                private modalCtrl: ModalController,
                 private sockets: SocketService) {
-    }
-
-    openSearchMateModal() {
-        this.modalCtrl.create(MatesSearchPage).present();
     }
 
     search(event): void {
@@ -43,10 +38,10 @@ export class MatesService {
             this.http.get(`${this.config.get('API')}/mates/search`, {
                 search: `q=${value}`,
                 headers: headers
-            }).subscribe((res: any) => {
-                res = res.json();
-                res.data.map(u => new User(u, this.auth.user.location.coordinates));
-                this.search$.next(res.data);
+            }).map(res => res.json()).subscribe((res: any) => {
+                this.search$.next(
+                    res.data.map(u => new User(u, this.auth.user.location.coordinates))
+                );
             }, (err) => {
                 this.events.publish('alert:error', err.text());
             });
@@ -55,12 +50,12 @@ export class MatesService {
         }
     }
 
-    add(friend: User): Observable<any> {
+    add(friend: User): Promise<any> {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', this.auth.token);
 
-        return new Observable((observer) => {
+        return new Promise((resolve, reject) => {
             this.http.post(`${this.config.get('API')}/mates`,
                 JSON.stringify({ mate: friend._id }),
                 { headers: headers }
@@ -87,16 +82,16 @@ export class MatesService {
                             }
                             this.sortMatesByStatus();
                         }
+                        resolve(res);
                     } else {
                         this.events.publish('alert:error', res.msg);
+                        reject(res.msg);
                     }
-                    observer.next(res);
                 },
                 (err) => {
                     this.events.publish('alert:error', err.text());
-                    observer.error(err);
-                },
-                () => observer.complete()
+                    reject(err.text());
+                }
             );
         });
     }

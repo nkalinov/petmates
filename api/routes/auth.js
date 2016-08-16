@@ -35,25 +35,27 @@ router.post('/', (req, res) => {
             {name: req.body.name},
             {email: req.body.name}
         ]
-    }, (err, user) => {
+    }, (err, profile) => {
         if (err) {
             throw err;
         }
-        if (!user) {
+        if (!profile) {
             return res.json({success: false, msg: 'Authentication failed. User not found.'});
         } else {
             // check if password matches
-            user.comparePassword(req.body.password, function (err, isMatch) {
+            profile.comparePassword(req.body.password, function (err, isMatch) {
                 if (isMatch && !err) {
                     // if user is found and password is right create a token
-                    var token = jwt.sign({_id: user._id}, auth.Jwt.secretOrKey);
+                    var token = jwt.sign({
+                        _id: profile._id
+                    }, auth.Jwt.secretOrKey);
 
                     // return the information including token as JSON
                     return res.json({
                         success: true,
                         data: {
                             token: 'JWT ' + token,
-                            profile: user
+                            profile
                         }
                     });
                 } else {

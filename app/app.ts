@@ -15,7 +15,6 @@ import { ChatService } from './services/chat.service';
 import { Page } from './models/page.interface';
 import { PlacesService } from './services/places.service';
 import { NearbyPage } from './pages/nearby/nearby';
-import { MatesPage } from './pages/mates/mates';
 
 @Component({
     templateUrl: 'build/app.html',
@@ -26,7 +25,7 @@ class PetMatesApp {
     rootPage: any;
     pages: Array<Page>;
     newRequests: number;
-    private defaultRootPage: any = MatesPage;
+    private defaultRootPage: any = NearbyPage;
 
     constructor(public auth: AuthService,
                 public walk: WalkService,
@@ -105,10 +104,10 @@ class PetMatesApp {
         this.openPage({ component: AuthModal, active: false });
     }
 
-    private showAlert(msg, title: string = 'Error!') {
+    private showAlert(subTitle, title: string = 'Error!') {
         this.alertCtrl.create({
-            title: title,
-            subTitle: msg,
+            title,
+            subTitle,
             buttons: ['OK']
         }).present();
     }

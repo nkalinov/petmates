@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Rx';
 import { User } from '../models/user.model';
 import { Facebook, FacebookLoginResponse } from 'ionic-native';
 import { Geolocation } from 'ionic-native';
+import { Location } from '../models/location.interface';
 
 @Injectable()
 export class AuthService {
@@ -52,9 +53,9 @@ export class AuthService {
         this.http.post(`${this.config.get('API')}/auth`, JSON.stringify({
             name,
             password
-        }), { headers: headers }).subscribe(
+        }), { headers: headers }).map(res => res.json).subscribe(
             (res: any) => {
-                this.parseLoginResponse(res.json());
+                this.parseLoginResponse(res);
             },
             (err: Response) => {
                 this.events.publish('alert:error', err.text());
@@ -113,26 +114,28 @@ export class AuthService {
         );
     }
 
-    getLocation(): Promise<any> {
+    getLocation(): Promise<Location> {
         return new Promise((resolve, reject) => {
             Geolocation.getCurrentPosition({
                 enableHighAccuracy: true
             }).then((data) => {
+                const location: Location = {
+                    coordinates: [data.coords.longitude, data.coords.latitude]
+                };
                 this.http.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${data.coords.latitude},${data.coords.longitude}&key=AIzaSyCInsRcxf6Y6zI7xkYA5VWDjEH9asjPP3g`)
                     .map(res => res.json())
                     .subscribe(res => {
-                        const addr = res.results[0]['address_components'];
-                        resolve({
-                            coordinates: [data.coords.longitude, data.coords.latitude],
-                            city: addr[addr.length - 3]['long_name'],
-                            country: addr[addr.length - 2]['long_name']
+                        res.results[0]['address_components'].map((item) => {
+                            if (item.types[0] === 'administrative_area_level_1') {
+                                location.city = item.long_name;
+                            }
+                            if (item.types[0] === 'country') {
+                                location.country = item.long_name;
+                            }
                         });
                     }, err => {
-                        // LIMIT probably reached
-                        resolve({
-                            coordinates: [data.coords.longitude, data.coords.latitude]
-                        });
-                    });
+                        // LIMIT probably reached todo something
+                    }, () => resolve(location));
             }, (err) => {
                 this.events.publish('alert:error', err.text());
                 reject(err.text());
@@ -279,7 +282,6 @@ export class AuthService {
             this.local.set('id_token', token);
             this.user = this.parseUser(res.data.profile);
             this.token = token;
-            this.checkAndUpdateLocation();
             this.events.publish('user:login');
         } else {
             this.events.publish('alert:error', res.msg);

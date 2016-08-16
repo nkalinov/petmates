@@ -33,11 +33,7 @@ export class MatesSearchPage {
     }
 
     addMate(mate) {
-        this.mates.add(mate).subscribe((res: any) => {
-            if (res.success && res.data) {
-                this.searchResults.splice(this.searchResults.indexOf(mate), 1);
-            }
-        });
+        this.mates.add(mate).then(() => this.searchResults.splice(this.searchResults.indexOf(mate), 1));
     }
 
     ionViewWillLeave() {

@@ -78,11 +78,9 @@ export class PetEditPage {
                         text: 'Delete',
                         role: 'destructive',
                         handler: () => {
-                            this.pets.deletePet(this.pet).then(() => {
-                                alert.dismiss().then(() => {
-                                    this.nav.pop();
-                                });
-                            });
+                            this.pets.deletePet(this.pet)
+                                .then(() => alert.dismiss())
+                                .then(() => this.nav.pop());
                         }
                     }
                 ]

@@ -2,6 +2,7 @@ import { ModalController, LoadingController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { ForgotForm } from './forgot/forgot.form';
+import { Location } from '../../models/location.interface';
 
 @Component({
     templateUrl: 'build/pages/auth/auth.html'
@@ -11,15 +12,10 @@ export class AuthModal {
     mode: string = 'login';
     name: string;
     email: string;
-    location: {
-        city: string,
-        country: string,
-        coordinates?: Array<Number>
-    } = {
+    location: Location = {
         city: '',
         country: ''
     };
-    locationModel: string;
     password: string;
 
     constructor(public auth: AuthService,
@@ -56,10 +52,7 @@ export class AuthModal {
 
     geoLocalizeMe() {
         if (!this.location.coordinates) {
-            this.auth.getLocation().then(location => {
-                this.location = location;
-                this.locationModel = this.location.city + ', ' + this.location.country;
-            });
+            this.auth.getLocation().then(location => this.location = location);
         }
     }
 

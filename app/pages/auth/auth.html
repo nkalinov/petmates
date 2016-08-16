@@ -53,7 +53,7 @@
                 <ion-item (click)="geoLocalizeMe()">
                     <ion-icon item-left name="locate"></ion-icon>
                     <ion-input readonly required type="text" placeholder="Click to get your location"
-                               [(ngModel)]="locationModel"></ion-input>
+                               [value]="user.city + ', ' + user.country"></ion-input>
                 </ion-item>
                 <button ion-item type="submit"
                         [disabled]="!location.coordinates || !name || !password || !email">Submit

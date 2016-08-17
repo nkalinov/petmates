@@ -35,28 +35,13 @@ export class MateViewPage {
                 private mates: MatesService,
                 private auth: AuthService,
                 private alertCtrl: AlertController) {
-
         this.nav = app.getActiveNav();
         this.mate = navParams.get('mate');
-        this.friendshipId = navParams.get('friendshipId');
-
-        if (this.friendshipId) {
-            // see what actions are available (accept/remove/new)
-            const friendship = auth.user.mates.find(friendship => friendship._id === this.friendshipId);
-            if (friendship) {
-                this.friendshipStatus = friendship.status;
-            }
-        }
+        this.mapFriendship();
     }
 
     addMate() {
-        this.mates.add(this.mate).then(() => {
-            this.friendshipStatus = STATUS_REQUESTED;
-            const friendship = this.auth.user.mates.find(friendship => friendship.friend._id === this.mate._id);
-            if (friendship) {
-                this.friendshipId = friendship._id;
-            }
-        });
+        this.mates.add(this.mate).then(() => this.mapFriendship());
     }
 
     approveMate() {
@@ -95,5 +80,15 @@ export class MateViewPage {
             ]
         });
         alert.present();
+    }
+
+    private mapFriendship() {
+        const friendship = this.auth.user.mates.find(
+            friendship => friendship.friend._id === this.mate._id
+        );
+        if (friendship) {
+            this.friendshipStatus = friendship.status;
+            this.friendshipId = friendship._id;
+        }
     }
 }

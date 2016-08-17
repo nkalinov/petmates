@@ -19,8 +19,7 @@ export class MatesPendingPage {
 
     viewMate(friendship: Friendship) {
         this.nav.push(MateViewPage, {
-            mate: friendship.friend,
-            friendshipId: friendship._id
+            mate: friendship.friend
         });
     }
 

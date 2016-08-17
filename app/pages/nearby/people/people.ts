@@ -1,19 +1,34 @@
-import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { Component, forwardRef } from '@angular/core';
+import { NavController, Refresher } from 'ionic-angular';
 import { NearbyService } from '../../../services/nearby.service';
+import { User } from '../../../models/user.model';
+import { MateViewPage } from '../../mates/view/mate.view';
+import { MateImage } from '../../../common/mate-image';
 
 @Component({
     templateUrl: 'build/pages/nearby/people/people.html',
+    directives: [
+        forwardRef(() => MateImage)
+    ]
 })
 
 export class PeoplePage {
-
     constructor(private navCtrl: NavController,
                 private nearby: NearbyService) {
-
     }
 
     ionViewDidEnter() {
-        this.nearby.getPeople();
+        this.nearby.getNearbyPeople();
+    }
+
+    viewMate(mate: User) {
+        this.navCtrl.push(MateViewPage, { mate });
+    }
+
+    doRefresh(refresher: Refresher) {
+        this.nearby.getNearbyPeople(true).then(
+            () => refresher.complete(),
+            err => refresher.complete()
+        );
     }
 }

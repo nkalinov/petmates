@@ -15,6 +15,7 @@ import { ChatService } from './services/chat.service';
 import { Page } from './models/page.interface';
 import { PlacesService } from './services/places.service';
 import { NearbyPage } from './pages/nearby/nearby';
+import 'rxjs/add/operator/map';
 
 @Component({
     templateUrl: 'build/app.html',

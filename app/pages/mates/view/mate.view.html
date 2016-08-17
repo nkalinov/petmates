@@ -40,18 +40,25 @@
             <ion-icon name="person-add"></ion-icon>
             Send mate request
         </button>
-        <button block light
-                *ngIf="friendshipStatus === friendshipStatuses.requested"
-                (click)="cancelMate()">
-            <ion-icon name="close"></ion-icon>
-            Cancel mate request
-        </button>
         <button block secondary
                 *ngIf="friendshipStatus === friendshipStatuses.pending"
                 (click)="approveMate()">
             <ion-icon name="checkmark"></ion-icon>
             Add to my mates
         </button>
+        <div text-center
+             *ngIf="friendshipStatus === friendshipStatuses.requested ||
+                    friendshipStatus === friendshipStatuses.pending">
+            <span style="display: block" margin-bottom-small
+                  *ngIf="friendshipStatus === friendshipStatuses.requested">
+                Request sent!
+            </span>
+            <button small block danger outline
+                    (click)="cancelMate()">
+                <ion-icon name="close"></ion-icon>
+                Cancel
+            </button>
+        </div>
         <button small block danger outline
                 *ngIf="friendshipStatus === friendshipStatuses.accepted"
                 (click)="removeMate()">

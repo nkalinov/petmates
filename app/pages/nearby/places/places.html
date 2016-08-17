@@ -3,10 +3,27 @@
         <button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
-        <ion-title>Nearby</ion-title>
+        <ion-title>Nearby places</ion-title>
     </ion-navbar>
 </ion-header>
 
 <ion-content>
-
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+    <ion-list>
+        <ion-list-header>
+            Max. distance is 500km.
+        </ion-list-header>
+        <button ion-item *ngFor="let item of nearby.places$ | async"
+                (click)="viewMate(item)">
+            <ion-avatar item-left>
+                <mate-image [image]="item.pic"></mate-image>
+            </ion-avatar>
+            <h2>{{item.name}}</h2>
+            <p *ngIf="item.distance">
+                {{ item.distance }} away - {{ item.city }}, {{ item.country }}
+            </p>
+        </button>
+    </ion-list>
 </ion-content>

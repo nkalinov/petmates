@@ -68,9 +68,9 @@ export class MatesService {
                             res.data.fRequest.friend = this.auth.user;
 
                             // see if request exists
-                            let index = this.auth.user.mates.findIndex((friendship: Friendship) => {
-                                return friendship._id === res.data.myRequest._id;
-                            });
+                            const index = this.auth.user.mates.findIndex(
+                                friendship => friendship._id === res.data.myRequest._id
+                            );
                             if (index > -1) {
                                 // we are accepting pending request -> replace
                                 this.auth.user.mates[index] = res.data.myRequest;

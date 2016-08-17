@@ -26,10 +26,8 @@ export class MatesSearchPage {
         });
     }
 
-    viewMate(user: User) {
-        this.nav.push(MateViewPage, {
-            mate: user
-        });
+    viewMate(mate: User) {
+        this.nav.push(MateViewPage, { mate });
     }
 
     addMate(mate) {

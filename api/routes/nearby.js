@@ -5,42 +5,54 @@ const User = require('../models/user');
 const Place = require('../models/place');
 
 router.get('/people', passport.authenticate('jwt', {session: false}), (req, res) => {
-    User.find({
-        _id: {
-            $ne: req.user._id
+    User.aggregate(
+        {
+            $geoNear: {
+                distanceField: 'distance',
+                near: {
+                    type: 'Point',
+                    coordinates: req.user.location.coordinates
+                },
+                maxDistance: 500 * 1000,
+                spherical: true,
+                query: {
+                    _id: {
+                        $ne: req.user._id
+                    }
+                }
+            }
         },
-        location: {
-            $near: {
-                $geometry: req.user.location,
-                $maxDistance: 500 * 1000 // 500km
+        {
+            $project: {
+                _id: 1,
+                name: 1,
+                picture: 1,
+                city: 1,
+                country: 1,
+                distance: 1
             }
         }
-    })
-        .select('_id name picture city country mates location.coordinates pets')
-        .exec(function (err, data) {
-            if (err)
-                return res.json({success: false, msg: err});
-            return res.json({success: true, data: data});
-        });
+    ).exec().then(
+        data => res.json({success: true, data}),
+        err => res.json({success: false, msg: err})
+    );
 });
 
 router.get('/places', passport.authenticate('jwt', {session: false}), (req, res) => {
-    Place.find({
-        _id: {
-            $ne: req.user._id
+    Place.geoNear(
+        {
+            type: 'Point',
+            coordinates: req.user.location.coordinates
         },
-        location: {
-            $near: {
-                $geometry: req.user.location,
-                $maxDistance: 500 * 1000 // 500km
-            }
-        }
-    }, (err, data) => {
-        if (err)
-            return res.json({success: false, msg: err});
-
-        return res.json({success: true, data: data});
-    });
+        {
+            spherical: true,
+            $maxDistance: 500 * 1000
+        },
+        (err, data) => res.json(err ?
+            {success: false, msg: err} :
+            {success: true, data}
+        )
+    );
 });
 
 module.exports = router;

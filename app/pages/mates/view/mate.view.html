@@ -13,8 +13,8 @@
         </ion-col>
     </ion-row>
     <p text-center *ngIf="mate.city && mate.country">
+        {{ mate.distance }} away<br>
         {{ mate.city + ', ' + mate.country }}
-        <!--Distance: {{ mate.distance }} away-->
     </p>
     <ion-list>
         <ion-list-header>

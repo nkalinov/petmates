@@ -35,8 +35,7 @@ function seed() {
     });
 
     Place.findOne({}, (err, res) => {
-        if (err)
-            throw err;
+        if (err) throw err;
 
         if (!res || res.length === 0) {
             const place = new Place({
@@ -45,8 +44,7 @@ function seed() {
                 location: {
                     coordinates: [23.334503, 42.657809]
                 },
-                city: 'Sofia',
-                country: 'Bulgaria',
+                address: 'ул.Браила, София 1000',
                 phone: '+359 897 599 991',
                 hours: '24/7',
                 link: 'http://centralvetclinic.com/'

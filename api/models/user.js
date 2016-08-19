@@ -11,8 +11,8 @@ var UserSchema = new Schema({
     facebookId: String,
     name: {
         type: String,
-        unique: true, // todo email not sufficient ?
-        required: true
+        required: true,
+        trim: true
     },
     password: {
         type: String,
@@ -21,7 +21,9 @@ var UserSchema = new Schema({
     email: {
         type: String,
         unique: true,
-        required: true
+        required: true,
+        lowercase: true,
+        trim: true
     },
     city: String,
     country: String,
@@ -38,11 +40,17 @@ var UserSchema = new Schema({
     resetPasswordToken: String,
     resetPasswordExpires: Date
 }, {
-    toObject: {
-        virtuals: true
-    },
     toJSON: {
-        virtuals: true
+        virtuals: true,
+        versionKey: false,
+        transform: (doc, ret) => {
+            delete ret.id;
+            delete ret.picture;
+            delete ret.password;
+            delete ret.resetPasswordToken;
+            delete ret.resetPasswordExpires;
+            return ret;
+        }
     }
 });
 

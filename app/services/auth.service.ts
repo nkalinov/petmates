@@ -5,8 +5,7 @@ import { Pet } from '../models/pet.model';
 import { Observable } from 'rxjs/Rx';
 import { User } from '../models/user.model';
 import { Facebook, FacebookLoginResponse } from 'ionic-native';
-import { Geolocation } from 'ionic-native';
-import { Location } from '../models/location.interface';
+import { LocationService } from './location.service';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +15,8 @@ export class AuthService {
 
     constructor(private http: Http,
                 private events: Events,
-                private config: Config) {
+                private config: Config,
+                private location: LocationService) {
     }
 
     init() {
@@ -26,19 +26,23 @@ export class AuthService {
                     // check token validity and that user still exists in db
                     let headers = new Headers();
                     headers.append('Authorization', token);
-                    this.http.post(`${this.config.get('API')}/user/check`, null, {
-                        headers: headers
-                    }).map(res => res.json()).subscribe((res: any) => {
-                        if (res.success) {
-                            this.user = this.parseUser(res.data);
-                            this.token = token;
-                            this.checkAndUpdateLocation();
-                            resolve(this.user);
-                        } else {
-                            this.cleanUser();
-                            reject('User not found');
-                        }
-                    }, err => reject(err));
+                    this.http
+                        .post(
+                            `${this.config.get('API')}/user/check`, null,
+                            { headers: headers }
+                        )
+                        .map(res => res.json())
+                        .subscribe((res: any) => {
+                            if (res.success) {
+                                this.user = this.parseUser(res.data);
+                                this.token = token;
+                                // this.checkAndUpdateLocation();
+                                resolve(this.user);
+                            } else {
+                                this.cleanUser();
+                                reject('User not found');
+                            }
+                        }, err => reject(err));
                 } else {
                     reject('Token missing');
                 }
@@ -46,12 +50,12 @@ export class AuthService {
         });
     }
 
-    login(name, password) {
+    login(email, password) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
         this.http.post(`${this.config.get('API')}/auth`, JSON.stringify({
-            name,
+            email,
             password
         }), { headers: headers }).map(res => res.json).subscribe(
             (res: any) => {
@@ -96,51 +100,25 @@ export class AuthService {
     signup(data) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
-        this.http.post(`${this.config.get('API')}/auth/signup`,
-            JSON.stringify(data),
-            { headers: headers }
-        ).subscribe(
-            (res: any) => {
-                res = res.json();
-                if (res.success) {
-                    this.login(data.name, data.password);
-                } else {
-                    this.events.publish('alert:error', 'Username or email already registered');
+        this.http
+            .post(
+                `${this.config.get('API')}/auth/signup`,
+                JSON.stringify(data),
+                { headers: headers }
+            )
+            .map(res => res.json())
+            .subscribe(
+                (res: any) => {
+                    if (res.success) {
+                        this.login(data.email, data.password);
+                    } else {
+                        this.events.publish('alert:error', 'Username or email already registered');
+                    }
+                },
+                (err) => {
+                    this.events.publish('alert:error', err);
                 }
-            },
-            (err) => {
-                this.events.publish('alert:error', err);
-            }
-        );
-    }
-
-    getLocation(): Promise<Location> {
-        return new Promise((resolve, reject) => {
-            Geolocation.getCurrentPosition({
-                enableHighAccuracy: true
-            }).then((data) => {
-                const location: Location = {
-                    coordinates: [data.coords.longitude, data.coords.latitude]
-                };
-                this.http.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${data.coords.latitude},${data.coords.longitude}&key=AIzaSyCInsRcxf6Y6zI7xkYA5VWDjEH9asjPP3g`)
-                    .map(res => res.json())
-                    .subscribe(res => {
-                        res.results[0]['address_components'].map((item) => {
-                            if (item.types[0] === 'administrative_area_level_1') {
-                                location.city = item.long_name;
-                            }
-                            if (item.types[0] === 'country') {
-                                location.country = item.long_name;
-                            }
-                        });
-                    }, err => {
-                        // LIMIT probably reached todo something
-                    }, () => resolve(location));
-            }, (err) => {
-                this.events.publish('alert:error', err.text());
-                reject(err.text());
-            });
-        });
+            );
     }
 
     update(data) {
@@ -149,27 +127,29 @@ export class AuthService {
         headers.append('Content-Type', 'application/json');
 
         return new Promise((resolve, reject) => {
-            this.http.put(`${this.config.get('API')}/user`,
-                JSON.stringify(data),
-                { headers: headers }
-            ).subscribe(
-                (res: any) => {
-                    res = res.json();
-                    if (res.success) {
-                        if (res.data) {
-                            this.user = this.parseUser(res.data);
+            this.http
+                .put(`${this.config.get('API')}/user`,
+                    JSON.stringify(data),
+                    { headers: headers }
+                )
+                .map(res => res.json())
+                .subscribe(
+                    (res: any) => {
+                        if (res.success) {
+                            if (res.data) {
+                                this.user = this.parseUser(res.data);
+                            }
+                            resolve(this.user);
+                        } else {
+                            this.events.publish('alert:error', res.msg);
+                            reject(res.msg);
                         }
-                        resolve(this.user);
-                    } else {
-                        this.events.publish('alert:error', res.msg);
-                        reject(res.msg);
+                    },
+                    (err) => {
+                        this.events.publish('alert:error', err.text());
+                        reject(err.text());
                     }
-                },
-                (err) => {
-                    this.events.publish('alert:error', err.text());
-                    reject(err.text());
-                }
-            );
+                );
         });
     }
 
@@ -180,9 +160,9 @@ export class AuthService {
             .delete(`${this.config.get('API')}/user`,
                 { headers: headers }
             )
+            .map(res => res.json())
             .subscribe(
                 (res: any) => {
-                    res = res.json();
                     if (res.success) {
                         this.logout();
                     } else {
@@ -209,41 +189,46 @@ export class AuthService {
     submitForgotRequest(email: string) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
-        this.http.post(`${this.config.get('API')}/auth/forgot`,
-            JSON.stringify({ email: email }),
-            { headers: headers }
-        ).subscribe(
-            (res: any) => {
-                res = res.json();
-                if (res.success) {
-                    this.events.publish('alert:info', res.msg);
-                } else {
-                    this.events.publish('alert:error', res.msg);
+        this.http
+            .post(
+                `${this.config.get('API')}/auth/forgot`,
+                JSON.stringify({ email }),
+                { headers: headers }
+            )
+            .map(res => res.json())
+            .subscribe(
+                (res: any) => {
+                    if (res.success) {
+                        this.events.publish('alert:info', res.msg);
+                    } else {
+                        this.events.publish('alert:error', res.msg);
+                    }
+                },
+                (err) => {
+                    this.events.publish('alert:error', err);
                 }
-            },
-            (err) => {
-                this.events.publish('alert:error', err);
-            }
-        );
+            );
     }
 
     checkResetToken(token: string): Observable {
         return new Observable(observer => {
-            this.http.get(`${this.config.get('API')}/auth/reset/${token}`).subscribe(
-                (res: any) => {
-                    res = res.json();
-                    if (!res.success) {
-                        this.events.publish('alert:error', res.msg);
+            this.http
+                .get(`${this.config.get('API')}/auth/reset/${token}`)
+                .map(res => res.json())
+                .subscribe(
+                    (res: any) => {
+                        if (!res.success) {
+                            this.events.publish('alert:error', res.msg);
+                        }
+                        observer.next(res);
+                        observer.complete();
+                    },
+                    (err) => {
+                        this.events.publish('alert:error', err);
+                        observer.next(err);
+                        observer.complete();
                     }
-                    observer.next(res);
-                    observer.complete();
-                },
-                (err) => {
-                    this.events.publish('alert:error', err);
-                    observer.next(err);
-                    observer.complete();
-                }
-            );
+                );
         });
     }
 
@@ -252,27 +237,30 @@ export class AuthService {
         headers.append('Content-Type', 'application/json');
 
         return new Observable(observer => {
-            this.http.post(`${this.config.get('API')}/auth/reset/${token}`,
-                JSON.stringify({ password: password }),
-                { headers: headers }
-            ).subscribe(
-                (res: any) => {
-                    res = res.json();
-                    if (res.success) {
-                        this.events.publish('alert:info', res.msg);
-                        this.login(res.data.name, password);
-                    } else {
-                        this.events.publish('alert:error', res.msg);
+            this.http
+                .post(
+                    `${this.config.get('API')}/auth/reset/${token}`,
+                    JSON.stringify({ password }),
+                    { headers: headers }
+                )
+                .map(res => res.json())
+                .subscribe(
+                    (res: any) => {
+                        if (res.success) {
+                            this.events.publish('alert:info', res.msg);
+                            this.login(res.data.email, password);
+                        } else {
+                            this.events.publish('alert:error', res.msg);
+                        }
+                        observer.next(res);
+                        observer.complete();
+                    },
+                    (err) => {
+                        this.events.publish('alert:error', err);
+                        observer.next(err);
+                        observer.complete();
                     }
-                    observer.next(res);
-                    observer.complete();
-                },
-                (err) => {
-                    this.events.publish('alert:error', err);
-                    observer.next(err);
-                    observer.complete();
-                }
-            );
+                );
         });
     }
 
@@ -291,7 +279,7 @@ export class AuthService {
 
     private checkAndUpdateLocation() {
         if (this.user.location.coordinates.length === 0 || !this.user.country || !this.user.city) {
-            this.getLocation().then(location => {
+            this.location.getLocation().then(location => {
                 this.update({ location });
             });
         }

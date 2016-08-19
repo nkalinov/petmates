@@ -5,6 +5,7 @@ import { AuthService } from '../../../services/auth.service';
 import { User } from '../../../models/user.model';
 import { makeFileRequest } from '../../../services/common.service';
 import { MateImage } from '../../../common/mate-image';
+import { LocationService } from '../../../services/location.service';
 
 @Component({
     templateUrl: 'build/pages/profile/edit/profile.edit.html',
@@ -17,6 +18,7 @@ export class ProfileEdit {
 
     constructor(private viewCtrl: ViewController,
                 private auth: AuthService,
+                private location: LocationService,
                 private config: Config,
                 private events: Events) {
         this.user = new User(this.auth.user);
@@ -27,7 +29,7 @@ export class ProfileEdit {
     }
 
     geoLocalizeMe() {
-        this.auth.getLocation().then(location => {
+        this.location.getLocation().then(location => {
             this.user.location.coordinates = location.coordinates;
             this.user.city = location.city;
             this.user.country = location.country;

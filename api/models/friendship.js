@@ -13,7 +13,7 @@ var Friendship = new Schema({
     friend: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        autopopulate: {select: '_id name picture pets city country location'}
+        autopopulate: {select: '_id name picture location.coordinates city country'}
     }
 });
 

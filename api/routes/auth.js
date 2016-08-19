@@ -28,67 +28,60 @@ router.get('/facebook',
     }
 );
 
-// login
+// login by email
 router.post('/', (req, res) => {
-    User.findOne({
-        $or: [
-            {name: req.body.name},
-            {email: req.body.name}
-        ]
-    }, (err, profile) => {
-        if (err) {
-            throw err;
-        }
-        if (!profile) {
-            return res.json({success: false, msg: 'Authentication failed. User not found.'});
-        } else {
-            // check if password matches
-            profile.comparePassword(req.body.password, function (err, isMatch) {
-                if (isMatch && !err) {
-                    // if user is found and password is right create a token
-                    var token = jwt.sign({
-                        _id: profile._id
-                    }, auth.Jwt.secretOrKey);
+    User.findOne(
+        {email: req.body.email.toString().toLowerCase().trim()},
+        (err, profile) => {
+            if (err)
+                throw err;
 
-                    // return the information including token as JSON
-                    return res.json({
-                        success: true,
-                        data: {
-                            token: 'JWT ' + token,
-                            profile
-                        }
-                    });
-                } else {
-                    return res.send({success: false, msg: 'Authentication failed. Wrong password.'});
-                }
-            });
-        }
-    });
+            if (!profile) {
+                return res.json({success: false, msg: 'Authentication failed. User not found.'});
+            } else {
+                // check if password matches
+                profile.comparePassword(req.body.password, function (err, isMatch) {
+                    if (isMatch && !err) {
+                        // if user is found and password is right create a token
+                        var token = jwt.sign({
+                            _id: profile._id
+                        }, auth.Jwt.secretOrKey);
+
+                        // return the information including token as JSON
+                        return res.json({
+                            success: true,
+                            data: {
+                                token: 'JWT ' + token,
+                                profile
+                            }
+                        });
+                    } else {
+                        return res.send({success: false, msg: 'Authentication failed. Wrong password.'});
+                    }
+                });
+            }
+        });
 });
 
 // create
 router.post('/signup', (req, res) => {
-    if (!req.body.name || !req.body.password) {
-        res.json({success: false, msg: 'Please pass name and password.'});
-    } else {
-        const {name, password, email, location} = req.body;
+    const {name, password, email, location} = req.body;
 
-        var newUser = new User({
-            name,
-            password,
-            email,
-            city: location.city,
-            country: location.country
-        });
-        newUser.location.coordinates = location.coordinates;
+    var user = new User({
+        name,
+        password,
+        email,
+        city: location.city,
+        country: location.country
+    });
+    user.location.coordinates = location.coordinates;
 
-        newUser.save(err => {
-            if (err) {
-                return res.json({success: false, msg: err});
-            }
-            res.json({success: true});
-        });
-    }
+    user.save(err => {
+        if (err)
+            return res.json({success: false, msg: err});
+
+        return res.json({success: true});
+    });
 });
 
 // reset password request
@@ -167,8 +160,11 @@ router.post('/reset/:token', function (req, res) {
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
 
-        user.save(function (err) {
-            return res.json({success: true, msg: 'Your password has been changed.', data: {name: user.name}});
+        user.save(err => {
+            if (err)
+                return res.json({success: false, msg: err});
+
+            return res.json({success: true, msg: 'Your password has been changed.', data: {name: user.email}});
         });
     });
 });

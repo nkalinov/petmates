@@ -1,6 +1,6 @@
+- get info from api/users/${_id}
 - dog events nearby
 - wall (activities)
-- custom vets/shops icons
+- custom map shops icons
 - loader (photo upload)
 - donate
-- users nearby

@@ -14,11 +14,14 @@ var Pet = new Schema({
     },
     picture: String
 }, {
-    toObject: {
-        virtuals: true
-    },
     toJSON: {
-        virtuals: true
+        virtuals: true,
+        versionKey: false,
+        transform: (doc, ret) => {
+            delete ret.id;
+            delete ret.picture;
+            return ret;
+        }
     }
 });
 

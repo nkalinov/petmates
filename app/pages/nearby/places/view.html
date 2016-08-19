@@ -1,0 +1,42 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{place.name}}</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+    <ion-card>
+        <place-image [place]="place" [card]="true"></place-image>
+
+        <ion-item>
+            <h2>{{place.name}}</h2>
+            <p>
+                <ion-icon name="pin"></ion-icon>
+                {{place.address}}
+            </p>
+            <h3>
+                <ion-icon name="time-outline"></ion-icon>
+                {{place.hours}}
+            </h3>
+            <h3>
+                <ion-icon name="call"></ion-icon>
+                {{place.phone}}
+            </h3>
+            <a [attr.href]="place.link" target="_blank">
+                {{place.link}}
+            </a>
+        </ion-item>
+
+        <ion-item>
+            <span item-left>
+                <span secondary class="item-bold">~{{place.timeToDistance}}</span>
+                ({{place.distance}})
+            </span>
+            <button primary clear item-right
+                    (click)="navigate()">
+                <ion-icon name="navigate"></ion-icon>
+                Start navigation
+            </button>
+        </ion-item>
+    </ion-card>
+</ion-content>

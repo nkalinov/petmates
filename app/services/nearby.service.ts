@@ -28,10 +28,13 @@ export class NearbyService {
                     .map(res => res.json())
                     .subscribe(
                         res => {
-                            this.people$.next(
-                                res.data.map(u => new User(u, this.auth.user.location.coordinates))
-                            );
-                            resolve();
+                            const data = res.data.map(u => {
+                                const user = new User(u);
+                                user.setDistance(u.distance);
+                                return user;
+                            });
+                            this.people$.next(data);
+                            resolve(data);
                         },
                         err => {
                             this.events.publish('alert:error', err.text());
@@ -39,7 +42,7 @@ export class NearbyService {
                         }
                     );
             } else {
-                resolve();
+                resolve(this.people$.value);
             }
         });
     }
@@ -55,10 +58,13 @@ export class NearbyService {
                     .map(res => res.json())
                     .subscribe(
                         res => {
-                            this.places$.next(
-                                res.data.map(u => new Place(u, this.auth.user.location.coordinates))
-                            );
-                            resolve();
+                            const data = res.data.map(p => {
+                                const place = new Place(p.obj);
+                                place.setDistance(p.dis);
+                                return place;
+                            });
+                            this.places$.next(data);
+                            resolve(data);
                         },
                         err => {
                             this.events.publish('alert:error', err.text());
@@ -66,7 +72,7 @@ export class NearbyService {
                         }
                     );
             } else {
-                resolve();
+                resolve(this.places$.value);
             }
         });
     }

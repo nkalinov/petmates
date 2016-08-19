@@ -39,15 +39,20 @@ export class User {
                         Math.sin(dLon / 2) * Math.sin(dLon / 2)
                     ;
                 const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                const distance = R * c;
-                if (distance < 1) {
-                    // m
-                    this.distance = (distance.toFixed(3) * 1000).toString() + 'm.';
-                } else {
-                    // km
-                    this.distance = distance.toFixed().toString() + 'km.';
-                }
+                const distance = (R * c) * 1000;
+                this.setDistance(distance);
             }
+        }
+    }
+
+    /**
+     * @param dis distance in meters
+     */
+    setDistance(dis: number) {
+        if (dis) {
+            this.distance = dis < 1000 ?
+            dis.toFixed(3).toString() + ' m' :
+            (dis / 1000).toFixed(1).toString() + ' km';
         }
     }
 }

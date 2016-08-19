@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { ForgotForm } from './forgot/forgot.form';
 import { Location } from '../../models/location.interface';
+import { LocationService } from '../../services/location.service';
 
 @Component({
     templateUrl: 'build/pages/auth/auth.html'
@@ -20,11 +21,12 @@ export class AuthModal {
 
     constructor(public auth: AuthService,
                 private modalCtrl: ModalController,
+                private locationService: LocationService,
                 private loadingCtrl: LoadingController) {
     }
 
     login() {
-        this.auth.login(this.name, this.password);
+        this.auth.login(this.email, this.password);
     }
 
     loginFacebook() {
@@ -52,7 +54,7 @@ export class AuthModal {
 
     geoLocalizeMe() {
         if (!this.location.coordinates) {
-            this.auth.getLocation().then(location => this.location = location);
+            this.locationService.getLocation().then(location => this.location = location);
         }
     }
 

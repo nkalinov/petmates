@@ -13,9 +13,10 @@ import { SocketService } from './services/socket.service';
 import { MatesService } from './services/mates.service';
 import { ChatService } from './services/chat.service';
 import { Page } from './models/page.interface';
-import { PlacesService } from './services/places.service';
 import { NearbyPage } from './pages/nearby/nearby';
 import 'rxjs/add/operator/map';
+import { NearbyService } from './services/nearby.service';
+import { LocationService } from './services/location.service';
 
 @Component({
     templateUrl: 'build/app.html',
@@ -125,7 +126,8 @@ ionicBootstrap(PetMatesApp, [
     WalkService,
     MatesService,
     ChatService,
-    PlacesService
+    NearbyService,
+    LocationService
 ], {
     tabsPlacement: 'bottom',
     // prodMode: true,
@@ -135,5 +137,9 @@ ionicBootstrap(PetMatesApp, [
     emitCoordsIntervalMs: 15 * 1000,
     deleteInactiveIntervalMs: 30 * 1000,
     defaultPetImage: 'build/img/default_pet.jpg',
-    defaultMateImage: 'build/img/default_user.gif'
+    defaultMateImage: 'build/img/default_user.gif',
+    defaultVetImage: 'build/img/hospital_marker.png',
+    defaultVetCardImage: 'build/img/hospital_marker.png', // todo
+    defaultShopImage: 'build/img/hospital_marker.png', // todo
+    defaultShopCardImage: 'build/img/hospital_marker.png' // todo
 });

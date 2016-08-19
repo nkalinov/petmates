@@ -1,8 +1,8 @@
 <ion-list>
     <ion-list-header>Pets</ion-list-header>
-    <button ion-item type="button" (click)="petCreateModal()">
-        <ion-icon name="add"></ion-icon>
-        Add new pet
+    <button ion-item (click)="petCreateModal()">
+        <ion-icon item-left name="add"></ion-icon>
+        <span>Add new pet</span>
     </button>
     <button type="button" ion-item *ngFor="let d of auth.user.pets" (click)="petEdit(d)">
         <ion-thumbnail item-left>

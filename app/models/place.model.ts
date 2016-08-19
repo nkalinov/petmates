@@ -1,5 +1,3 @@
-const deg2rad = (deg) => deg * (Math.PI / 180);
-
 export class Place {
     _id: string;
     name: string;
@@ -7,43 +5,38 @@ export class Place {
     location: {
         coordinates: Array<Number> // [lon, lat]
     };
-    city: string;
-    country: string;
+    address: string;
     pic: string;
     phone: string;
     hours: string;
     link: string;
 
     distance: string;
+    timeToDistance: string;
 
-    constructor(data?, myCoordinates?) {
+    constructor(data?) {
         if (data) {
             Object.assign(this, data);
+        }
+    }
 
-            if (myCoordinates && this.location && this.location.coordinates.length > 0) {
-                const lat1 = this.location.coordinates[1];
-                const lon1 = this.location.coordinates[0];
-                const lat2 = myCoordinates[1];
-                const lon2 = myCoordinates[0];
-
-                const R = 6371; // Radius of the earth in km
-                const dLat = deg2rad(lat2 - lat1);  // deg2rad below
-                const dLon = deg2rad(lon2 - lon1);
-                const a =
-                        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-                        Math.sin(dLon / 2) * Math.sin(dLon / 2)
-                    ;
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                const distance = R * c;
-                if (distance < 1) {
-                    // m
-                    this.distance = (distance.toFixed(3) * 1000).toString() + 'm.';
-                } else {
-                    // km
-                    this.distance = distance.toFixed().toString() + 'km.';
-                }
+    /**
+     * @param dis distance in meters
+     */
+    setDistance(dis: number) {
+        if (dis) {
+            const timeToDistance = (dis / 6) * 60;
+            if (timeToDistance < 1) {
+                this.timeToDistance = '1min.';
+            } else if (timeToDistance > 60) {
+                this.timeToDistance = (timeToDistance / 60).toFixed(3).toString() + ' h';
+            } else {
+                this.timeToDistance = timeToDistance.toFixed().toString() + ' min';
             }
+
+            this.distance = dis < 1000 ?
+            dis.toFixed(3).toString() + ' m' :
+            (dis / 1000).toFixed(1).toString() + ' km';
         }
     }
 }

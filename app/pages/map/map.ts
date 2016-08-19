@@ -7,8 +7,9 @@ import { WalkService } from '../../services/walk.service';
 import { WalkModal } from './walk-modal/walk-modal';
 import { Walk } from '../../models/walk.model';
 import { getAge } from '../../services/common.service';
-import { PlacesService, Place } from '../../services/places.service';
+import { NearbyService } from '../../services/nearby.service';
 import { vetIcon, UserIcon } from '../../common/icons';
+import { Place } from '../../models/place.model';
 L.Icon.Default.imagePath = 'build/img/leaflet';
 
 @Component({
@@ -37,7 +38,7 @@ export class MapPage {
 
     constructor(private auth: AuthService,
                 public walk: WalkService,
-                private places: PlacesService,
+                private nearby: NearbyService,
                 private modalCtrl: ModalController,
                 private config: Config) {
     }
@@ -172,21 +173,32 @@ export class MapPage {
     }
 
     private addPlacesMarkers() {
-        return this.places.getPlaces().then((places) => {
-            places.vets.forEach((place: Place) => {
-                L.marker(place.coords, {
-                    icon: vetIcon()
-                }).bindPopup(
-                    `<b>${place.name}</b><br>${place.phone}<br>${place.hours}`
-                ).addTo(this.layers.vets);
-            });
-
-            places.shops.forEach((place: Place) => {
-                L.marker(place.coords)
-                    .bindPopup(
-                        `<b>${place.name}</b><br>${place.phone}<br>${place.hours}`
+        return this.nearby.getNearbyPlaces().then(places => {
+            places.forEach((place: Place) => {
+                if (place.type === 'vet') {
+                    L.marker(
+                        [
+                            place.location.coordinates[1],
+                            place.location.coordinates[0]
+                        ],
+                        { icon: vetIcon() }
                     )
-                    .addTo(this.layers.shops);
+                        .bindPopup(
+                            `<b>${place.name}</b><br>${place.phone}<br>${place.hours}`
+                        )
+                        .addTo(this.layers.vets);
+                } else {
+                    L.marker(
+                        [
+                            place.location.coordinates[1],
+                            place.location.coordinates[0]
+                        ]
+                    )
+                        .bindPopup(
+                            `<b>${place.name}</b><br>${place.phone}<br>${place.hours}`
+                        )
+                        .addTo(this.layers.shops);
+                }
             });
 
             this.mcgLayerSupportGroup.checkIn([this.layers.shops, this.layers.vets]);

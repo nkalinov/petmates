@@ -18,18 +18,21 @@ const PlaceSchema = new Schema({
         },
         coordinates: [Number]
     },
-    city: String,
-    country: String,
+    address: String,
     picture: String,
     phone: String,
     hours: String,
     link: String
 }, {
-    toObject: {
-        virtuals: true
-    },
     toJSON: {
-        virtuals: true
+        virtuals: true,
+        versionKey: false,
+        transform: (doc, ret) => {
+            delete ret._id;
+            delete ret.id;
+            delete ret.picture;
+            return ret;
+        }
     }
 });
 

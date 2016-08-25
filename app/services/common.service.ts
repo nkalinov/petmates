@@ -43,7 +43,7 @@ export function getMenu(auth: boolean = false): Array<Page> {
         { title: 'Map', component: MapPage },
         { title: 'Nearby', component: NearbyPage },
         { title: 'Chats', component: ConversationsListPage },
-        { title: 'My mates', component: MatesPage, id: 'mates' },
+        { title: 'Mates', component: MatesPage, id: 'mates' },
         { title: 'My profile', component: ProfilePage }
     ];
     return auth ? loggedInPages.concat(commonPages) : publicPages.concat(commonPages);

@@ -1,20 +1,22 @@
-import {Component, Input} from '@angular/core';
-import {Config} from 'ionic-angular';
+import { Component, Input } from '@angular/core';
+import { Config } from 'ionic-angular';
 
 @Component({
     selector: 'pet-image',
-    template: `<img src="{{image}}">`
+    template: `<img [attr.src]="src">`
 })
 
 export class PetImage {
     @Input() image;
+    src: string;
 
-    constructor(private config:Config) {
+    constructor(private config: Config) {
     }
 
-    ngOnInit() {
+    ngOnChanges() {
         if (!this.image) {
-            this.image = this.config.get('defaultPetImage');
+            return this.src = this.config.get('defaultPetImage');
         }
+        this.src = this.image;
     }
 }

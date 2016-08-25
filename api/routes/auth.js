@@ -12,6 +12,7 @@ const mg = require('nodemailer-mailgun-transport');
 const passport = require('passport');
 
 // send Facebook users an endless local JWT token
+// todo get profile info
 router.get('/facebook',
     passport.authenticate('facebook-token', {session: false}),
     (req, res) => {
@@ -34,10 +35,10 @@ router.post('/', (req, res) => {
         {email: req.body.email.toString().toLowerCase().trim()},
         (err, profile) => {
             if (err)
-                throw err;
+                return res.json({success: false, msg: err});
 
             if (!profile) {
-                return res.json({success: false, msg: 'Authentication failed. User not found.'});
+                return res.json({success: false, msg: 'Wrong email or password'});
             } else {
                 // check if password matches
                 profile.comparePassword(req.body.password, function (err, isMatch) {
@@ -55,9 +56,9 @@ router.post('/', (req, res) => {
                                 profile
                             }
                         });
-                    } else {
-                        return res.send({success: false, msg: 'Authentication failed. Wrong password.'});
                     }
+
+                    return res.json({success: false, msg: 'Wrong email or password'});
                 });
             }
         });
@@ -65,16 +66,19 @@ router.post('/', (req, res) => {
 
 // create
 router.post('/signup', (req, res) => {
-    const {name, password, email, location} = req.body;
+    const {name, email, location: {coordinates}, password, picture, city, country} = req.body;
 
     var user = new User({
         name,
         password,
         email,
-        city: location.city,
-        country: location.country
+        city,
+        country,
+        picture,
+        location: {
+            coordinates
+        }
     });
-    user.location.coordinates = location.coordinates;
 
     user.save(err => {
         if (err)

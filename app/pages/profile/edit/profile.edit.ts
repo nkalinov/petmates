@@ -1,5 +1,5 @@
 import { ImagePicker } from 'ionic-native';
-import { ViewController, Events, Config } from 'ionic-angular';
+import { ViewController, Events, Config, LoadingController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { User } from '../../../models/user.model';
@@ -14,11 +14,11 @@ import { LocationService } from '../../../services/location.service';
 
 export class ProfileEdit {
     user: User;
-    picture: any;
 
     constructor(private viewCtrl: ViewController,
                 private auth: AuthService,
                 private location: LocationService,
+                private loadingCtrl: LoadingController,
                 private config: Config,
                 private events: Events) {
         this.user = new User(this.auth.user);
@@ -37,78 +37,68 @@ export class ProfileEdit {
     }
 
     save() {
-        this.auth.update(this.user).then(() => {
+        const { name, email, picture, password, location, city, country } = this.user;
+        this.auth.update(
+            { name, email, picture, password, location, city, country }
+        ).then(() => {
             this.viewCtrl.dismiss();
         });
     }
 
     changePicture() {
         ImagePicker.getPictures({
-            // max images to be selected, defaults to 15. If this is set to 1, upon
-            // selection of a single image, the plugin will return it.
             maximumImagesCount: 1,
+            width: 500,
+            height: 500
+        }).then(images => {
+            if (images && images.length > 0) {
+                const loader = this.loadingCtrl.create();
+                loader.present();
 
-            // max width and height to allow the images to be.  Will keep aspect
-            // ratio no matter what.  So if both are 800, the returned image
-            // will be at most 800 pixels wide and 800 pixels tall.  If the width is
-            // 800 and height 0 the image will be 800 pixels wide if the source
-            // is at least that wide.
-            width: 200,
-            height: 200,
-
-            // quality of resized image, defaults to 100
-            quality: 60
-        }).then((images) => {
-            for (let i = 0; i < images.length; i++) {
-                console.log('Image URI: ' + images[i]);
-            }
-            if (images) {
                 let options = new FileUploadOptions();
                 options.fileKey = 'picture';
                 options.headers = {
                     'Authorization': this.auth.token
                 };
                 const ft = new FileTransfer();
-                ft.upload(images[0], encodeURI(`${this.config.get('API')}/user/upload`),
+                ft.upload(
+                    images[0],
+                    encodeURI(`${this.config.get('API')}/upload`),
                     (res: any) => {
                         res.response = JSON.parse(res.response);
 
                         if (res.response.success) {
-                            // change img src
-                            this.user.pic = res.response.file.url;
-                            this.auth.user.pic = this.user.pic;
+                            this.user.pic = res.response.data.url;
+                            this.user.picture = res.response.data.filename;
                         } else {
                             this.events.publish('alert:error', res.response.msg);
                         }
+
+                        loader.dismiss();
                     },
-                    (err) => {
+                    err => {
                         this.events.publish('alert:error', err.text());
-                    }, options);
+                        loader.dismiss();
+                    },
+                    options
+                );
             }
-        }, (err) => {
+        }, err => {
             this.events.publish('alert:error', err);
         });
     }
 
     // dev
     fileChangeEvent(fileInput: any) {
-        this.picture = <Array<File>> fileInput.target.files[0];
-        this.upload();
-    }
-
-    // dev
-    private upload() {
-        makeFileRequest(`${this.config.get('API')}/user/upload`, this.picture, this.auth.token).then(
+        makeFileRequest(`${this.config.get('API')}/upload`, fileInput.target.files[0], this.auth.token).then(
             (res: any) => {
                 if (res.response.success) {
-                    this.user.pic = res.response.file.url;
-                    this.auth.user.pic = this.user.pic;
+                    this.user.pic = res.response.data.url;
+                    this.user.picture = res.response.data.filename;
                 } else {
                     this.events.publish('alert:error', res.response.msg);
                 }
             },
-            (error) => {
-                console.error(error);
-            });
+            err => console.error(err));
     }
 }

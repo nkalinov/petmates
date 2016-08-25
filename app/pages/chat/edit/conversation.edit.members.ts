@@ -11,33 +11,31 @@ import { MateImage } from '../../../common/mate-image';
 })
 
 export class ConversationEditMembersPage {
-    friends:Array<User> = [];
-    conversation:Conversation;
+    friends: Array<User> = [];
+    conversation: Conversation;
 
-    constructor(public viewCtrl:ViewController,
-                navParams:NavParams,
-                private mates:MatesService) {
+    constructor(public viewCtrl: ViewController,
+                navParams: NavParams,
+                private mates: MatesService) {
         this.conversation = navParams.get('conversation');
 
         // get friends not in members
         this.friends = this.mates.mates.accepted
-            .map((f) => f.friend)
-            .filter((u:User) => !this.conversation.members.find((m:User) => m._id === u._id));
+            .map(f => f.friend)
+            .filter((u: User) => !this.conversation.members.find((m: User) => m._id === u._id));
     }
 
     ionViewWillLeave() {
-        this.friends.forEach((f:any) => {
-            f.checked = false;
-        });
+        this.friends.forEach((f: any) => f.checked = false);
     }
 
     haveCheckedFriends() {
-        return this.friends.filter((f:any) => f.checked).length > 0;
+        return this.friends.filter((f: any) => f.checked).length > 0;
     }
 
     addMatesToConversation() {
         this.conversation.members = this.conversation.members.concat(
-            this.friends.filter((u:any) => u.checked === true)
+            this.friends.filter((u: any) => u.checked === true)
         );
         this.viewCtrl.dismiss();
     }

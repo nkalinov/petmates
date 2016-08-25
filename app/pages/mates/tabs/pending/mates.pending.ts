@@ -2,7 +2,6 @@ import { forwardRef, Component } from '@angular/core';
 import { NavController, ModalController } from 'ionic-angular';
 import { MateImage } from '../../../../common/mate-image';
 import { MatesService } from '../../../../services/mates.service';
-import { Friendship } from '../../../../models/friendship.interface';
 import { MateViewPage } from '../../view/mate.view';
 import { MatesSearchPage } from '../../search/mates.search';
 
@@ -17,10 +16,8 @@ export class MatesPendingPage {
                 private nav: NavController) {
     }
 
-    viewMate(friendship: Friendship) {
-        this.nav.push(MateViewPage, {
-            mate: friendship.friend
-        });
+    viewMate(id: string) {
+        this.nav.push(MateViewPage, { id });
     }
 
     openSearchMateModal() {

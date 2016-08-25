@@ -1,151 +1,122 @@
-import { ViewController, NavParams, AlertController, NavController, Config, App } from 'ionic-angular';
+import {
+    ViewController, NavParams, AlertController, NavController, ModalController, Config,
+    Events
+} from 'ionic-angular';
 import { ImagePicker } from 'ionic-native';
-import { FormBuilder, ControlGroup, Validators } from '@angular/common';
-import { forwardRef, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { BreedService } from '../../../services/breed.service';
 import { PetService } from '../../../services/pet.service';
 import { Pet } from '../../../models/pet.model';
 import { PetImage } from '../../../common/pet-image';
+import { BreedPage } from './breed/breed';
+import { makeFileRequest } from '../../../services/common.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
     providers: [PetService],
-    directives: [
-        forwardRef(() => PetImage)
-    ],
+    directives: [PetImage],
     templateUrl: 'build/pages/pets/edit/pet.edit.html'
 })
 export class PetEditPage {
     pet: Pet;
-    petForm: ControlGroup;
-    isNew: boolean = true;
-    breeds: Array<any> = [];
-    picture: any;
 
-    private nav: NavController;
-
-    constructor(public viewCtrl: ViewController,
+    constructor(navParams: NavParams,
+                public viewCtrl: ViewController,
+                public breeds: BreedService,
                 private pets: PetService,
-                private breedService: BreedService,
-                navParams: NavParams,
-                fb: FormBuilder,
+                private auth: AuthService,
                 private config: Config,
-                private app: App,
-                private alertCtrl: AlertController) {
-        this.nav = this.app.getActiveNav();
-        let petParams = navParams.get('pet');
+                private nav: NavController,
+                private modalCtrl: ModalController,
+                private alertCtrl: AlertController,
+                private events: Events) {
+        this.pet = new Pet(navParams.get('pet'));
+    }
 
-        if (petParams) {
-            this.pet = new Pet(petParams);
-            this.isNew = false;
-        } else {
-            this.pet = new Pet();
-        }
-
-        this.petForm = fb.group({
-            name: ['', Validators.required],
-            breed: ['', Validators.required],
-            birthday: [''],
-            gender: ['']
+    save() {
+        this.pets.save(this.pet).then(() => {
+            if (this.nav.canGoBack()) {
+                this.nav.pop();
+            } else {
+                this.viewCtrl.dismiss();
+            }
         });
-
-        breedService.breeds$.subscribe((breeds) => this.breeds = breeds);
-        breedService.getAll();
     }
 
-    save(): void {
-        if (this.petForm.valid) {
-            this.pets.save(this.pet).subscribe(() => {
-                if (this.nav.canGoBack()) {
-                    this.nav.pop();
-                } else {
-                    this.viewCtrl.dismiss();
-                }
-            });
-        }
-    }
-
-    remove(): void {
-        if (!this.isNew) {
-            const alert = this.alertCtrl.create({
-                title: 'Removing ' + this.pet.name,
-                message: 'Are you sure?',
-                buttons: [
-                    {
-                        text: 'Cancel',
-                        role: 'cancel'
-                    },
-                    {
-                        text: 'Delete',
-                        role: 'destructive',
-                        handler: () => {
-                            this.pets.deletePet(this.pet)
-                                .then(() => alert.dismiss())
-                                .then(() => this.nav.pop());
-                        }
+    remove() {
+        const alert = this.alertCtrl.create({
+            title: 'Removing ' + this.pet.name,
+            message: 'Are you sure?',
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel'
+                },
+                {
+                    text: 'Delete',
+                    role: 'destructive',
+                    handler: () => {
+                        this.pets.deletePet(this.pet)
+                            .then(() => alert.dismiss())
+                            .then(() => this.nav.pop());
                     }
-                ]
-            });
-            alert.present();
-        }
+                }
+            ]
+        });
+        alert.present();
     }
 
-    onSelectBreed(breedId: string): void {
-        let newBreed = this.breedService.findBreedById(breedId);
-        if (newBreed) {
-            this.pet.breed.name = newBreed.name;
-        }
+    selectBreed() {
+        this.modalCtrl.create(BreedPage, { pet: this.pet }).present();
     }
 
     changePicture() {
         ImagePicker.getPictures({
-            // max images to be selected, defaults to 15. If this is set to 1, upon
-            // selection of a single image, the plugin will return it.
             maximumImagesCount: 1,
-
-            // max width and height to allow the images to be.  Will keep aspect
-            // ratio no matter what.  So if both are 800, the returned image
-            // will be at most 800 pixels wide and 800 pixels tall.  If the width is
-            // 800 and height 0 the image will be 800 pixels wide if the source
-            // is at least that wide.
-            width: 200,
-            height: 200,
-
-            // quality of resized image, defaults to 100
-            quality: 60
-        }).then((images) => {
+            width: 500,
+            height: 500
+        }).then(images => {
                 let options = new FileUploadOptions();
                 options.fileKey = 'picture';
                 options.headers = {
-                    'Authorization': this.pets.auth.token
+                    'Authorization': this.auth.token
                 };
                 let ft = new FileTransfer();
-                ft.upload(images[0], encodeURI(`${this.config.get('API')}/user/upload`),
-                    (res) => {
+                ft.upload(images[0], encodeURI(`${this.config.get('API')}/upload`),
+                    res => {
                         res.response = JSON.parse(res.response);
 
                         if (res.response.success) {
-                            this.pet.pic = res.response.file.url;
-                            // replace
-                            let index = this.pets.auth.getPetIndexById(this.pet._id);
-                            if (index > -1) {
-                                this.pets.auth.user.pets[index] = this.pet;
-                            }
+                            this.pet.pic = res.response.data.url;
+                            this.pet.picture = res.response.data.filename;
                         } else {
-                            this.pets.events.publish('alert:error', res.response.msg);
+                            this.events.publish('alert:error', res.response.msg);
                         }
                     },
-                    (err) => {
-                        this.pets.events.publish('alert:error', err.text());
+                    err => {
+                        this.events.publish('alert:error', err.text());
                     }, options);
             },
-            (err) => {
-                this.pets.events.publish('alert:error', err.text());
+            err => {
+                this.events.publish('alert:error', err);
             });
     }
 
     // dev
     public fileChangeEvent(fileInput: any) {
-        this.picture = <Array<File>> fileInput.target.files[0];
-        this.pets.upload(this.picture, this.pet);
+        makeFileRequest(
+            `${this.config.get('API')}/upload`,
+            fileInput.target.files[0],
+            this.auth.token
+        ).then(
+            (res: any) => {
+                if (res.response.success) {
+                    this.pet.pic = res.response.data.url;
+                    this.pet.picture = res.response.data.filename;
+                } else {
+                    this.events.publish('alert:error', res.response.msg);
+                }
+            },
+            err => console.error(err));
     }
 }

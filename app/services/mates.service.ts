@@ -5,11 +5,9 @@ import { Http, Headers } from '@angular/http';
 import { Subject } from 'rxjs/Subject';
 import { User } from '../models/user.model.ts';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs/Observable';
 import { Friendship, STATUS_REQUESTED, STATUS_ACCEPTED, STATUS_PENDING } from '../models/friendship.interface';
 import { SocketService } from './socket.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { MatesSearchPage } from '../pages/mates/search/mates.search';
 
 @Injectable()
 export class MatesService {
@@ -20,12 +18,44 @@ export class MatesService {
         requested: [],
         pending: []
     };
+    users = {}; // cache
 
     constructor(private http: Http,
                 private events: Events,
                 private config: Config,
                 private auth: AuthService,
                 private sockets: SocketService) {
+    }
+
+    getById(id: string) {
+        return new Promise((resolve, reject) => {
+            if (this.users[id]) {
+                return resolve(this.users[id]);
+            }
+
+            let headers = new Headers();
+            headers.append('Authorization', this.auth.token);
+
+            this.http.get(`${this.config.get('API')}/user/${id}`, {
+                headers: headers
+            }).map(res => res.json()).subscribe(
+                (res: any) => {
+                    if (res.success) {
+                        const user = new User(res.data, this.auth.user.location.coordinates);
+                        this.users[id] = user;
+                        resolve(user);
+                    } else {
+                        this.events.publish('alert:error', res.msg);
+                        reject(res.msg);
+                    }
+                },
+                err => {
+                    this.events.publish('alert:error', err.text());
+                    reject(err.text());
+                }
+            );
+        });
+
     }
 
     search(event): void {
@@ -175,19 +205,19 @@ export class MatesService {
     sortMatesByStatus(sortOnly = 'all') {
         setTimeout(() => {
             if (sortOnly === 'accepted' || sortOnly === 'all') {
-                this.mates.accepted = this.auth.user.mates.filter((f: Friendship) => {
-                    return f.status === STATUS_ACCEPTED;
-                });
+                this.mates.accepted = this.auth.user.mates.filter(
+                    (f: Friendship) => f.status === STATUS_ACCEPTED
+                );
             }
             if (sortOnly === 'requested' || sortOnly === 'all') {
-                this.mates.requested = this.auth.user.mates.filter((f: Friendship) => {
-                    return f.status === STATUS_REQUESTED;
-                });
+                this.mates.requested = this.auth.user.mates.filter(
+                    (f: Friendship) => f.status === STATUS_REQUESTED
+                );
             }
             if (sortOnly === 'pending' || sortOnly === 'all') {
-                this.mates.pending = this.auth.user.mates.filter((f: Friendship) => {
-                    return f.status === STATUS_PENDING;
-                });
+                this.mates.pending = this.auth.user.mates.filter(
+                    (f: Friendship) => f.status === STATUS_PENDING
+                );
                 this.pending$.next(this.mates.pending.length);
             }
         }, 0);

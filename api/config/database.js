@@ -9,6 +9,9 @@ module.exports = () => {
         if (err) throw err;
         seed();
     });
+    
+    // Use native promises
+    mongoose.Promise = global.Promise;
 };
 
 // check for new breeds

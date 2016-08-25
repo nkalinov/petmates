@@ -1,6 +1,7 @@
-- get info from api/users/${_id}
-- dog events nearby
+- pets tmp upload
+- nearby 
+    - events
 - wall (activities)
 - custom map shops icons
-- loader (photo upload)
 - donate
+- cron task deleting public/tmp/* every 24h

@@ -1,7 +1,8 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons start>
-            <button dark (click)="viewCtrl.dismiss()">
+            <button primary (click)="viewCtrl.dismiss()">
+                <ion-icon name="arrow-back"></ion-icon>
                 Cancel
             </button>
         </ion-buttons>
@@ -36,12 +37,13 @@
             <ion-icon primary name="add"></ion-icon>
             Add mates
         </button>
-        <ion-item *ngFor="let f of conversation.members">
+        <button ion-item *ngFor="let f of conversation.members"
+                (click)="viewMate(f._id)">
             <ion-avatar item-left>
                 <mate-image [image]="f.pic"></mate-image>
             </ion-avatar>
             <ion-label>{{f.name}}</ion-label>
-        </ion-item>
+        </button>
     </ion-list>
 
     <div padding-horizontal *ngIf="conversation._id">

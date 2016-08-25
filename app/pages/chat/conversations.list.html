@@ -13,8 +13,12 @@
 </ion-header>
 
 <ion-content>
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
     <ion-list class="conversations-list">
-        <button ion-item *ngFor="let chat of chats.conversations$ | async" (click)="openConversation(chat)">
+        <button ion-item *ngFor="let chat of chats.conversations$ | async"
+                (click)="openConversation(chat._id)">
             <ion-avatar item-left>
                 <mate-image [image]="chats.getMembersPic(chat)"></mate-image>
             </ion-avatar>

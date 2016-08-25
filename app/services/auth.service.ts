@@ -34,7 +34,7 @@ export class AuthService {
                         .map(res => res.json())
                         .subscribe((res: any) => {
                             if (res.success) {
-                                this.user = this.parseUser(res.data);
+                                this.parseUser(res.data);
                                 this.token = token;
                                 // this.checkAndUpdateLocation();
                                 resolve(this.user);
@@ -57,7 +57,7 @@ export class AuthService {
         this.http.post(`${this.config.get('API')}/auth`, JSON.stringify({
             email,
             password
-        }), { headers: headers }).map(res => res.json).subscribe(
+        }), { headers: headers }).map(res => res.json()).subscribe(
             (res: any) => {
                 this.parseLoginResponse(res);
             },
@@ -128,7 +128,8 @@ export class AuthService {
 
         return new Promise((resolve, reject) => {
             this.http
-                .put(`${this.config.get('API')}/user`,
+                .put(
+                    `${this.config.get('API')}/user`,
                     JSON.stringify(data),
                     { headers: headers }
                 )
@@ -137,7 +138,7 @@ export class AuthService {
                     (res: any) => {
                         if (res.success) {
                             if (res.data) {
-                                this.user = this.parseUser(res.data);
+                                this.parseUser(res.data);
                             }
                             resolve(this.user);
                         } else {
@@ -268,7 +269,7 @@ export class AuthService {
         if (res.success) {
             const token = res.data.token;
             this.local.set('id_token', token);
-            this.user = this.parseUser(res.data.profile);
+            this.parseUser(res.data.profile);
             this.token = token;
             this.events.publish('user:login');
         } else {
@@ -291,23 +292,15 @@ export class AuthService {
         this.token = null;
     }
 
-    private parseUser(user: any): User {
-        if (user) {
-            user = new User(user);
+    private parseUser(data: any) {
+        if (data) {
+            const user = new User(data);
             user.password = '';
-
-            if (user.pets) {
-                user.pets.forEach((pet) => new Pet(pet));
-            }
-
-            if (!user.mates) {
-                user.mates = [];
-            } else {
-                user.mates.forEach(mate => {
-                    mate.friend = new User(mate.friend, user.location.coordinates);
-                });
-            }
+            user.pets = user.pets.map(pet => new Pet(pet));
+            user.mates.forEach(mate => {
+                mate.friend = new User(mate.friend);
+            });
+            this.user = user;
         }
-        return user;
     }
 }

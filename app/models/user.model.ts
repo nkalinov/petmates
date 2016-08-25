@@ -8,13 +8,16 @@ export class User {
     name: string;
     email: string;
     password: string;
-    pic: string; // filename with url
-    pets: Array<Pet>;
-    mates: Array<Friendship>;
-    city: string;
-    country: string;
+    picture: string; // filename
+    pic: string; // picture url
+    pets: Array<Pet> = [];
+    mates: Array<Friendship> = [];
+    city: string = '';
+    country: string = '';
     location: {
         coordinates: Array<Number> // [lon, lat]
+    } = {
+        coordinates: undefined
     };
 
     lastActive: Date = null;

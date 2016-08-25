@@ -1,26 +1,28 @@
-import {Component, Input} from '@angular/core';
-import {Config} from 'ionic-angular';
+import { Component, Input } from '@angular/core';
+import { Config } from 'ionic-angular';
 
 @Component({
     selector: 'mate-image',
-    template: `<img *ngIf="src" src="{{src}}"><ion-icon *ngIf="!src" name="people"></ion-icon>`
+    template: `
+        <img *ngIf="src" [attr.src]="src">
+        <ion-icon *ngIf="!src" name="people"></ion-icon>
+    `
 })
 
 export class MateImage {
-    @Input() image;
-    src:string;
+    @Input('image') image;
+    src: string;
 
-    constructor(private config:Config) {
+    constructor(private config: Config) {
     }
 
-    ngOnInit() {
+    ngOnChanges() {
         if (!this.image) {
-            this.src = this.config.get('defaultMateImage');
+            return this.src = this.config.get('defaultMateImage');
         } else if (this.image === 'group') {
             return;
             // this.src = this.config.get('defaultGroupChatImage');
-        } else {
-            this.src = this.image;
         }
+        this.src = this.image;
     }
 }

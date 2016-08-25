@@ -1,7 +1,6 @@
 import { Component, forwardRef } from '@angular/core';
 import { NavController, Refresher } from 'ionic-angular';
 import { NearbyService } from '../../../services/nearby.service';
-import { User } from '../../../models/user.model';
 import { MateViewPage } from '../../mates/view/mate.view';
 import { MateImage } from '../../../common/mate-image';
 
@@ -21,8 +20,8 @@ export class PeoplePage {
         this.nearby.getNearbyPeople();
     }
 
-    viewMate(mate: User) {
-        this.navCtrl.push(MateViewPage, { mate });
+    viewMate(id: string) {
+        this.navCtrl.push(MateViewPage, { id });
     }
 
     doRefresh(refresher: Refresher) {

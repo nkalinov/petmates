@@ -1,4 +1,4 @@
-const JwtStrategy = require('passport-jwt').Strategy;
+const PassportJwt = require('passport-jwt');
 const FacebookTokenStrategy = require('passport-facebook-token');
 const User = require('../models/user');
 const auth = require('./auth');
@@ -6,20 +6,23 @@ const nodemailer = require('nodemailer');
 const mg = require('nodemailer-mailgun-transport');
 const email = require('../config/email');
 
-module.exports = function (passport) {
+module.exports = passport => {
 
-    passport.use(new JwtStrategy(auth.Jwt, (jwt_payload, cb) => {
-        User.findById(jwt_payload._id, function (err, user) {
-            if (err) {
-                return cb(err, false);
-            }
-            if (user) {
-                return cb(null, user);
-            } else {
-                cb(null, false);
-            }
-        });
-    }));
+    passport.use(new PassportJwt.Strategy(
+        auth.Jwt,
+        (jwt_payload, cb) => {
+            User.findById(jwt_payload._id, function (err, user) {
+                if (err) {
+                    return cb(err, false);
+                }
+                if (user) {
+                    return cb(null, user);
+                } else {
+                    cb(null, false);
+                }
+            });
+        })
+    );
 
     passport.use(new FacebookTokenStrategy(
         auth.Facebook,
@@ -98,5 +101,7 @@ module.exports = function (passport) {
                     });
                 }
             });
-        }));
+        })
+    );
+
 };

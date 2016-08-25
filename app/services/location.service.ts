@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Geolocation } from 'ionic-native';
-import { Location } from '../models/location.interface';
 import { Http } from '@angular/http';
 import { Events } from 'ionic-angular';
 
@@ -17,14 +16,18 @@ export class LocationService {
             data => [data.coords.longitude, data.coords.latitude],
             err => {
                 this.events.publish('alert:error', err.text());
-                throw err;
+                // throw err;
             });
     }
 
-    getLocation(): Promise<Location> {
+    getLocation(): Promise<{
+        city?: string;
+        country?: string;
+        coordinates?: Array<Number>;
+    }> {
         return new Promise((resolve, reject) => {
             this.getGeolocation().then(data => {
-                const location: Location = {
+                const location: any = {
                     coordinates: data
                 };
                 this.http

@@ -1,5 +1,5 @@
-import { App, NavParams, NavController, AlertController } from 'ionic-angular';
-import { Component, forwardRef } from '@angular/core';
+import { NavParams, NavController, AlertController, LoadingController } from 'ionic-angular';
+import { Component } from '@angular/core';
 import { AgeInfo } from '../../../common/age';
 import { GenderInfo } from '../../../common/gender';
 import { PetImage } from '../../../common/pet-image';
@@ -11,17 +11,11 @@ import { STATUS_ACCEPTED, STATUS_PENDING, STATUS_REQUESTED } from '../../../mode
 
 @Component({
     templateUrl: 'build/pages/mates/view/mate.view.html',
-    directives: [
-        forwardRef(() => GenderInfo),
-        forwardRef(() => AgeInfo),
-        forwardRef(() => PetImage),
-        forwardRef(() => MateImage)
-    ]
+    directives: [GenderInfo, AgeInfo, PetImage, MateImage]
 })
 
 export class MateViewPage {
-    nav: NavController;
-    mate: User;
+    mate: User = new User();
     friendshipId: string;
     friendshipStatus: string;
     friendshipStatuses = {
@@ -30,14 +24,33 @@ export class MateViewPage {
         requested: STATUS_REQUESTED
     };
 
-    constructor(app: App,
-                navParams: NavParams,
+    constructor(public auth: AuthService,
+                private navParams: NavParams,
+                private nav: NavController,
                 private mates: MatesService,
-                private auth: AuthService,
-                private alertCtrl: AlertController) {
-        this.nav = app.getActiveNav();
-        this.mate = navParams.get('mate');
-        this.mapFriendship();
+                private alertCtrl: AlertController,
+                private loadingCtrl: LoadingController) {
+    }
+
+    ionViewWillEnter() {
+        const loader = this.loadingCtrl.create();
+        loader.present();
+        this.mates
+            .getById(this.navParams.get('id'))
+            .then(user => {
+                this.mate = user;
+                // remove me and not accepted mates
+                this.mate.mates = this.mate.mates.filter(f =>
+                    f.friend._id !== this.auth.user._id &&
+                    f.status === this.friendshipStatuses.accepted ? f.friend : null
+                );
+                this.mapFriendship();
+                loader.dismiss();
+            });
+    }
+
+    viewMate(id: string) {
+        this.nav.push(MateViewPage, { id });
     }
 
     addMate() {

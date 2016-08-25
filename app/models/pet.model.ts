@@ -10,6 +10,7 @@ export class Pet {
         name: ''
     };
     pic: string;
+    picture: string;
     birthday: Date = new Date();
 
     constructor(data?) {

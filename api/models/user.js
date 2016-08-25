@@ -5,6 +5,8 @@ const helpers = require('../helpers');
 const autopopulate = require('mongoose-autopopulate');
 const Friendship = require('./friendship');
 const Pet = require('./pet');
+const fs = require('fs');
+const upload = require('../config/upload');
 
 // set up a mongoose model
 var UserSchema = new Schema({
@@ -34,7 +36,15 @@ var UserSchema = new Schema({
         },
         coordinates: [Number]
     },
-    picture: String,
+    picture: {
+        type: String,
+        set: function (value) {
+            if (this.picture && value !== this.picture) {
+                this._oldPicture = this.picture;
+            }
+            return value;
+        }
+    },
     pets: [Pet],
     mates: [Friendship.Schema],
     resetPasswordToken: String,
@@ -62,24 +72,48 @@ UserSchema.virtual('pic').get(function () {
 
 UserSchema.plugin(autopopulate);
 
+UserSchema.pre('save', true, function (next, done) {
+    next(); // in parallel ^
+
+    if (this.isModified('picture') || this.isNew) {
+        if (this._oldPicture) {
+            // delete old one
+            fs.unlink(`${upload.dest}${this._oldPicture}`);
+        }
+
+        // copy photo from tmp
+        fs.rename(
+            `${upload.destTmp}${this.picture}`,
+            `${upload.dest}${this.picture}`,
+            done
+        );
+    } else {
+        return done();
+    }
+});
+
 UserSchema.pre('save', function (next) {
-    var user = this;
     if (this.isModified('password') || this.isNew) {
-        bcrypt.genSalt(10, function (err, salt) {
-            if (err) {
+        bcrypt.genSalt(10, (err, salt) => {
+            if (err)
                 return next(err);
-            }
-            bcrypt.hash(user.password, salt, function (err, hash) {
-                if (err) {
+
+            bcrypt.hash(this.password, salt, (err, hash) => {
+                if (err)
                     return next(err);
-                }
-                user.password = hash;
+
+                this.password = hash;
                 next();
             });
         });
-    }
-    else {
+    } else {
         return next();
+    }
+});
+
+UserSchema.post('remove', user => {
+    if (user.picture) {
+        fs.unlink(`${upload.dest}${user.picture}`);
     }
 });
 

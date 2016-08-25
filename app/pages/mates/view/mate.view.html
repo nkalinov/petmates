@@ -12,30 +12,49 @@
             <mate-image [image]="mate.pic"></mate-image>
         </ion-col>
     </ion-row>
-    <p text-center *ngIf="mate.city && mate.country">
-        {{ mate.distance }} away<br>
+    <p text-center>
+        <span *ngIf="mate.distance">{{ mate.distance }} away<br></span>
         {{ mate.city + ', ' + mate.country }}
     </p>
+
     <ion-list>
         <ion-list-header>
             Pets
         </ion-list-header>
         <ion-item *ngIf="mate.pets.length===0">
-            {{mate.name}} haven't added his pets.
+            {{mate.name}} No pets...
         </ion-item>
         <ion-item *ngFor="let d of mate.pets">
-            <ion-thumbnail item-left>
+            <ion-avatar item-left>
                 <pet-image [image]="d.pic"></pet-image>
-            </ion-thumbnail>
+            </ion-avatar>
             <h2>{{d.name}}</h2>
             <h3>{{d.breed.name}}</h3>
             <p><span [gender]="d.sex"></span>, <span [age]="d.birthday"></span></p>
         </ion-item>
     </ion-list>
 
+    <ion-list>
+        <ion-list-header>
+            Mates
+        </ion-list-header>
+        <ion-item *ngIf="mate.mates.length===0">
+            {{mate.name}} No mates...
+        </ion-item>
+        <button ion-item
+                *ngFor="let d of mate.mates"
+                (click)="viewMate(d.friend._id)">
+            <ion-avatar item-left>
+                <mate-image [image]="d.friend.pic"></mate-image>
+            </ion-avatar>
+            <h2>{{d.friend.name}}</h2>
+            <p>{{d.friend.city + ', ' + d.friend.country}}</p>
+        </button>
+    </ion-list>
+
     <div padding>
         <button block primary
-                *ngIf="!friendshipStatus"
+                *ngIf="!friendshipStatus && mate._id !== auth.user._id"
                 (click)="addMate()">
             <ion-icon name="person-add"></ion-icon>
             Send mate request

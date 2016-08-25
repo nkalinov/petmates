@@ -5,9 +5,9 @@
         <span>Add new pet</span>
     </button>
     <button type="button" ion-item *ngFor="let d of auth.user.pets" (click)="petEdit(d)">
-        <ion-thumbnail item-left>
+        <ion-avatar item-left>
             <pet-image [image]="d.pic"></pet-image>
-        </ion-thumbnail>
+        </ion-avatar>
         <h2>{{d.name}}</h2>
         <h3>{{d.breed.name}}</h3>
         <p><span [gender]="d.sex"></span>, <span [age]="d.birthday"></span></p>

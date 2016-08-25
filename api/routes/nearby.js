@@ -4,15 +4,16 @@ const passport = require('passport');
 const User = require('../models/user');
 const Place = require('../models/place');
 
-router.get('/people', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.post('/people', passport.authenticate('jwt', {session: false}), (req, res) => {
+    const point = {
+        type: 'Point',
+        coordinates: req.body.coords ? req.body.coords : req.user.location.coordinates
+    };
     User.aggregate(
         {
             $geoNear: {
                 distanceField: 'distance',
-                near: {
-                    type: 'Point',
-                    coordinates: req.user.location.coordinates
-                },
+                near: point,
                 maxDistance: 500 * 1000,
                 spherical: true,
                 query: {
@@ -38,12 +39,13 @@ router.get('/people', passport.authenticate('jwt', {session: false}), (req, res)
     );
 });
 
-router.get('/places', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.post('/places', passport.authenticate('jwt', {session: false}), (req, res) => {
+    const point = {
+        type: 'Point',
+        coordinates: req.body.coords ? req.body.coords : req.user.location.coordinates
+    };
     Place.geoNear(
-        {
-            type: 'Point',
-            coordinates: req.user.location.coordinates
-        },
+        point,
         {
             spherical: true,
             $maxDistance: 500 * 1000

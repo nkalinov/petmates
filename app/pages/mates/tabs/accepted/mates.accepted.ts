@@ -22,10 +22,8 @@ export class MatesAcceptedPage {
                 private nav: NavController) {
     }
 
-    viewMate(friendship: Friendship) {
-        this.nav.push(MateViewPage, {
-            mate: friendship.friend
-        });
+    viewMate(id: string) {
+        this.nav.push(MateViewPage, { id });
     }
 
     removeMate(friendship: Friendship) {

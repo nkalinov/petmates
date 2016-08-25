@@ -1,5 +1,5 @@
-import { NavParams, NavController, Content, ModalController } from 'ionic-angular';
-import { forwardRef, ViewChild, Component } from '@angular/core';
+import { NavParams, NavController, Content } from 'ionic-angular';
+import { ViewChild, Component } from '@angular/core';
 import { ChatService } from '../../../services/chat.service';
 import { AuthService } from '../../../services/auth.service';
 import { MateImage } from '../../../common/mate-image';
@@ -10,28 +10,27 @@ import { LastActivity } from '../../../common/last-activity';
 
 @Component({
     templateUrl: 'build/pages/chat/view/conversation.html',
-    directives: [
-        forwardRef(() => MateImage),
-        forwardRef(() => LastActivity)
-    ]
+    directives: [MateImage, LastActivity]
 })
 export class ConversationPage {
     @ViewChild(Content) content: Content;
-    conversation: Conversation;
+    conversation: Conversation = new Conversation();
     message: Message;
 
     constructor(public auth: AuthService,
                 public chats: ChatService,
-                private modalCtrl: ModalController,
-                nav: NavController,
-                navParams: NavParams) {
-        this.conversation = navParams.get('conversation');
+                private nav: NavController,
+                private navParams: NavParams) {
         this.newMessage();
 
         // load conversation messages
-        this.chats.getMessages(this.conversation).then(() => {
+        this.chats.getMessages(this.navParams.get('id')).then(() => {
             this.scrollToBottom(0);
-        }, () => nav.pop());
+        }, () => this.nav.pop());
+    }
+
+    ionViewWillEnter() {
+        this.conversation = this.chats.findConversationById(this.navParams.get('id')) || new Conversation();
     }
 
     ionViewWillLeave() {
@@ -39,23 +38,15 @@ export class ConversationPage {
     }
 
     editConversation() {
-        const modal = this.modalCtrl.create(ConversationEditPage, {
+        this.nav.push(ConversationEditPage, {
             conversation: this.conversation
-        });
-        modal.present();
-        modal.onDidDismiss(updatedConversation => {
-            if (updatedConversation) {
-                this.conversation = updatedConversation;
-            }
         });
     }
 
     sendMessage() {
-        this.chats.send(this.message, this.conversation).then((res: any) => {
-            if (res.success) {
-                this.newMessage();
-                this.scrollToBottom();
-            }
+        this.chats.send(this.message, this.conversation).then(() => {
+            this.newMessage();
+            this.scrollToBottom();
         });
     }
 

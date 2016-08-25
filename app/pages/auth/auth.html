@@ -12,8 +12,10 @@
             Create account
         </ion-segment-button>
     </ion-segment>
+
     <div [ngSwitch]="mode" padding-horizontal>
-        <form (ngSubmit)="login()" *ngSwitchCase="'login'">
+
+        <form (ngSubmit)="login()" *ngSwitchCase="'login'" #loginForm="ngForm">
             <div padding-bottom class="fb">
                 <button small type="button" facebook block (click)="loginFacebook()">
                     <ion-icon name="logo-facebook"></ion-icon>
@@ -22,41 +24,67 @@
             </div>
             <ion-list>
                 <ion-item>
-                    <ion-input required type="text" [(ngModel)]="name" placeholder="Email"></ion-input>
+                    <ion-input required type="email" placeholder="Email"
+                               name="email"
+                               [(ngModel)]="user.email"></ion-input>
                 </ion-item>
                 <ion-item>
-                    <ion-input required type="password" [(ngModel)]="password" placeholder="Password"></ion-input>
+                    <ion-input required type="password" placeholder="Password"
+                               name="password"
+                               [(ngModel)]="user.password"></ion-input>
                 </ion-item>
-                <button ion-item type="submit" [disabled]="!name || !password">Login</button>
+                <button ion-item type="submit"
+                        [disabled]="!loginForm.valid">Login
+                </button>
             </ion-list>
             <button type="button" (click)="openForgotForm()" small light block>
                 Forgot password?
             </button>
         </form>
-        <form (ngSubmit)="signup()" *ngSwitchCase="'sign-up'">
+
+        <form class="sign-up" (ngSubmit)="signup()" *ngSwitchCase="'sign-up'" #signupForm="ngForm">
             <div padding-bottom>
                 <button small type="button" facebook block (click)="loginFacebook()">
                     <ion-icon name="logo-facebook"></ion-icon>
                     Sign-up with Facebook
                 </button>
             </div>
+            <ion-grid>
+                <ion-row>
+                    <ion-col width-25 class="profile-picture" (click)="changePicture()">
+                        <mate-image [image]="user.pic"></mate-image>
+                        <p class="change-text">Change</p>
+                    </ion-col>
+                    <ion-col width-75>
+                        <ion-list>
+                            <ion-item>
+                                <ion-input required type="text" placeholder="Name"
+                                           name="name"
+                                           [(ngModel)]="user.name"></ion-input>
+                            </ion-item>
+                            <ion-item>
+                                <ion-input required type="email" placeholder="Email"
+                                           name="email"
+                                           [(ngModel)]="user.email"></ion-input>
+                            </ion-item>
+                        </ion-list>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
             <ion-list>
                 <ion-item>
-                    <ion-input required type="text" [(ngModel)]="name" placeholder="Name"></ion-input>
-                </ion-item>
-                <ion-item>
-                    <ion-input required type="text" [(ngModel)]="email" placeholder="Email"></ion-input>
-                </ion-item>
-                <ion-item>
-                    <ion-input required type="password" [(ngModel)]="password" placeholder="Password"></ion-input>
+                    <ion-input required type="password" placeholder="Password"
+                               name="password"
+                               [(ngModel)]="user.password"></ion-input>
                 </ion-item>
                 <ion-item (click)="geoLocalizeMe()">
                     <ion-icon item-left name="locate"></ion-icon>
                     <ion-input readonly required type="text" placeholder="Click to get your location"
-                               [value]="user.city + ', ' + user.country"></ion-input>
+                               [value]="user.city ? (user.city + ', ' + user.country) : undefined"></ion-input>
                 </ion-item>
                 <button ion-item type="submit"
-                        [disabled]="!location.coordinates || !name || !password || !email">Submit
+                        [disabled]="!signupForm.valid">
+                    Submit
                 </button>
             </ion-list>
         </form>

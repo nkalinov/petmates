@@ -1,9 +1,10 @@
-import { ViewController, NavParams, ModalController, App, AlertController } from 'ionic-angular';
+import { ViewController, NavParams, ModalController, AlertController, NavController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { MateImage } from '../../../common/mate-image';
 import { Conversation } from '../../../models/conversation.model';
 import { ChatService } from '../../../services/chat.service';
 import { ConversationEditMembersPage } from './conversation.edit.members';
+import { MateViewPage } from '../../mates/view/mate.view';
 
 @Component({
     directives: [MateImage],
@@ -17,21 +18,14 @@ export class ConversationEditPage {
                 private chat: ChatService,
                 private modalCtrl: ModalController,
                 private alertCtrl: AlertController,
-                private app: App,
+                private nav: NavController,
                 navParams: NavParams) {
         this.conversation = new Conversation(navParams.get('conversation'));
     }
 
     saveConversation() {
-        if (!this.conversation._id) {
-            this.chat.createConversation(this.conversation).subscribe(() => {
-                this.viewCtrl.dismiss();
-            });
-        } else {
-            this.chat.updateConversation(this.conversation).subscribe((updatedConversation) => {
-                this.viewCtrl.dismiss(updatedConversation);
-            });
-        }
+        this.chat.createOrUpdateConversation(this.conversation)
+            .then(() => this.nav.pop());
     }
 
     addMatesModal() {
@@ -42,7 +36,7 @@ export class ConversationEditPage {
 
     leaveConversation() {
         const alert = this.alertCtrl.create({
-            title: 'Leave conversation ' + (this.conversation.name || '') + '?',
+            title: `Leave ${this.conversation.name || 'conversation'}?`,
             message: 'Are you sure?',
             buttons: [
                 {
@@ -55,12 +49,15 @@ export class ConversationEditPage {
                     handler: () => {
                         this.chat.leaveConversation(this.conversation)
                             .then(() => alert.dismiss())
-                            .then(() => this.viewCtrl.dismiss())
-                            .then(() => this.app.getActiveNav().pop());
+                            .then(() => this.nav.popToRoot());
                     }
                 }
             ]
         });
         alert.present();
+    }
+
+    viewMate(id: string) {
+        this.nav.push(MateViewPage, { id });
     }
 }

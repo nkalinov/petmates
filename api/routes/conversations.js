@@ -28,14 +28,14 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
             if (err)
                 return res.json({success: false, msg: err});
 
-            res.json({success: true, data: data});
-
             // notify each member
             members.forEach((uid) => {
                 if (sockets.connections[uid]) {
                     sockets.connections[uid].socket.emit('chat:conversation');
                 }
             });
+
+            res.json({success: true, data: data});
         });
     } else {
         return res.json({success: false, msg: 'Select at least 1 participant.'});
@@ -44,16 +44,14 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
 
 // update conversation (add members, change name)
 router.put('/:cid', passport.authenticate('jwt', {session: false}), (req, res) => {
-    var cid = req.params.cid;
-    var name = req.body.name;
-    var members = req.body.members;
+    const {name, members} = req.body;
 
     Conversation.findOneAndUpdate({
-        _id: cid,
+        _id: req.params.cid,
         members: req.user._id
     }, {
-        members: members,
-        name: name
+        members,
+        name
     }, (err, data) => {
         if (err)
             return res.json({success: false, msg: err});

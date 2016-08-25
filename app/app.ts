@@ -1,6 +1,7 @@
 import 'leaflet';
 import 'leaflet.markercluster';
 import './leaflet.markercluster.layersupport-src';
+import 'rxjs/add/operator/map';
 
 import { Events, Nav, ionicBootstrap, Platform, AlertController } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
@@ -13,10 +14,10 @@ import { SocketService } from './services/socket.service';
 import { MatesService } from './services/mates.service';
 import { ChatService } from './services/chat.service';
 import { Page } from './models/page.interface';
-import { NearbyPage } from './pages/nearby/nearby';
-import 'rxjs/add/operator/map';
 import { NearbyService } from './services/nearby.service';
 import { LocationService } from './services/location.service';
+import { MatesPage } from './pages/mates/mates';
+import { ProfilePage } from './pages/profile/profile';
 
 @Component({
     templateUrl: 'build/app.html',
@@ -27,7 +28,7 @@ class PetMatesApp {
     rootPage: any;
     pages: Array<Page>;
     newRequests: number;
-    private defaultRootPage: any = NearbyPage;
+    private defaultRootPage: any = ProfilePage;
 
     constructor(public auth: AuthService,
                 public walk: WalkService,
@@ -106,7 +107,7 @@ class PetMatesApp {
         this.openPage({ component: AuthModal, active: false });
     }
 
-    private showAlert(subTitle, title: string = 'Error!') {
+    private showAlert(subTitle, title: string = 'Error') {
         this.alertCtrl.create({
             title,
             subTitle,

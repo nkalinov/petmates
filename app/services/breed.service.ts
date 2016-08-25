@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { Events, Config } from 'ionic-angular';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Breed } from '../models/breed.interface';
 import { AuthService } from './auth.service';
 
 @Injectable()
 export class BreedService {
-    breeds$: any = new BehaviorSubject([]);
     private cache: Array<Breed>;
 
     constructor(private http: Http,
@@ -23,22 +21,25 @@ export class BreedService {
     }
 
     getAll() {
-        if (!this.cache) {
-            let headers = new Headers();
-            headers.append('Authorization', this.auth.token);
-            this.http.get(`${this.config.get('API')}/breeds`, { headers: headers })
-                .subscribe(
-                    (res: any) => {
-                        res = res.json();
-                        this.cache = res.data;
-                        this.breeds$.next(this.cache);
-                    },
-                    (err) => {
-                        this.events.publish('alert:error', err.text());
-                    }
-                );
-        } else {
-            this.breeds$.next(this.cache);
-        }
+        return new Promise((resolve, reject) => {
+            if (this.cache) {
+                resolve(this.cache);
+            } else {
+                let headers = new Headers();
+                headers.append('Authorization', this.auth.token);
+                this.http.get(`${this.config.get('API')}/breeds`, { headers: headers })
+                    .map(res => res.json())
+                    .subscribe(
+                        (res: any) => {
+                            this.cache = res.data;
+                            resolve(this.cache);
+                        },
+                        (err) => {
+                            this.events.publish('alert:error', err.text());
+                            reject(err.text());
+                        }
+                    );
+            }
+        });
     }
 }

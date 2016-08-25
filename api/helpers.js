@@ -1,12 +1,11 @@
-var upload = require('./config/upload');
+const upload = require('./config/upload');
 
-exports.uploadPath = function (src) {
+exports.uploadPath = src => {
     if (src) {
         if (src.split('://').length > 1) {
             return src;
         }
-        return upload.uploads + src;
-    } else {
-        return null;
+        return `${upload.url}${src}`;
     }
+    return null;
 };

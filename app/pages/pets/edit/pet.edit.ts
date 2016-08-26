@@ -34,13 +34,7 @@ export class PetEditPage {
     }
 
     save() {
-        this.pets.save(this.pet).then(() => {
-            if (this.nav.canGoBack()) {
-                this.nav.pop();
-            } else {
-                this.viewCtrl.dismiss();
-            }
-        });
+        this.pets.save(this.pet).then(this.goBack());
     }
 
     remove() {
@@ -58,7 +52,7 @@ export class PetEditPage {
                     handler: () => {
                         this.pets.deletePet(this.pet)
                             .then(() => alert.dismiss())
-                            .then(() => this.nav.pop());
+                            .then(this.goBack());
                     }
                 }
             ]
@@ -100,6 +94,14 @@ export class PetEditPage {
             err => {
                 this.events.publish('alert:error', err);
             });
+    }
+
+    private goBack() {
+        if (this.nav.canGoBack()) {
+            this.nav.pop();
+        } else {
+            this.viewCtrl.dismiss();
+        }
     }
 
     // dev

@@ -2,7 +2,7 @@ import { Storage, LocalStorage, Events, Config } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { Http, Headers, Response } from '@angular/http';
 import { Pet } from '../models/pet.model';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 import { User } from '../models/user.model';
 import { Facebook, FacebookLoginResponse } from 'ionic-native';
 import { LocationService } from './location.service';
@@ -288,7 +288,7 @@ export class AuthService {
 
     private cleanUser() {
         this.local.remove('id_token');
-        this.user = null;
+        this.user = new User();
         this.token = null;
     }
 

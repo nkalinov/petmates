@@ -17,14 +17,11 @@ export class ProfilePage {
                 private actionSheetCtrl: ActionSheetController) {
     }
 
-    public editModal() {
+    editModal() {
         this.modalCtrl.create(ProfileEdit).present();
     }
 
-    /**
-     * Settings button
-     */
-    public openDangerSheet() {
+    openDangerSheet() {
         const actionSheet = this.actionSheetCtrl.create({
             buttons: [
                 {

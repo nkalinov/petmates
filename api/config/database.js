@@ -3,16 +3,14 @@ const mongoose = require('mongoose');
 const Breed = require('../models/breed');
 const Place = require('../models/place');
 
-module.exports = () => {
-    // todo use auth.secret
-    mongoose.connect('mongodb://127.0.0.1/pm2', err => {
-        if (err) throw err;
-        seed();
-    });
-    
-    // Use native promises
-    mongoose.Promise = global.Promise;
-};
+// todo use auth.secret
+mongoose.connect('mongodb://127.0.0.1/pm2', err => {
+    if (err) throw err;
+    seed();
+});
+
+// Use native promises
+mongoose.Promise = global.Promise;
 
 // check for new breeds
 // TODO insert only new OR updated entries

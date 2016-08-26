@@ -12,14 +12,13 @@
  *      pic:string
  *  };
  */
-function Walk(data, socket) {
-    // this.socket = socket;
-
-    if (data) {
-        Object.assign(this, data);
+class Walk {
+    constructor(data, socket) {
+        if (data) {
+            Object.assign(this, data);
+        }
     }
 }
-
 
 module.exports = (function () {
     var walks = [];

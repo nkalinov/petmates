@@ -61,6 +61,7 @@ var SocketsModule = (function () {
         var uid = token._id;
         var currentWalk;
 
+        // todo get coords from token and "namespace" connections in intervals
         // add to online users
         connections[uid] = {
             socket: socket,

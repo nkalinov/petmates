@@ -1,8 +1,7 @@
 import 'leaflet';
 import 'leaflet.markercluster';
 import './leaflet.markercluster.layersupport-src';
-import 'rxjs/add/operator/map';
-
+import './rxjs.operators';
 import { Events, Nav, ionicBootstrap, Platform, AlertController } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
 import { AuthModal } from './pages/auth/auth';
@@ -16,8 +15,8 @@ import { ChatService } from './services/chat.service';
 import { Page } from './models/page.interface';
 import { NearbyService } from './services/nearby.service';
 import { LocationService } from './services/location.service';
-import { MatesPage } from './pages/mates/mates';
 import { ProfilePage } from './pages/profile/profile';
+import { MapPage } from './pages/map/map';
 
 @Component({
     templateUrl: 'build/app.html',
@@ -28,7 +27,7 @@ class PetMatesApp {
     rootPage: any;
     pages: Array<Page>;
     newRequests: number;
-    private defaultRootPage: any = ProfilePage;
+    private defaultRootPage: any = MapPage;
 
     constructor(public auth: AuthService,
                 public walk: WalkService,

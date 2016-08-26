@@ -1,9 +1,4 @@
 #!/usr/bin/env node
-
-
-/**
- * Module dependencies.
- */
 const app = require('../app');
 const http = require('http');
 const sockets = require('./sockets');
@@ -22,18 +17,16 @@ var server = http.createServer(app);
 sockets.init(server);
 
 
-/**
- * "CRON" routines
- */
-
 // remove old messages
-var cleanUpMessages = function () {
+const cleanUpMessages = () => {
     var lastTwoDays = new Date();
     lastTwoDays.setDate(lastTwoDays.getDate() - 2);
 
     Conversation.update({}, {
         $pull: {
-            'messages': {added: {$lt: lastTwoDays}}
+            messages: {
+                added: {$lt: lastTwoDays}
+            }
         }
     }, {multi: true}, (err, res) => {
         if (err)
@@ -63,7 +56,7 @@ function onError(error) {
 
     var bind = typeof port === 'string'
         ? 'Pipe ' + port
-        : 'Port ' + port
+        : 'Port ' + port;
 
     // handle specific listen errors with friendly messages
     switch (error.code) {

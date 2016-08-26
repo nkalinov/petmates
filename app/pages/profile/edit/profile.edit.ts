@@ -38,11 +38,8 @@ export class ProfileEdit {
 
     save() {
         const { name, email, picture, password, location, city, country } = this.user;
-        this.auth.update(
-            { name, email, picture, password, location, city, country }
-        ).then(() => {
-            this.viewCtrl.dismiss();
-        });
+        this.auth.update({ name, email, picture, password, location, city, country })
+            .then(this.cancel());
     }
 
     changePicture() {

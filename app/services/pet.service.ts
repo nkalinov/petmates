@@ -36,6 +36,9 @@ export class PetService {
             req.map(res => res.json()).subscribe(
                 res => {
                     if (res.success) {
+                        if (!pet._id) {
+                            // create
+                        }
                         this.auth.user.pets = res.data.map(p => new Pet(p));
                         resolve();
                     } else {
@@ -61,11 +64,6 @@ export class PetService {
             ).map(res => res.json()).subscribe(
                 (res: APIResponse) => {
                     if (res.success) {
-                        // remove from user.pets
-                        // let index = this.auth.getPetIndexById(pet._id);
-                        // if (index > -1) {
-                        //     this.auth.user.pets.splice(index, 1);
-                        // }
                         this.auth.user.pets = res.data.map(p => new Pet(p));
                         resolve(res);
                     } else {

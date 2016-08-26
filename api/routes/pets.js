@@ -13,14 +13,13 @@ router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
         sex,
         picture,
         birthday,
-        breed: breed._id
+        breed
     });
 
     req.user.save((err, user) => {
         if (err)
             return res.json({success: false, msg: err});
 
-        // todo populate here or in app ?
         return res.json({success: true, data: user.pets});
     });
 });
@@ -52,7 +51,7 @@ router.put('/:id', passport.authenticate('jwt', {session: false}), (req, res) =>
         pet.birthday = birthday;
     }
     if (breed) {
-        pet.breed = breed._id;
+        pet.breed = breed;
     }
 
     if (!req.user.isModified())

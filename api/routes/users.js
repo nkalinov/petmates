@@ -37,23 +37,7 @@ router.delete('/', passport.authenticate('jwt', {session: false}), (req, res) =>
         if (err)
             return res.json({success: false, msg: err});
 
-        // deletion OK, continue in the background...
         res.json({success: true});
-
-        // delete profile picture
-        // if (user.picture) {
-        //     fs.unlink(upload.dest + user.picture);
-        // }
-
-        // delete pets pictures
-        // todo move in post remove hook
-        if (user.pets && user.pets.length) {
-            user.pets.forEach((pet) => {
-                if (pet.picture) {
-                    fs.unlink(upload.dest + pet.picture);
-                }
-            });
-        }
 
         // remove user from other's mates
         if (user.mates && user.mates.length) {

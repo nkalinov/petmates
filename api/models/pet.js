@@ -4,6 +4,7 @@ const autopopulate = require('mongoose-autopopulate');
 const helpers = require('../helpers');
 const fs = require('fs');
 const upload = require('../config/upload');
+const Breed = require('./breed');
 
 var Pet = new Schema({
     name: String,
@@ -35,6 +36,7 @@ var Pet = new Schema({
     }
 });
 
+// handle pictures
 Pet.pre('save', true, function (next, done) {
     next(); // in parallel ^
 

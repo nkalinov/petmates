@@ -16,7 +16,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const serveStatic = require('serve-static');
 
-var app = express();
+const app = express();
 
 app.use(cors());
 app.use(helmet());
@@ -40,7 +40,7 @@ app.use('/nearby', nearby);
 app.use('/upload', upload);
 
 // connect db
-require('./config/database')();
+require('./config/database');
 
 // pass passport for configuration
 require('./config/passport')(passport);

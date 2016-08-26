@@ -1,6 +1,6 @@
-- pets tmp upload
-- nearby 
-    - events
+- nearby events 
+    - create new event
+- refactor api/bin/sockets.js
 - wall (activities)
 - custom map shops icons
 - donate

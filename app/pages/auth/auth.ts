@@ -6,6 +6,7 @@ import { ForgotForm } from './forgot/forgot.form';
 import { LocationService } from '../../services/location.service';
 import { User } from '../../models/user.model';
 import { MateImage } from '../../common/mate-image';
+import { makeFileRequest } from "../../services/common.service";
 
 @Component({
     templateUrl: 'build/pages/auth/auth.html',
@@ -64,6 +65,10 @@ export class AuthModal {
         }
     }
 
+    openForgotForm() {
+        this.modalCtrl.create(ForgotForm).present();
+    }
+
     changePicture() {
         ImagePicker.getPictures({
             maximumImagesCount: 1,
@@ -107,7 +112,17 @@ export class AuthModal {
         });
     }
 
-    openForgotForm() {
-        this.modalCtrl.create(ForgotForm).present();
+    // dev
+    fileChangeEvent(fileInput: any) {
+        makeFileRequest(`${this.config.get('API')}/upload`, fileInput.target.files[0], this.auth.token).then(
+            (res: any) => {
+                if (res.response.success) {
+                    this.user.pic = res.response.data.url;
+                    this.user.picture = res.response.data.filename;
+                } else {
+                    this.events.publish('alert:error', res.response.msg);
+                }
+            },
+            err => console.error(err));
     }
 }

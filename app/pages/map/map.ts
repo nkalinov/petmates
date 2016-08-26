@@ -20,7 +20,7 @@ export class MapPage {
     walks = {}; // saved walk markers by _id
     map: L.Map;
     marker: L.Marker;
-    mcgLayerSupportGroup = L.markerClusterGroup.layerSupport({
+    mcgLayerSupportGroup = (<any>L).markerClusterGroup.layerSupport({
         showCoverageOnHover: false
     });
     control = L.control.layers(null, null, { collapsed: false });
@@ -155,7 +155,7 @@ export class MapPage {
         this.layers.walks.addTo(this.mcgLayerSupportGroup);
 
         // Remove inactive walks interval
-        this.clearInactiveInterval = setInterval(() => {
+        this.clearInactiveInterval = <number>setInterval(() => {
             for (let uid in this.walks) {
                 if (this.walks.hasOwnProperty(uid)) {
                     let key = uid;

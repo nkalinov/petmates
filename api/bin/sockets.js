@@ -47,7 +47,7 @@ var SocketsModule = (function () {
 
         // send walk updates every 20sec.
         setInterval(() => {
-            // todo namespace /bulgaria /usa ...
+            // todo namespace by user country /bulgaria /usa ...
             io.emit('walks', walk.walks);
         }, 20 * 1000);
     }

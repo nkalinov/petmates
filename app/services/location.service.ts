@@ -9,14 +9,13 @@ export class LocationService {
                 private events: Events) {
     }
 
-    getGeolocation(): Promise<Array<Number>> {
-        return Geolocation.getCurrentPosition({
+    getGeolocation(opts?: any): Promise<Array<Number>> {
+        return Geolocation.getCurrentPosition(Object.assign({}, opts, {
             enableHighAccuracy: true
-        }).then(
+        })).then(
             data => [data.coords.longitude, data.coords.latitude],
             err => {
                 this.events.publish('alert:error', err.text());
-                // throw err;
             });
     }
 

@@ -15,8 +15,7 @@ import { ChatService } from './services/chat.service';
 import { Page } from './models/page.interface';
 import { NearbyService } from './services/nearby.service';
 import { LocationService } from './services/location.service';
-import { ProfilePage } from './pages/profile/profile';
-import { MapPage } from './pages/map/map';
+import { NearbyPage } from './pages/nearby/nearby';
 
 @Component({
     templateUrl: 'build/app.html',
@@ -27,7 +26,7 @@ class PetMatesApp {
     rootPage: any;
     pages: Array<Page>;
     newRequests: number;
-    private defaultRootPage: any = MapPage;
+    private defaultRootPage: any = NearbyPage;
 
     constructor(public auth: AuthService,
                 public walk: WalkService,

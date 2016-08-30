@@ -17,7 +17,7 @@ export class PeoplePage {
     }
 
     ionViewDidEnter() {
-        this.nearby.getNearbyPeople();
+        this.nearby.getLocationThenNearbyPeople();
     }
 
     viewMate(id: string) {
@@ -25,7 +25,7 @@ export class PeoplePage {
     }
 
     doRefresh(refresher: Refresher) {
-        this.nearby.getNearbyPeople(true).then(
+        this.nearby.getLocationThenNearbyPeople(true).then(
             () => refresher.complete(),
             err => refresher.complete()
         );

@@ -10,6 +10,7 @@ import { getAge } from '../../services/common.service';
 import { NearbyService } from '../../services/nearby.service';
 import { vetIcon, UserIcon } from '../../common/icons';
 import { Place } from '../../models/place.model';
+import { LocationService } from '../../services/location.service';
 L.Icon.Default.imagePath = 'build/img/leaflet';
 
 @Component({
@@ -40,6 +41,7 @@ export class MapPage {
                 public walk: WalkService,
                 private nearby: NearbyService,
                 private modalCtrl: ModalController,
+                private location: LocationService,
                 private config: Config) {
     }
 
@@ -55,9 +57,9 @@ export class MapPage {
 
         this.mcgLayerSupportGroup.addTo(this.map);
 
-        this.initGeolocation().then(() => {
+        this.initGeolocation().then(coords => {
             this.populate();
-            this.addPlacesMarkers();
+            this.addPlacesMarkers(coords);
             this.control.addTo(this.map);
         });
     }
@@ -80,12 +82,9 @@ export class MapPage {
     }
 
     private initGeolocation() {
-        return Geolocation.getCurrentPosition({
-            timeout: 10000,
-            enableHighAccuracy: true
-        }).then((data) => {
+        return this.location.getGeolocation({ timeout: 10000 }).then(data => {
             this.GEOaccess = true;
-            const position = L.latLng(data.coords.latitude, data.coords.longitude);
+            const position = L.latLng(data[1], data[0]);
             this.map.setView(position, 16);
 
             // add my marker
@@ -117,6 +116,7 @@ export class MapPage {
             );
 
             this.watchWalks();
+            return data;
 
         }, (err) => {
             this.geolocalizationErrorCb(err);
@@ -172,32 +172,28 @@ export class MapPage {
         }, this.config.get('deleteInactiveIntervalMs'));
     }
 
-    private addPlacesMarkers() {
-        return this.nearby.getNearbyPlaces().then(places => {
+    private addPlacesMarkers(coords) {
+        return this.nearby.getNearbyPlaces(coords).then(places => {
             places.forEach((place: Place) => {
-                if (place.type === 'vet') {
-                    L.marker(
-                        [
-                            place.location.coordinates[1],
-                            place.location.coordinates[0]
-                        ],
-                        { icon: vetIcon() }
-                    )
-                        .bindPopup(
-                            `<b>${place.name}</b><br>${place.phone}<br>${place.hours}`
-                        )
-                        .addTo(this.layers.vets);
-                } else {
-                    L.marker(
-                        [
-                            place.location.coordinates[1],
-                            place.location.coordinates[0]
-                        ]
-                    )
-                        .bindPopup(
-                            `<b>${place.name}</b><br>${place.phone}<br>${place.hours}`
-                        )
-                        .addTo(this.layers.shops);
+                const marker = L.marker([
+                    place.location.coordinates[1],
+                    place.location.coordinates[0]
+                ]).bindPopup(
+                    `<b>${place.name}</b><br>${place.phone}<br>${place.hours}`
+                );
+
+                switch (place.type) {
+                    case 'vet':
+                        marker
+                            .setIcon(vetIcon())
+                            .addTo(this.layers.vets);
+                        break;
+                    case 'shop':
+                        marker
+                            .addTo(this.layers.shops);
+                        break;
+                    default:
+                        break;
                 }
             });
 

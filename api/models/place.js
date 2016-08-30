@@ -9,7 +9,7 @@ const PlaceSchema = new Schema({
     },
     type: {
         type: String,
-        enum: ['vet', 'shop']
+        enum: ['vet', 'shop', 'bar', 'park', 'restaurant']
     },
     location: {
         type: {

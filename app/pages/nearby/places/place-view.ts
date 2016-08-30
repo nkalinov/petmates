@@ -5,7 +5,7 @@ import { PlaceImage } from '../../../common/place-image';
 import { Place } from '../../../models/place.model';
 
 @Component({
-    templateUrl: 'build/pages/nearby/places/view.html',
+    templateUrl: 'build/pages/nearby/places/place-view.html',
     directives: [PlaceImage]
 })
 

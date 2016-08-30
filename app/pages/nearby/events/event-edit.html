@@ -1,0 +1,58 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons start>
+            <button dark (click)="viewCtrl.dismiss()">
+                Cancel
+            </button>
+        </ion-buttons>
+        <ion-title>
+            <span *ngIf="event._id">Edit</span>
+            <span *ngIf="!event._id">New</span>
+            event
+        </ion-title>
+        <ion-buttons end>
+            <button secondary (click)="save()" [disabled]="!eventForm.valid">
+                Save
+            </button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-row no-padding wrap center>
+        <ion-col no-padding width-100>
+            map
+        </ion-col>
+    </ion-row>
+
+    <form (submit)="save()" #eventForm="ngForm">
+        <ion-list>
+            <ion-item>
+                <ion-label>Name</ion-label>
+                <ion-input name="name" required type="text" [(ngModel)]="event.name"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Description</ion-label>
+                <ion-textarea name="description" required [(ngModel)]="event.description"></ion-textarea>
+            </ion-item>
+            <ion-item>
+                <ion-label>Where</ion-label>
+                <ion-input name="address" required type="text" [(ngModel)]="event.address"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Date</ion-label>
+                <ion-datetime name="date" [(ngModel)]="event.date"></ion-datetime>
+            </ion-item>
+            <ion-item>
+                <ion-label>Start Time</ion-label>
+                <ion-datetime name="time" displayFormat="h:mm A" pickerFormat="h mm A" [(ngModel)]="event.date"></ion-datetime>
+            </ion-item>
+            <!-- Participants ? -->
+        </ion-list>
+    </form>
+    <div padding *ngIf="event._id">
+        <button small block danger outline (click)="remove()">
+            Cancel event
+        </button>
+    </div>
+</ion-content>

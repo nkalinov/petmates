@@ -1,0 +1,35 @@
+<ion-header>
+    <ion-navbar>
+        <button menuToggle>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>Nearby events</ion-title>
+        <ion-buttons end>
+            <button secondary (click)="addEvent()">
+                <ion-icon name="add"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+    <ion-list>
+        <ion-list-header>
+            Max. distance is 500km.
+        </ion-list-header>
+        <button ion-item *ngFor="let item of nearby.events$ | async"
+                (click)="viewEvent(item)">
+            <ion-avatar item-left>
+                <ion-icon name="calendar"></ion-icon>
+            </ion-avatar>
+            <h2>{{item.name}}</h2>
+            <p>{{item.date | date: "short"}}</p>
+            <p>
+                {{ item.distance }} - {{ item.address }}
+            </p>
+        </button>
+    </ion-list>
+</ion-content>

@@ -9,11 +9,11 @@
         <place-image [place]="place" [card]="true"></place-image>
 
         <ion-item>
-            <h2>{{place.name}}</h2>
-            <p>
+            <h1>{{place.name}}</h1>
+            <h2>
                 <ion-icon name="pin"></ion-icon>
                 {{place.address}}
-            </p>
+            </h2>
             <h3>
                 <ion-icon name="time-outline"></ion-icon>
                 {{place.hours}}
@@ -29,13 +29,12 @@
 
         <ion-item>
             <span item-left>
-                <span secondary class="item-bold">~{{place.timeToDistance}}</span>
-                ({{place.distance}})
+                ~{{place.distance}} away
             </span>
             <button primary clear item-right
                     (click)="navigate()">
                 <ion-icon name="navigate"></ion-icon>
-                Start navigation
+                Directions
             </button>
         </ion-item>
     </ion-card>

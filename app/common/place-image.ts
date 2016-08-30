@@ -4,7 +4,10 @@ import { Place } from '../models/place.model';
 
 @Component({
     selector: 'place-image',
-    template: `<img *ngIf="src" src="{{src}}"><ion-icon *ngIf="!src" name="cart"></ion-icon>`
+    template: `
+        <img *ngIf="src" src="{{src}}">
+        <ion-icon *ngIf="!src && place.type === 'shop'" name="cart"></ion-icon>
+    `
 })
 
 export class PlaceImage {

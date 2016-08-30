@@ -1,15 +1,16 @@
-export class Place {
+import { User } from './user.model';
+
+export class Event {
     _id: string;
+    creator: any;
     name: string;
-    type: string;
+    description: string;
+    date: Date;
+    address: string;
     location: {
         coordinates: Array<Number> // [lon, lat]
     };
-    address: string;
-    pic: string;
-    phone: string;
-    hours: string;
-    link: string;
+    participants: Array<User> = [];
 
     distance: string;
 

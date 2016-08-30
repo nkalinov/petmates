@@ -1,5 +1,16 @@
-- nearby events 
-    - create new event
+- nearby
+    - places 
+        - to add new dog friendly place (parks, restos, bars...)
+        - create new with drop marker for location
+    - events
+        - push notification on a new event nearby
+        - create new 
+            - name
+            - description
+            - date, hour
+            - participants[ObjectId]
+            - location: Point with drop marker for location
+            - where[String]
 - refactor api/bin/sockets.js
 - wall (activities)
 - custom map shops icons

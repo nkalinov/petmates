@@ -3,7 +3,7 @@ import { NavController, Refresher } from 'ionic-angular';
 import { NearbyService } from '../../../services/nearby.service';
 import { Place } from '../../../models/place.model';
 import { PlaceImage } from '../../../common/place-image';
-import { PlaceViewPage } from './view';
+import { PlaceViewPage } from './place-view';
 
 @Component({
     templateUrl: 'build/pages/nearby/places/places.html',
@@ -15,7 +15,7 @@ export class PlacesPage {
     }
 
     ionViewDidEnter() {
-        this.nearby.getNearbyPlaces();
+        this.nearby.getLocationThenNearbyPlaces();
     }
 
     viewPlace(place: Place) {
@@ -23,7 +23,7 @@ export class PlacesPage {
     }
 
     doRefresh(refresher: Refresher) {
-        this.nearby.getNearbyPlaces(true).then(
+        this.nearby.getLocationThenNearbyPlaces(true).then(
             () => refresher.complete(),
             err => refresher.complete()
         );

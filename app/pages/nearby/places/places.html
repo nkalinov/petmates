@@ -12,11 +12,7 @@
         <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
     <ion-list>
-        <ion-list-header>
-            Max. distance is 500km.
-        </ion-list-header>
-        <button ion-item *ngFor="let item of nearby.places$ | async"
-                (click)="viewPlace(item)">
+        <button ion-item *ngFor="let item of nearby.places$ | async" (click)="viewPlace(item)">
             <ion-avatar item-left>
                 <place-image [place]="item"></place-image>
             </ion-avatar>

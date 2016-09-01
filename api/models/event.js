@@ -5,8 +5,7 @@ const autopopulate = require('mongoose-autopopulate');
 const EventSchema = new Schema({
     creator: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
-        autopopulate: {select: '_id name picture'}
+        ref: 'User'
     },
     name: {
         type: String,

@@ -2,20 +2,32 @@ import { Injectable } from '@angular/core';
 import { Geolocation } from 'ionic-native';
 import { Http } from '@angular/http';
 import { Events } from 'ionic-angular';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class LocationService {
+    lastCoords: Array<Number>;
+
     constructor(private http: Http,
+                private auth: AuthService,
                 private events: Events) {
+    }
+
+    getLastCoords() {
+        return this.lastCoords ? this.lastCoords : this.auth.user.location.coordinates;
     }
 
     getGeolocation(opts?: any): Promise<Array<Number>> {
         return Geolocation.getCurrentPosition(Object.assign({}, opts, {
             enableHighAccuracy: true
         })).then(
-            data => [data.coords.longitude, data.coords.latitude],
+            data => {
+                this.lastCoords = [data.coords.longitude, data.coords.latitude];
+                return this.lastCoords;
+            },
             err => {
                 this.events.publish('alert:error', err.text());
+                return this.auth.user.location.coordinates; // fallback to cached
             });
     }
 

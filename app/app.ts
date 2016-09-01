@@ -16,6 +16,7 @@ import { Page } from './models/page.interface';
 import { NearbyService } from './services/nearby.service';
 import { LocationService } from './services/location.service';
 import { NearbyPage } from './pages/nearby/nearby';
+import { EventsService } from './services/events.service';
 
 @Component({
     templateUrl: 'build/app.html',
@@ -126,7 +127,8 @@ ionicBootstrap(PetMatesApp, [
     MatesService,
     ChatService,
     NearbyService,
-    LocationService
+    LocationService,
+    EventsService
 ], {
     tabsPlacement: 'bottom',
     // prodMode: true,

@@ -22,7 +22,7 @@
             Pets
         </ion-list-header>
         <ion-item *ngIf="mate.pets.length===0">
-            {{mate.name}} No pets...
+            No pets here...
         </ion-item>
         <ion-item *ngFor="let d of mate.pets">
             <ion-avatar item-left>
@@ -39,7 +39,7 @@
             Mates
         </ion-list-header>
         <ion-item *ngIf="mate.mates.length===0">
-            {{mate.name}} No mates...
+            No mates here...
         </ion-item>
         <button ion-item
                 *ngFor="let d of mate.mates"

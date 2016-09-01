@@ -5,7 +5,6 @@ import { Pet } from '../models/pet.model';
 import { Observable } from 'rxjs/Observable';
 import { User } from '../models/user.model';
 import { Facebook, FacebookLoginResponse } from 'ionic-native';
-import { LocationService } from './location.service';
 
 @Injectable()
 export class AuthService {
@@ -15,8 +14,7 @@ export class AuthService {
 
     constructor(private http: Http,
                 private events: Events,
-                private config: Config,
-                private location: LocationService) {
+                private config: Config) {
     }
 
     init() {
@@ -36,7 +34,6 @@ export class AuthService {
                             if (res.success) {
                                 this.parseUser(res.data);
                                 this.token = token;
-                                // this.checkAndUpdateLocation();
                                 resolve(this.user);
                             } else {
                                 this.cleanUser();
@@ -275,14 +272,6 @@ export class AuthService {
         } else {
             this.events.publish('alert:error', res.msg);
             return new Error(res.msg);
-        }
-    }
-
-    private checkAndUpdateLocation() {
-        if (this.user.location.coordinates.length === 0 || !this.user.country || !this.user.city) {
-            this.location.getLocation().then(location => {
-                this.update({ location });
-            });
         }
     }
 

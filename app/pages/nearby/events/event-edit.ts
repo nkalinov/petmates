@@ -1,24 +1,112 @@
 import { Component } from '@angular/core';
-import { NavParams, ViewController } from 'ionic-angular';
+import { NavParams, NavController, AlertController } from 'ionic-angular';
 import { Event } from '../../../models/event.model';
-import { NearbyService } from '../../../services/nearby.service';
+import { LocationService } from '../../../services/location.service';
+import { MateViewPage } from '../../mates/view/mate.view';
+import { MateImage } from '../../../common/mate-image';
+import { localISO } from '../../../services/common.service';
+import LeafletMouseEvent = L.LeafletMouseEvent;
+import { EventsService } from '../../../services/events.service';
 
 @Component({
-    templateUrl: 'build/pages/nearby/events/event-edit.html'
+    templateUrl: 'build/pages/nearby/events/event-edit.html',
+    directives: [MateImage]
 })
 
 export class EventEditPage {
     event: Event;
+    map: L.Map;
+    marker: L.Marker;
+    min: string;
+    max: string;
 
     constructor(navParams: NavParams,
-                public viewCtrl: ViewController,
-                private nearby: NearbyService) {
+                private navCtrl: NavController,
+                private events: EventsService,
+                private location: LocationService,
+                private alertCtrl: AlertController) {
         this.event = new Event(navParams.get('event'));
+
+        const now = new Date();
+        const month = now.getMonth() + 1;
+        this.min = `${now.getFullYear()}-${month < 10 ? '0' + month : month}`;
+        this.max = (now.getFullYear() + 1).toString();
+
+        if (this.event._id) {
+            // convert to local ISO (for <datetime /> component)
+            this.event.date = localISO(this.event.date);
+        }
+    }
+
+    ionViewDidEnter() {
+        const lastCoords = this.location.getLastCoords();
+
+        const tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        });
+
+        this.map = L.map('event-map', {
+            center: L.latLng(lastCoords[1], lastCoords[0]),
+            zoom: 16,
+            zoomControl: false,
+            layers: [tiles]
+        }).on('click', (e: LeafletMouseEvent) => {
+            e.originalEvent.preventDefault();
+
+            if (this.marker) {
+                this.marker.setLatLng(e.latlng);
+            } else {
+                this.addMarker(e.latlng);
+            }
+
+            this.event.setCoords([e.latlng.lng, e.latlng.lat]);
+        });
+
+        if (this.event.location && this.event.location.coordinates.length > 0) {
+            const coords = L.latLng(this.event.location.coordinates[1], this.event.location.coordinates[0]);
+            this.map.setView(coords);
+            this.addMarker(coords);
+        }
+    }
+
+    viewMate(id: string) {
+        this.navCtrl.push(MateViewPage, { id });
     }
 
     save() {
-        this.nearby.editOrCreateEvent(this.event).then(res => {
-            this.viewCtrl.dismiss();
+        this.events.editOrCreateEvent(this.event)
+            .then(() => this.navCtrl.pop());
+    }
+
+    cancelEvent() {
+        const alert = this.alertCtrl.create({
+            title: 'Are you sure?',
+            message: `Remove ${this.event.name} ?`,
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel'
+                },
+                {
+                    text: 'Delete',
+                    role: 'destructive',
+                    handler: () => {
+                        this.events.cancelEvent(this.event._id)
+                            .then(() => alert.dismiss())
+                            .then(() => this.navCtrl.popToRoot());
+                    }
+                }
+            ]
         });
+        alert.present();
+    }
+
+    private addMarker(latlng) {
+        this.marker = L.marker(latlng, { draggable: true })
+            .addTo(this.map)
+            .on('dragend', () => {
+                const coords = this.marker.getLatLng();
+                this.event.setCoords([coords.lng, coords.lat]);
+            });
     }
 }

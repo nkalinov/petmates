@@ -4,13 +4,7 @@
         - create new with drop marker for location
     - events
         - push notification on a new event nearby
-        - create new 
-            - name
-            - description
-            - date, hour
-            - participants[ObjectId]
-            - location: Point with drop marker for location
-            - where[String]
+        - bin/www "cron" delete events where date < now()
 - refactor api/bin/sockets.js
 - wall (activities)
 - custom map shops icons

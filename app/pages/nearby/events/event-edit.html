@@ -1,29 +1,26 @@
 <ion-header>
-    <ion-toolbar>
-        <ion-buttons start>
-            <button dark (click)="viewCtrl.dismiss()">
-                Cancel
-            </button>
-        </ion-buttons>
+    <ion-navbar>
         <ion-title>
             <span *ngIf="event._id">Edit</span>
             <span *ngIf="!event._id">New</span>
             event
         </ion-title>
         <ion-buttons end>
-            <button secondary (click)="save()" [disabled]="!eventForm.valid">
+            <button secondary (click)="save()"
+                    [disabled]="!eventForm.valid || !event.location || !event.location.coordinates">
                 Save
             </button>
         </ion-buttons>
-    </ion-toolbar>
+    </ion-navbar>
 </ion-header>
 
 <ion-content>
     <ion-row no-padding wrap center>
-        <ion-col no-padding width-100>
-            map
+        <ion-col class="event-map-col" no-padding width-100>
+            <div id="event-map"></div>
         </ion-col>
     </ion-row>
+    <p no-padding text-center text-small>Click on the map or drag the marker to set the event coordinates.</p>
 
     <form (submit)="save()" #eventForm="ngForm">
         <ion-list>
@@ -36,22 +33,24 @@
                 <ion-textarea name="description" required [(ngModel)]="event.description"></ion-textarea>
             </ion-item>
             <ion-item>
-                <ion-label>Where</ion-label>
+                <ion-label>Address</ion-label>
                 <ion-input name="address" required type="text" [(ngModel)]="event.address"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>Date</ion-label>
-                <ion-datetime name="date" [(ngModel)]="event.date"></ion-datetime>
+                <ion-label>Start Date</ion-label>
+                <ion-datetime name="date" [(ngModel)]="event.date"
+                              min="{{min}}" max="{{max}}"></ion-datetime>
             </ion-item>
             <ion-item>
                 <ion-label>Start Time</ion-label>
-                <ion-datetime name="time" displayFormat="h:mm A" pickerFormat="h mm A" [(ngModel)]="event.date"></ion-datetime>
+                <ion-datetime name="time" displayFormat="h:mm:A" pickerFormat="hh mm A"
+                              [(ngModel)]="event.date"></ion-datetime>
             </ion-item>
-            <!-- Participants ? -->
         </ion-list>
     </form>
-    <div padding *ngIf="event._id">
-        <button small block danger outline (click)="remove()">
+
+    <div padding-horizontal margin-bottom *ngIf="event._id">
+        <button small block danger outline (click)="cancelEvent()">
             Cancel event
         </button>
     </div>

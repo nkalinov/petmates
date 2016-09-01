@@ -4,6 +4,7 @@ const passport = require('passport');
 const User = require('../models/user');
 const Place = require('../models/place');
 const Event = require('../models/event');
+const helpers = require('../helpers');
 
 router.get('/people', passport.authenticate('jwt', {session: false}), (req, res) => {
     const point = {
@@ -37,7 +38,14 @@ router.get('/people', passport.authenticate('jwt', {session: false}), (req, res)
             }
         }
     ).exec().then(
-        data => res.json({success: true, data}),
+        data => res.json({
+            success: true,
+            data: data.map(d => {
+                d.pic = helpers.uploadPath(d.picture);
+                delete d.picture;
+                return d;
+            })
+        }),
         err => res.json({success: false, msg: err})
     );
 });
@@ -62,8 +70,7 @@ router.get('/places', passport.authenticate('jwt', {session: false}), (req, res)
     );
 });
 
-// get nearby events
-router.get('/events/', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.get('/events', passport.authenticate('jwt', {session: false}), (req, res) => {
     const point = {
         type: 'Point',
         coordinates: req.query.coords ?
@@ -81,64 +88,6 @@ router.get('/events/', passport.authenticate('jwt', {session: false}), (req, res
             {success: true, data}
         )
     );
-});
-
-// get event details
-router.get('/events/:id', passport.authenticate('jwt', {session: false}), (req, res) => {
-    const id = req.params.id;
-
-    if (!id)
-        return res.json({success: false, msg: 'Supply event id'});
-
-    Event.findById(id, (err, data) => {
-        if (err)
-            return res.json({success: false, msg: err});
-
-        if (!data)
-            return res.json({success: false, msg: 'Event not found'});
-
-        return res.json({success: true, data});
-    });
-});
-
-// create
-router.post('/events', passport.authenticate('jwt', {session: false}), (req, res) => {
-    const {name, description, date, address, location} = req.body;
-
-    const event = new Event({
-        creator: req.user._id,
-        name,
-        description,
-        date,
-        address,
-        location
-    });
-
-    event.save(err => {
-        if (err)
-            return res.json({success: false, msg: err});
-
-        return res.json({success: true});
-    });
-});
-
-// update
-router.put('/events/:id', passport.authenticate('jwt', {session: false}), (req, res) => {
-    const id = req.params.id;
-
-    if (!id)
-        return res.json({success: false, msg: 'Supply event id'});
-
-    // todo
-    Event.findOneAndUpdate({
-        _id: id,
-        creator: req.user._id
-    }, {}, err => {
-        if (err)
-            return res.json({success: false, msg: err});
-
-        return res.json({success: true});
-    });
 });
 
 module.exports = router;

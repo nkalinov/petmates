@@ -2,24 +2,30 @@
     <ion-navbar>
         <ion-title>{{event.name}}</ion-title>
         <ion-buttons end>
-            <button dark *ngIf="auth.user._id === event.creator._id" (click)="editEvent()">
+            <button dark *ngIf="auth.user._id === event.creator" (click)="editEvent()">
                 Edit
             </button>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content>
+    <ion-row no-padding wrap center>
+        <ion-col class="event-map-col" no-padding width-100>
+            <div id="event-map"></div>
+        </ion-col>
+    </ion-row>
+
     <ion-card>
         <place-image [place]="event" [card]="true"></place-image>
 
         <ion-item>
-            <h1>{{event.name}}</h1>
+            <h1 class="nearby-item-title">{{event.name}}</h1>
             <p>
                 <ion-icon name="time-outline"></ion-icon>
                 {{event.date | date: 'short'}}
             </p>
-            <h3>
+            <h3 margin-bottom-small>
                 <ion-icon name="pin"></ion-icon>
                 {{event.address}}
             </h3>
@@ -27,14 +33,37 @@
         </ion-item>
 
         <ion-item>
-            <span item-left>
-                ~{{event.distance}} away
-            </span>
+                <span item-left>
+                    ~{{event.distance}}
+                </span>
             <button primary clear item-right
                     (click)="navigate()">
                 <ion-icon name="navigate"></ion-icon>
                 Directions
             </button>
         </ion-item>
+
+        <div *ngIf="event.creator !== auth.user._id">
+            <button small block secondary (click)="joinEvent()" *ngIf="!hasJoined()" no-margin>
+                Going
+            </button>
+            <button small block danger (click)="notGoing()" *ngIf="hasJoined()" no-margin>
+                Not going
+            </button>
+        </div>
     </ion-card>
+
+    <!-- Participants -->
+    <ion-list margin-bottom-small>
+        <ion-list-header>Participants</ion-list-header>
+        <button ion-item *ngFor="let d of event.participants" (click)="viewMate(d._id)">
+            <ion-avatar item-left>
+                <mate-image [image]="d.pic"></mate-image>
+            </ion-avatar>
+            <h2>{{d.name}}</h2>
+        </button>
+    </ion-list>
+    <div *ngIf="event.participants.length === 0">
+        <p text-center>No participants...</p>
+    </div>
 </ion-content>

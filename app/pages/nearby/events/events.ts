@@ -1,20 +1,21 @@
 import { Component } from '@angular/core';
 import { NavController, Refresher } from 'ionic-angular';
-import { NearbyService } from '../../../services/nearby.service';
 import { EventViewPage } from './event-view';
 import { Event } from '../../../models/event.model';
 import { EventEditPage } from './event-edit';
+import { EventsService } from '../../../services/events.service';
 
 @Component({
     templateUrl: 'build/pages/nearby/events/events.html'
 })
+
 export class EventsPage {
     constructor(private navCtrl: NavController,
-                private nearby: NearbyService) {
+                public events: EventsService) {
     }
 
     ionViewDidEnter() {
-        this.nearby.getNearbyEvents();
+        this.events.getNearbyEvents();
     }
 
     viewEvent(event: Event) {
@@ -26,7 +27,7 @@ export class EventsPage {
     }
 
     doRefresh(refresher: Refresher) {
-        this.nearby.getNearbyEvents(true).then(
+        this.events.getNearbyEvents(true).then(
             () => refresher.complete(),
             err => refresher.complete()
         );

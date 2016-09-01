@@ -54,7 +54,7 @@ export class User {
     setDistance(dis: number) {
         if (dis) {
             this.distance = dis < 1000 ?
-            dis.toFixed(3).toString() + ' m' :
+            dis.toFixed().toString() + ' m' :
             (dis / 1000).toFixed(1).toString() + ' km';
         }
     }

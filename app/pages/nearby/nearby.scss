@@ -1,6 +1,23 @@
 .nearby-page {
+
+  .event-map-col {
+    height: 200px;
+    
+    #event-map {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .nearby-item-title {
+    white-space: normal;
+    font-size: 2rem;
+  }
+
   ion-list {
     ion-avatar {
+      margin: 8px 5px 8px 0;
+
       ion-icon {
         font-size: 30px;
       }

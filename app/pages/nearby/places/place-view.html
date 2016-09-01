@@ -4,12 +4,12 @@
     </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content>
     <ion-card>
         <place-image [place]="place" [card]="true"></place-image>
 
         <ion-item>
-            <h1>{{place.name}}</h1>
+            <h1 class="nearby-item-title">{{place.name}}</h1>
             <h2>
                 <ion-icon name="pin"></ion-icon>
                 {{place.address}}
@@ -29,7 +29,7 @@
 
         <ion-item>
             <span item-left>
-                ~{{place.distance}} away
+                ~{{place.distance}}
             </span>
             <button primary clear item-right
                     (click)="navigate()">

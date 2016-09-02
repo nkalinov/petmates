@@ -137,18 +137,21 @@ UserSchema.methods.comparePassword = function (passw, cb) {
 
 UserSchema.methods.requestFriend = function (uid, cb) {
     // search for existing request
-    var find = this.mates.find((m) => {
-        return m.friend._id ? m.friend._id.equals(uid) : m.friend.equals(uid);
-    });
+    var find = this.mates.find(m => m.friend._id ? m.friend._id.equals(uid) : m.friend.equals(uid));
+
     if (find) {
         // no action if already accepted OR requested
         if (find.status === Friendship.Status.ACCEPTED || find.status === Friendship.Status.REQUESTED)
-            return cb(null, null);
+            return cb('Already added');
 
         // accept other's 'requested'
         this.model('User').findOneAndUpdate({
             _id: uid,
-            'mates': {$elemMatch: {friend: this._id}}
+            mates: {
+                $elemMatch: {
+                    friend: this._id
+                }
+            }
         }, {
             $set: {
                 'mates.$.status': Friendship.Status.ACCEPTED,

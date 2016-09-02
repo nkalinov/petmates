@@ -1,7 +1,7 @@
 - nearby
     - places 
         - to add new dog friendly place (parks, restos, bars...)
-        - create new with drop marker for location
+        - create new (like new event)
     - events
         - push notification on a new event nearby
         - bin/www "cron" delete events where date < now()
@@ -10,3 +10,4 @@
 - custom map shops icons
 - donate
 - cron task deleting public/tmp/* every 24h
+- develop: търсене на изгубени кучета по регион/снимка

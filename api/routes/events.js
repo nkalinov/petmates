@@ -1,13 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const User = require('../models/user');
-const Place = require('../models/place');
 const Event = require('../models/event');
 
-// todo get events ?filter=....
+// get [going/mine] events
 router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
+    const {filter} = req.query;
+    const cond = {};
 
+    if (!filter || filter === 'mine') {
+        cond.creator = req.user._id;
+    }
+
+    if (filter === 'going') {
+        cond.participants = {
+            $elemMatch: {
+                $eq: req.user._id
+            }
+        };
+    }
+
+    Event.find(cond, (err, data) => {
+        if (err)
+            return res.json({success: false, msg: err});
+
+        return res.json({success: true, data});
+    });
 });
 
 // get event details

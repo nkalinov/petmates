@@ -1,33 +1,92 @@
 <ion-header>
-    <ion-navbar>
+    <ion-toolbar>
         <button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
-        <ion-title>Nearby events</ion-title>
+        <ion-title>Events</ion-title>
         <ion-buttons end>
             <button secondary (click)="addEvent()">
                 <ion-icon name="add"></ion-icon>
             </button>
         </ion-buttons>
-    </ion-navbar>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content>
     <ion-refresher (ionRefresh)="doRefresh($event)">
         <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
-    <ion-list>
-        <button ion-item *ngFor="let item of events.events$ | async" (click)="viewEvent(item)">
-            <ion-avatar item-left>
-                <ion-icon name="calendar"></ion-icon>
-            </ion-avatar>
-            <h2>{{item.name}}</h2>
-            <p>
-                {{item.date | date: "short"}} <span *ngIf="item.participants.length > 1">({{item.participants.length}} going)</span>
-            </p>
-            <p>
-                {{ item.distance }} - {{ item.address }}
-            </p>
-        </button>
-    </ion-list>
+
+    <div padding>
+        <ion-segment [(ngModel)]="events.mode" (ionChange)="onSegmentChange()">
+            <ion-segment-button value="nearby">
+                Nearby
+            </ion-segment-button>
+            <ion-segment-button value="going">
+                Going
+            </ion-segment-button>
+            <ion-segment-button value="mine">
+                Created
+            </ion-segment-button>
+        </ion-segment>
+    </div>
+
+    <div [ngSwitch]="events.mode">
+
+        <div *ngSwitchCase="'nearby'">
+            <ion-list>
+                <button ion-item *ngFor="let item of events.nearby$ | async" (click)="viewEvent(item)">
+                    <ion-avatar item-left>
+                        <ion-icon name="calendar"></ion-icon>
+                    </ion-avatar>
+                    <h2>{{item.name}}</h2>
+                    <p>
+                        {{item.date | date: "short"}} <span *ngIf="item.participants.length > 1">({{item.participants.length}} going)</span>
+                    </p>
+                    <p>
+                        {{ item.distance }} - {{ item.address }}
+                    </p>
+                </button>
+            </ion-list>
+            <p text-center *ngIf="events.nearby$.getValue().length === 0">No events nearby...</p>
+        </div>
+
+        <div *ngSwitchCase="'going'">
+            <ion-list>
+                <button ion-item *ngFor="let item of events.going$ | async" (click)="viewEvent(item)">
+                    <ion-avatar item-left>
+                        <ion-icon name="checkmark-circle"></ion-icon>
+                    </ion-avatar>
+                    <h2>{{item.name}}</h2>
+                    <p>
+                        {{item.date | date: "short"}} <span *ngIf="item.participants.length > 1">({{item.participants.length}} going)</span>
+                    </p>
+                    <p>
+                        {{ item.address }}
+                    </p>
+                </button>
+            </ion-list>
+            <p text-center *ngIf="events.going$.getValue().length === 0">No upcoming events...</p>
+        </div>
+
+        <div *ngSwitchCase="'mine'">
+            <ion-list>
+                <button ion-item *ngFor="let item of events.mine$ | async" (click)="viewEvent(item)">
+                    <ion-avatar item-left>
+                        <ion-icon name="create"></ion-icon>
+                    </ion-avatar>
+                    <h2>{{item.name}}</h2>
+                    <p>
+                        {{item.date | date: "short"}} <span *ngIf="item.participants.length > 1">({{item.participants.length}} going)</span>
+                    </p>
+                    <p>
+                        {{ item.address }}
+                    </p>
+                </button>
+            </ion-list>
+            <p text-center *ngIf="events.mine$.getValue().length === 0">You haven't created events...</p>
+        </div>
+
+    </div>
+
 </ion-content>

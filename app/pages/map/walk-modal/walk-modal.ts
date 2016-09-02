@@ -1,11 +1,11 @@
-import { ViewController } from 'ionic-angular';
+import { ViewController, ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { WalkService } from '../../../services/walk.service.ts';
-import { PetsPage } from '../../pets/pets';
 import { AgeInfo } from '../../../common/age';
 import { GenderInfo } from '../../../common/gender';
 import { PetImage } from '../../../common/pet-image';
+import { PetEditPage } from '../../pets/edit/pet.edit';
 
 @Component({
     directives: [GenderInfo, AgeInfo, PetImage],
@@ -13,16 +13,20 @@ import { PetImage } from '../../../common/pet-image';
 })
 
 export class WalkModal {
-    selectedPet:string;
-    PetsPage:PetsPage;
+    selectedPet: string;
 
-    constructor(public auth:AuthService,
-                public walk:WalkService,
-                public viewCtrl:ViewController) {
+    constructor(private modalCtrl: ModalController,
+                public auth: AuthService,
+                public walk: WalkService,
+                public viewCtrl: ViewController) {
     }
 
     start() {
         this.walk.start(this.selectedPet);
         this.viewCtrl.dismiss();
+    }
+
+    petCreateModal() {
+        this.modalCtrl.create(PetEditPage).present();
     }
 }

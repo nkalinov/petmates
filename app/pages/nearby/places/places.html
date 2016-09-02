@@ -22,4 +22,5 @@
             </p>
         </button>
     </ion-list>
+    <p text-center *ngIf="nearby.places$.getValue().length === 0">No places nearby...</p>
 </ion-content>

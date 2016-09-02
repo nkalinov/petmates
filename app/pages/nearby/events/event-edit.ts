@@ -29,7 +29,8 @@ export class EventEditPage {
 
         const now = new Date();
         const month = now.getMonth() + 1;
-        this.min = `${now.getFullYear()}-${month < 10 ? '0' + month : month}`;
+        const day = now.getDate();
+        this.min = `${now.getFullYear()}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
         this.max = (now.getFullYear() + 1).toString();
 
         if (this.event._id) {

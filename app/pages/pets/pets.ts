@@ -13,16 +13,16 @@ import { PetImage } from '../../common/pet-image';
 })
 export class PetsPage {
 
-    constructor(private nav: NavController,
-                public auth: AuthService,
+    constructor(public auth: AuthService,
+                private nav: NavController,
                 private modalCtrl: ModalController) {
     }
 
-    public petEdit(pet) {
+    petEdit(pet) {
         this.nav.push(PetEditPage, { pet });
     }
 
-    public petCreateModal() {
+    petCreateModal() {
         this.modalCtrl.create(PetEditPage).present();
     }
 }

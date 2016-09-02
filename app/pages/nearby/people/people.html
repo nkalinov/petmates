@@ -1,10 +1,10 @@
 <ion-header>
-    <ion-navbar>
+    <ion-toolbar>
         <button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
         <ion-title>Nearby people</ion-title>
-    </ion-navbar>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content>
@@ -22,4 +22,5 @@
             </p>
         </button>
     </ion-list>
+    <p text-center *ngIf="nearby.people$.getValue().length === 0">No people nearby...</p>
 </ion-content>

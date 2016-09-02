@@ -7,6 +7,7 @@ import { EventEditPage } from './event-edit';
 import { MateViewPage } from '../../mates/view/mate.view';
 import { MateImage } from '../../../common/mate-image';
 import { EventsService } from '../../../services/events.service';
+import { LocationService } from '../../../services/location.service';
 
 @Component({
     templateUrl: 'build/pages/nearby/events/event-view.html',
@@ -22,6 +23,7 @@ export class EventViewPage {
                 private events: EventsService,
                 private loadingCtrl: LoadingController,
                 private navCtrl: NavController,
+                private location: LocationService,
                 public auth: AuthService) {
         this.event = navParams.get('event');
     }
@@ -29,10 +31,16 @@ export class EventViewPage {
     ionViewWillEnter() {
         const loader = this.loadingCtrl.create();
         loader.present();
+
         this.events
             .getEventDetails(this.event._id)
             .then(data => {
-                this.event = data; // populated data
+                this.event = data;
+                this.event.setDistance(
+                    this.event.latLng.distanceTo(
+                        L.latLng(this.location.getLastCoords()[1], this.location.getLastCoords()[0])
+                    )
+                );
                 loader.dismiss();
             }, () => this.navCtrl.pop());
     }

@@ -10,12 +10,21 @@ import { EventsService } from '../../../services/events.service';
 })
 
 export class EventsPage {
+
     constructor(private navCtrl: NavController,
                 public events: EventsService) {
     }
 
     ionViewDidEnter() {
-        this.events.getNearbyEvents();
+        this.onSegmentChange();
+    }
+
+    onSegmentChange() {
+        if (this.events.mode === 'nearby') {
+            this.events.getNearbyEvents();
+        } else {
+            this.events.getEvents();
+        }
     }
 
     viewEvent(event: Event) {
@@ -27,9 +36,16 @@ export class EventsPage {
     }
 
     doRefresh(refresher: Refresher) {
-        this.events.getNearbyEvents(true).then(
-            () => refresher.complete(),
-            err => refresher.complete()
-        );
+        if (this.events.mode === 'nearby') {
+            this.events.getNearbyEvents(true).then(
+                () => refresher.complete(),
+                err => refresher.complete()
+            );
+        } else {
+            this.events.getEvents(true).then(
+                () => refresher.complete(),
+                err => refresher.complete()
+            );
+        }
     }
 }

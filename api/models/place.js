@@ -22,7 +22,11 @@ const PlaceSchema = new Schema({
     picture: String,
     phone: String,
     hours: String,
-    link: String
+    link: String,
+    approved: {
+        type: Boolean,
+        default: false
+    }
 }, {
     toJSON: {
         virtuals: true,

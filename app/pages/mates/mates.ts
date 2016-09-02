@@ -27,7 +27,9 @@ export class MatesPage implements AfterViewInit {
     ngAfterViewInit() {
         this.pendingRequestsBadgeSubscription = this.mates.pending$.subscribe((length) => {
             // set new requests badge
-            this.tabs.last.tabBadge = length > 0 ? length.toString() : undefined;
+            setTimeout(() => {
+                this.tabs.last.tabBadge = length > 0 ? length.toString() : null;
+            });
         });
     }
 

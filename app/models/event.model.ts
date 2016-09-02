@@ -1,5 +1,6 @@
 import { User } from './user.model';
 import { localISO } from '../services/common.service';
+import LatLng = L.LatLng;
 
 export class Event {
     _id: string;
@@ -14,11 +15,12 @@ export class Event {
     participants: Array<User> = [];
 
     distance: string;
-    populated: boolean = false;
+    latLng: LatLng;
 
     constructor(data?) {
         if (data) {
             Object.assign(this, data);
+            this.latLng = L.latLng(this.location.coordinates[1], this.location.coordinates[0]);
         }
     }
 

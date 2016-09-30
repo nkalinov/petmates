@@ -1,5 +1,7 @@
+- profile settings to popover links
 - nearby
     - places 
+        - report place
         - to add new dog friendly place (parks, restos, bars...)
         - create new (like new event)
     - events

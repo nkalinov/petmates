@@ -1,0 +1,57 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            <span *ngIf="place._id">Edit</span>
+            <span *ngIf="!place._id">New</span>
+            event
+        </ion-title>
+        <ion-buttons end>
+            <button secondary (click)="save()"
+                    [disabled]="!eventForm.valid || !place.location || !place.location.coordinates">
+                Save
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <ion-row no-padding wrap center>
+        <ion-col class="event-map-col" no-padding width-100>
+            <div id="event-map"></div>
+        </ion-col>
+    </ion-row>
+    <p no-padding text-center text-small>Click on the map or drag the marker to set the event coordinates.</p>
+
+    <form (submit)="save()" #eventForm="ngForm">
+        <ion-list>
+            <ion-item>
+                <ion-label>Name</ion-label>
+                <ion-input name="name" required type="text" [(ngModel)]="place.name"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Description</ion-label>
+                <ion-textarea name="description" required [(ngModel)]="place.description"></ion-textarea>
+            </ion-item>
+            <ion-item>
+                <ion-label>Address</ion-label>
+                <ion-input name="address" required type="text" [(ngModel)]="place.address"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Start Date</ion-label>
+                <ion-datetime name="date" [(ngModel)]="place.date"
+                              min="{{min}}" max="{{max}}"></ion-datetime>
+            </ion-item>
+            <ion-item>
+                <ion-label>Start Time</ion-label>
+                <ion-datetime name="time" displayFormat="h:mm:A" pickerFormat="hh mm A"
+                              [(ngModel)]="place.date"></ion-datetime>
+            </ion-item>
+        </ion-list>
+    </form>
+
+    <div padding-horizontal margin-bottom *ngIf="place._id">
+        <button small block danger outline (click)="reportPlace()">
+            Report place
+        </button>
+    </div>
+</ion-content>

@@ -41,7 +41,7 @@ export class MateViewPage {
                 this.mate = user;
                 // remove me and not accepted mates
                 this.mate.mates = this.mate.mates.filter(f =>
-                    f.friend._id !== this.auth.user._id &&
+                    // f.friend._id !== this.auth.user._id &&
                     f.status === this.friendshipStatuses.accepted ? f.friend : null
                 );
                 this.mapFriendship();

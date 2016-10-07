@@ -1,7 +1,8 @@
 <ion-header>
     <ion-navbar>
         <ion-buttons start *ngIf="!pet._id">
-            <button dark (click)="viewCtrl.dismiss()">
+            <button ion-button color="modalClose"
+                    (click)="viewCtrl.dismiss()">
                 Cancel
             </button>
         </ion-buttons>
@@ -11,7 +12,9 @@
             pet
         </ion-title>
         <ion-buttons end>
-            <button secondary (click)="save()" [disabled]="!petForm.valid">
+            <button ion-button color="secondary"
+                    [disabled]="!petForm.valid"
+                    (click)="save()">
                 Save
             </button>
         </ion-buttons>
@@ -45,12 +48,14 @@
             </ion-item>
             <ion-item (click)="selectBreed()">
                 <ion-label>Breed</ion-label>
-                <ion-input item-right name="breed" readonly required type="text" [(ngModel)]="pet.breed.name"></ion-input>
+                <ion-input item-right name="breed" readonly required type="text"
+                           [(ngModel)]="pet.breed.name"></ion-input>
             </ion-item>
         </ion-list>
     </form>
     <div padding *ngIf="pet._id">
-        <button small block danger outline (click)="remove()">
+        <button ion-button small block color="danger" outline
+                (click)="remove()">
             Delete pet
         </button>
     </div>

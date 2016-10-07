@@ -1,11 +1,11 @@
 <ion-header>
     <ion-navbar>
-        <button menuToggle>
+        <button ion-button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
         <ion-title>Mates</ion-title>
         <ion-buttons end>
-            <button secondary (click)="openSearchMateModal()">
+            <button ion-button icon-only color="secondary" (click)="openSearchMateModal()">
                 <ion-icon name="search"></ion-icon>
             </button>
         </ion-buttons>
@@ -28,11 +28,11 @@
                 <h2>{{friendship.friend.name}}</h2>
             </button>
             <ion-item-options>
-                <button secondary (click)="mates.add(friendship.friend)">
+                <button ion-button icon-left color="secondary" (click)="mates.add(friendship.friend)">
                     <ion-icon name="checkmark-circle"></ion-icon>
                     Accept
                 </button>
-                <button danger (click)="mates.remove(friendship._id)">
+                <button ion-button icon-left color="danger" (click)="mates.remove(friendship._id)">
                     <ion-icon name="remove-circle"></ion-icon>
                     Remove
                 </button>

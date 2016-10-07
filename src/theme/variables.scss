@@ -21,13 +21,14 @@ $background-color: #fff;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary: #6BD9EC,
-  primary2: #11c1f3,
-  secondary: #A7DF40,
-  danger: #F7755F,
-  light: #f4f4f4,
-  dark: #222,
-  facebook: #3b5998
+        primary: #6BD9EC,
+        primary2: #11c1f3,
+        secondary: #A7DF40,
+        danger: #F7755F,
+        light: #f4f4f4,
+        dark: #222,
+        modalClose: #222,
+        facebook: #3b5998
 );
 
 $content-ios-has-views-background: inherit;
@@ -48,4 +49,4 @@ $font-primary: 'Crafty Girls', cursive;
 // http://ionicframework.com/docs/v2/ionicons/
 
 $ionicons-font-path: "../assets/fonts";
-@import "ionicons";
+@import 'ionicons';

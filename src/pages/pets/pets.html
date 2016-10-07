@@ -4,7 +4,7 @@
         <ion-icon item-left name="add"></ion-icon>
         <span>Add new pet</span>
     </button>
-    <button type="button" ion-item *ngFor="let d of auth.user.pets" (click)="petEdit(d)">
+    <button ion-item type="button" *ngFor="let d of auth.user.pets" (click)="petEdit(d)">
         <ion-avatar item-left>
             <pet-image [image]="d.pic"></pet-image>
         </ion-avatar>

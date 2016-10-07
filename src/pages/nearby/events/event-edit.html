@@ -6,8 +6,9 @@
             event
         </ion-title>
         <ion-buttons end>
-            <button secondary (click)="save()"
-                    [disabled]="!eventForm.valid || !event.location || !event.location.coordinates">
+            <button ion-button color="secondary"
+                    [disabled]="!eventForm.valid || !event.location || !event.location.coordinates"
+                    (click)="save()">
                 Save
             </button>
         </ion-buttons>
@@ -17,7 +18,7 @@
 <ion-content>
     <ion-row no-padding wrap center>
         <ion-col class="event-map-col" no-padding width-100>
-            <div id="event-map"></div>
+            <div id="event-edit-map" class="event-map"></div>
         </ion-col>
     </ion-row>
     <p no-padding text-center text-small>Click on the map or drag the marker to set the event coordinates.</p>
@@ -50,7 +51,8 @@
     </form>
 
     <div padding-horizontal margin-bottom *ngIf="event._id">
-        <button small block danger outline (click)="cancelEvent()">
+        <button ion-button small block color="danger" outline
+                (click)="cancelEvent()">
             Cancel event
         </button>
     </div>

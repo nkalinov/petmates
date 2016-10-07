@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons start>
-            <button dark (click)="viewCtrl.dismiss()">
+            <button ion-button color="modalClose" (click)="viewCtrl.dismiss()">
                 Close
             </button>
         </ion-buttons>
@@ -9,7 +9,8 @@
             Add members
         </ion-title>
         <ion-buttons end>
-            <button secondary (click)="addMatesToConversation()"
+            <button ion-button color="secondary"
+                    (click)="addMatesToConversation()"
                     [disabled]="!haveCheckedFriends()">
                 Add
             </button>

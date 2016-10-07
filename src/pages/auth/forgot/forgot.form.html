@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons start>
-            <button (click)="viewCtrl.dismiss()">
+            <button ion-button color="modalClose" (click)="viewCtrl.dismiss()">
                 Close
             </button>
         </ion-buttons>
@@ -30,7 +30,7 @@
                 </ion-item>
             </ion-list>
             <div padding-horizontal>
-                <button small light block type="submit" block
+                <button ion-button small color="light" block type="submit"
                         [disabled]="!tokenForm.valid">
                     Send me a reset token
                 </button>
@@ -45,7 +45,7 @@
                 </ion-item>
             </ion-list>
             <div padding-horizontal>
-                <button small light block type="submit" block
+                <button ion-button small block color="light" type="submit"
                         [disabled]="!checkTokenForm.valid">
                     Check token
                 </button>
@@ -60,7 +60,7 @@
                            placeholder="New password"></ion-input>
             </ion-item>
             <div padding-horizontal>
-                <button small light block type="submit" block
+                <button ion-button small block color="light" type="submit"
                         [disabled]="!passwordForm.valid">
                     Change password
                 </button>

@@ -1,13 +1,16 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons start>
-            <button dark (click)="viewCtrl.dismiss()">
+            <button ion-button color="modalClose"
+                    (click)="viewCtrl.dismiss()">
                 Cancel
             </button>
         </ion-buttons>
         <ion-title>Go for a walk</ion-title>
         <ion-buttons end>
-            <button secondary (click)="start()" [disabled]="!selectedPet">
+            <button ion-button icon-right color="secondary"
+                    [disabled]="!selectedPet"
+                    (click)="start()">
                 Start
                 <ion-icon name="paw"></ion-icon>
             </button>
@@ -18,8 +21,8 @@
 <ion-content>
     <div text-center *ngIf="auth.user.pets.length===0">
         <p padding-horizontal>To go out for a walk, you must first add your pet.</p>
-        <button (click)="petCreateModal()">
-            <ion-icon item-left name="add"></ion-icon>
+        <button ion-button icon-left (click)="petCreateModal()">
+            <ion-icon name="add"></ion-icon>
             <span>Add new pet</span>
         </button>
     </div>

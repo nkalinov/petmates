@@ -8,7 +8,7 @@ last-activity {
   }
 }
 
-.chat {
+conversation-page {
   .messages {
     width: 100%;
     position: absolute;
@@ -55,34 +55,36 @@ last-activity {
     }
   }
 
-  & > .new-messages {
+  .new-messages {
     position: fixed;
     bottom: 47px;
     width: 100%;
   }
-}
 
-.toolbar-msg {
-  padding: 0 5px;
-  //height: 40px;
-  //border-top: 1px solid #222;
-  //background: #f4f4f4;
+  ion-footer {
+    ion-toolbar {
+      padding: 0 5px;
+      //height: 40px;
+      //border-top: 1px solid #222;
+      //background: #f4f4f4;
 
-  input {
-    display: block;
-    float: left;
-    width: 85%;
-    outline: none;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    padding: 4px 5px;
-    margin-top: 6px;
-  }
+      input {
+        display: block;
+        float: left;
+        width: 85%;
+        outline: none;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        padding: 4px 5px;
+        margin-top: 6px;
+      }
 
-  button {
-    display: block;
-    float: right;
-    width: 12%;
-    margin-top: 5px;
+      button {
+        display: block;
+        float: right;
+        width: 12%;
+        margin-top: 5px;
+      }
+    }
   }
 }

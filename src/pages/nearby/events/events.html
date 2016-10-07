@@ -1,11 +1,12 @@
 <ion-header>
     <ion-toolbar>
-        <button menuToggle>
+        <button ion-button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
         <ion-title>Events</ion-title>
         <ion-buttons end>
-            <button secondary (click)="addEvent()">
+            <button ion-button icon-only color="secondary"
+                    (click)="addEvent()">
                 <ion-icon name="add"></ion-icon>
             </button>
         </ion-buttons>

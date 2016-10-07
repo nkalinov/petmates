@@ -14,6 +14,7 @@ import { LocationService } from '../../providers/location.service';
 L.Icon.Default.imagePath = 'build/img/leaflet';
 
 @Component({
+    selector: 'map-page',
     templateUrl: 'map.html'
 })
 

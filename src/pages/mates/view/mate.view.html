@@ -19,7 +19,7 @@
     </p>
 
     <div padding-horizontal>
-        <button block primary
+        <button ion-button icon-left block color="primary"
                 *ngIf="!friendshipStatus && mate._id !== auth.user._id"
                 (click)="addMate()">
             <ion-icon name="person-add"></ion-icon>
@@ -29,7 +29,7 @@
         <p text-center *ngIf="friendshipStatus === friendshipStatuses.pending">
             {{mate.name}} sent you a mate request!
         </p>
-        <button block secondary margin-bottom-small
+        <button ion-button icon-left block color="secondary" margin-bottom-small
                 *ngIf="friendshipStatus === friendshipStatuses.pending"
                 (click)="approveMate()">
             <ion-icon name="checkmark"></ion-icon>
@@ -41,12 +41,13 @@
             <p *ngIf="friendshipStatus === friendshipStatuses.requested">
                 Request sent!
             </p>
-            <button small block danger outline (click)="cancelMate()">
+            <button ion-button icon-left small block color="danger" outline
+                    (click)="cancelMate()">
                 <ion-icon name="close"></ion-icon>
                 Cancel
             </button>
         </div>
-        <button small block danger outline
+        <button ion-button icon-left small block color="danger" outline
                 *ngIf="friendshipStatus === friendshipStatuses.accepted"
                 (click)="removeMate()">
             <ion-icon name="close"></ion-icon>

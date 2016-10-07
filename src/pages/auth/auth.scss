@@ -1,7 +1,14 @@
 $auth-input-placeholder-color: #666;
 
-.auth-page {
-  background: #fff url('../img/menu.jpg') bottom center;
+auth-page {
+
+  & > ion-content {
+    background: #fff url('../assets/img/menu.jpg') bottom center;
+  }
+
+  ion-segment-button {
+    color: #fff !important;
+  }
 
   .title {
     margin-top: 20px;
@@ -11,10 +18,6 @@ $auth-input-placeholder-color: #666;
       color: #fff;
       font-size: 30px;
     }
-  }
-
-  .segment-button {
-    color: #fff;
   }
 
   .sign-up {

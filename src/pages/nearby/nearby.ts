@@ -4,6 +4,7 @@ import { PlacesPage } from './places/places';
 import { EventsPage } from './events/events';
 
 @Component({
+    selector: 'nearby-page',
     templateUrl: 'nearby.html'
 })
 

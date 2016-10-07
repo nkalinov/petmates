@@ -5,7 +5,6 @@ import { LocationService } from '../../../providers/location.service';
 import { MateViewPage } from '../../mates/view/mate.view';
 import { MateImage } from '../../../common/mate-image';
 import { localISO } from '../../../providers/common.service';
-import LeafletMouseEvent = L.LeafletMouseEvent;
 import { EventsService } from '../../../providers/events.service';
 
 @Component({
@@ -46,12 +45,12 @@ export class EventEditPage {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         });
 
-        this.map = L.map('event-map', {
+        this.map = L.map('event-edit-map', {
             center: L.latLng(lastCoords[1], lastCoords[0]),
             zoom: 16,
             zoomControl: false,
             layers: [tiles]
-        }).on('click', (e: LeafletMouseEvent) => {
+        }).on('click', (e: any) => {
             e.originalEvent.preventDefault();
 
             if (this.marker) {
@@ -65,7 +64,7 @@ export class EventEditPage {
 
         if (this.event.location && this.event.location.coordinates.length > 0) {
             const coords = L.latLng(this.event.location.coordinates[1], this.event.location.coordinates[0]);
-            this.map.setView(coords);
+            this.map.setView(coords, 16);
             this.addMarker(coords);
         }
     }

@@ -1,6 +1,6 @@
 import 'leaflet';
 import 'leaflet.markercluster';
-// import '../vendor/leaflet.markercluster.layersupport-src';
+// import '../vendor/leaflet.markercluster.layersupport-src.js';
 import '../vendor/rxjs.operators';
 import { Events, Nav, Platform, AlertController } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';

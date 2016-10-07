@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons start>
-            <button primary (click)="viewCtrl.dismiss()">
+            <button ion-button icon-left color="modalClose" (click)="viewCtrl.dismiss()">
                 <ion-icon name="arrow-back"></ion-icon>
                 Cancel
             </button>
@@ -12,7 +12,7 @@
             conversation
         </ion-title>
         <ion-buttons end>
-            <button secondary (click)="saveConversation()"
+            <button ion-button color="secondary" (click)="saveConversation()"
                     [disabled]="conversation.members.length <= 0">
                 <span *ngIf="!conversation._id">Create</span>
                 <span *ngIf="conversation._id">Save</span>
@@ -47,7 +47,8 @@
     </ion-list>
 
     <div padding-horizontal *ngIf="conversation._id">
-        <button block danger small outline (click)="leaveConversation()">
+        <button ion-button block color="danger" small outline
+                (click)="leaveConversation()">
             Leave conversation
         </button>
     </div>

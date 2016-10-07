@@ -7,9 +7,10 @@ button[disabled] {
   font-size: 10px !important;
 }
 
-#main-menu {
+ion-menu#main-menu {
+
   .menu-inner {
-    background: #fff url('../img/menu.jpg') bottom center;
+    background: #fff url('../assets/img/menu.jpg') bottom center;
   }
 
   ion-title {
@@ -45,6 +46,7 @@ button[disabled] {
 [margin-bottom] {
   margin-bottom: 16px !important;
 }
+
 [margin-bottom-small] {
   margin-bottom: 8px !important;
 }

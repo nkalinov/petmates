@@ -1,17 +1,16 @@
 <ion-header>
     <ion-toolbar>
-        <button menuToggle>
+        <button ion-button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
         <ion-title>
-            <ion-icon primary name="paw"></ion-icon>
+            <ion-icon color="primary" name="paw"></ion-icon>
             PetMates
         </ion-title>
         <ion-buttons end>
-            <!--<button *ngIf="GEOaccess">-->
-            <!--<ion-icon name="funnel"></ion-icon>-->
-            <!--</button>-->
-            <button (click)="map.setView(marker.getLatLng(), 16);" *ngIf="GEOaccess">
+            <button ion-button icon-only
+                    (click)="map.setView(marker.getLatLng(), 16);"
+                    *ngIf="GEOaccess">
                 <ion-icon name="locate"></ion-icon>
             </button>
         </ion-buttons>
@@ -31,13 +30,15 @@
             Out with {{walk.currentWalk.pet.name}}
         </p>
         <ion-buttons end *ngIf="!walk.currentWalk.started">
-            <button secondary (click)="openWalkModal()">
+            <button ion-button icon-right color="secondary"
+                    (click)="openWalkModal()">
                 Start walk
                 <ion-icon name="paw"></ion-icon>
             </button>
         </ion-buttons>
         <ion-buttons end *ngIf="walk.currentWalk.started">
-            <button danger (click)="walk.stop()">
+            <button ion-button icon-right color="danger"
+                    (click)="walk.stop()">
                 Stop walk
                 <ion-icon name="close"></ion-icon>
             </button>

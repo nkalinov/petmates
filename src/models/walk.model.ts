@@ -1,6 +1,6 @@
 import LatLngExpression = L.LatLngExpression;
 import Marker = L.Marker;
-import * as uuid from 'node-uuid/uuid.js';
+// import * as uuid from 'node-uuid/uuid.js';
 
 export interface WalkPet {
     name: string;
@@ -30,7 +30,7 @@ export class Walk {
     }
 
     start(pet: WalkPet) {
-        this.id = (<any>uuid).v4();
+        // this.id = (<any>uuid).v4();
         this.pet = pet;
         this.started = true;
     }

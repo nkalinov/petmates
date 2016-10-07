@@ -1,4 +1,4 @@
-<ion-content class="auth-page">
+<ion-content>
     <h4 class="title" text-center>
         <!--<ion-icon name="paw" primary></ion-icon>-->
         <span secondary>PET MATES</span>
@@ -17,7 +17,8 @@
 
         <form (ngSubmit)="login()" *ngSwitchCase="'login'" #loginForm="ngForm">
             <div padding-bottom class="fb">
-                <button small type="button" facebook block (click)="loginFacebook()">
+                <button ion-button icon-left small block type="button" color="facebook"
+                        (click)="loginFacebook()">
                     <ion-icon name="logo-facebook"></ion-icon>
                     Login with Facebook
                 </button>
@@ -37,14 +38,15 @@
                         [disabled]="!loginForm.valid">Login
                 </button>
             </ion-list>
-            <button type="button" (click)="openForgotForm()" small light block>
+            <button ion-button type="button" (click)="openForgotForm()" small light block>
                 Forgot password?
             </button>
         </form>
 
         <form class="sign-up" (ngSubmit)="signup()" *ngSwitchCase="'sign-up'" #signupForm="ngForm">
             <div padding-bottom>
-                <button small type="button" facebook block (click)="loginFacebook()">
+                <button ion-button icon-left small block type="button" color="facebook"
+                        (click)="loginFacebook()">
                     <ion-icon name="logo-facebook"></ion-icon>
                     Sign-up with Facebook
                 </button>

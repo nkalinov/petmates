@@ -51,15 +51,14 @@ export class EventViewPage {
         });
         const coords = L.latLng(this.event.location.coordinates[1], this.event.location.coordinates[0]);
 
-        this.map = L.map('event-map', {
+        this.map = L.map('event-view-map', {
             center: coords,
             zoom: 16,
             zoomControl: false,
             layers: [tiles]
         });
 
-        this.marker = L.marker(coords)
-            .addTo(this.map);
+        this.marker = L.marker(coords).addTo(this.map);
     }
 
     editEvent() {

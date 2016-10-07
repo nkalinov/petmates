@@ -1,13 +1,15 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons start>
-            <button (click)="cancel()">
+            <button ion-button color="modalClose"
+                    (click)="cancel()">
                 Cancel
             </button>
         </ion-buttons>
         <ion-title>Edit profile</ion-title>
         <ion-buttons end>
-            <button secondary (click)="save()">
+            <button ion-button color="secondary"
+                    (click)="save()">
                 Save
             </button>
         </ion-buttons>

@@ -9,6 +9,7 @@ import { MateImage } from '../../common/mate-image';
 import { makeFileRequest } from '../../providers/common.service';
 
 @Component({
+    selector: 'auth-page',
     templateUrl: 'auth.html',
     directives: [MateImage]
 })

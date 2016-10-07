@@ -5,14 +5,15 @@
             <last-activity prefix="Active" [chat]="conversation" text-small></last-activity>
         </ion-title>
         <ion-buttons end>
-            <button dark (click)="editConversation()">
+            <button ion-button icon-only color="dark"
+                    (click)="editConversation()">
                 <ion-icon name="settings"></ion-icon>
             </button>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
 
-<ion-content class="chat">
+<ion-content>
     <div class="messages">
         <div class="message"
              *ngFor="let m of conversation.messages"
@@ -30,16 +31,19 @@
         </div>
     </div>
     <div class="new-messages" text-center *ngIf="conversation.newMessages > 0">
-        <button small round primary (click)="scrollToBottom()">
+        <button ion-button small round color="primary"
+                (click)="scrollToBottom()">
             New messages
         </button>
     </div>
 </ion-content>
 
 <ion-footer>
-    <ion-toolbar class="toolbar-msg">
+    <ion-toolbar>
         <input type="text" placeholder="Message..." [(ngModel)]="message.msg" (keydown.enter)="sendMessage()">
-        <button small (click)="sendMessage()" [disabled]="message.msg === ''">
+        <button ion-button small icon-only
+                [disabled]="message.msg === ''"
+                (click)="sendMessage()">
             <ion-icon name="send"></ion-icon>
         </button>
     </ion-toolbar>

@@ -1,7 +1,8 @@
 <ion-header>
     <ion-navbar>
         <ion-buttons start>
-            <button dark type="button" (click)="viewCtrl.dismiss()">
+            <button ion-button color="modalClose" type="button"
+                    (click)="viewCtrl.dismiss()">
                 Close
             </button>
         </ion-buttons>
@@ -26,7 +27,8 @@
                 </p>
             </button>
             <ion-item-options>
-                <button primary (click)="addMate(item)">
+                <button ion-button icon-left color="primary"
+                        (click)="addMate(item)">
                     <ion-icon name="person-add"></ion-icon>
                     Send request
                 </button>

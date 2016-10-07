@@ -2,7 +2,9 @@
     <ion-navbar>
         <ion-title>{{event.name}}</ion-title>
         <ion-buttons end>
-            <button dark *ngIf="auth.user._id === event.creator" (click)="editEvent()">
+            <button ion-button color="dark"
+                    *ngIf="auth.user._id === event.creator"
+                    (click)="editEvent()">
                 Edit
             </button>
         </ion-buttons>
@@ -12,7 +14,7 @@
 <ion-content>
     <ion-row no-padding wrap center>
         <ion-col class="event-map-col" no-padding width-100>
-            <div id="event-map"></div>
+            <div id="event-view-map" class="event-map"></div>
         </ion-col>
     </ion-row>
 
@@ -33,10 +35,10 @@
         </ion-item>
 
         <ion-item>
-                <span item-left>
-                    ~{{event.distance}}
-                </span>
-            <button primary clear item-right
+            <span item-left>
+                ~{{event.distance}}
+            </span>
+            <button ion-button icon-left color="primary" clear item-right
                     (click)="navigate()">
                 <ion-icon name="navigate"></ion-icon>
                 Directions
@@ -44,10 +46,14 @@
         </ion-item>
 
         <div *ngIf="event.creator !== auth.user._id">
-            <button small block secondary (click)="joinEvent()" *ngIf="!hasJoined()" no-margin>
+            <button ion-button small block color="secondary" no-margin
+                    *ngIf="!hasJoined()"
+                    (click)="joinEvent()">
                 Going
             </button>
-            <button small block danger (click)="notGoing()" *ngIf="hasJoined()" no-margin>
+            <button ion-button small block color="danger" no-margin
+                    *ngIf="hasJoined()"
+                    (click)="notGoing()">
                 Not going
             </button>
         </div>

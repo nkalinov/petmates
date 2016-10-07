@@ -6,8 +6,9 @@
             event
         </ion-title>
         <ion-buttons end>
-            <button secondary (click)="save()"
-                    [disabled]="!eventForm.valid || !place.location || !place.location.coordinates">
+            <button ion-button color="secondary"
+                    [disabled]="!eventForm.valid || !place.location || !place.location.coordinates"
+                    (click)="save()">
                 Save
             </button>
         </ion-buttons>
@@ -50,7 +51,8 @@
     </form>
 
     <div padding-horizontal margin-bottom *ngIf="place._id">
-        <button small block danger outline (click)="reportPlace()">
+        <button ion-button small block color="danger" outline
+                (click)="reportPlace()">
             Report place
         </button>
     </div>

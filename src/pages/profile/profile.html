@@ -1,13 +1,15 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons start>
-            <button menuToggle>
+            <button ion-button menuToggle>
                 <ion-icon name="menu"></ion-icon>
             </button>
         </ion-buttons>
         <ion-title>Profile</ion-title>
         <ion-buttons end>
-            <button right [hidden]="edit" (click)="openDangerSheet()">
+            <button ion-button icon-only right
+                    [hidden]="edit"
+                    (click)="openDangerSheet()">
                 <ion-icon name="settings"></ion-icon>
             </button>
         </ion-buttons>
@@ -27,7 +29,10 @@
             <p>{{ auth.user.email }} (private)</p>
         </ion-item>
         <ion-item>
-            <button primary clear item-left (click)="editModal()">Edit</button>
+            <button ion-button color="primary" clear item-left
+                    (click)="editModal()">
+                Edit
+            </button>
         </ion-item>
     </ion-card>
     <pets-list></pets-list>

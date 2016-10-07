@@ -9,6 +9,7 @@ import { ConversationEditPage } from '../edit/conversation.edit';
 import { LastActivity } from '../../../common/last-activity';
 
 @Component({
+    selector: 'conversation-page',
     templateUrl: 'conversation.html',
     directives: [MateImage, LastActivity]
 })

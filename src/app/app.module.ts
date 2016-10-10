@@ -1,3 +1,7 @@
+import 'leaflet';
+import 'leaflet.markercluster';
+import '../vendor/rxjs.operators';
+
 import { NgModule, Component } from '@angular/core';
 import { IonicApp, IonicModule } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
@@ -46,6 +50,7 @@ import { AgeInfo } from '../common/age';
 import { GenderInfo } from '../common/gender';
 import { LastActivity } from '../common/last-activity';
 import { PlaceImage } from '../common/place-image';
+import { config } from './config';
 
 const pages: Array<Component> = [
     PetMatesApp,
@@ -66,9 +71,9 @@ const pages: Array<Component> = [
     MatesPage,
     MateViewPage,
     MatesSearchPage,
-    // MatesAcceptedPage,
-    // MatesPendingPage,
-    // MatesRequestedPage,
+    MatesAcceptedPage,
+    MatesPendingPage,
+    MatesRequestedPage,
 
     NearbyPage,
     EventsPage,
@@ -98,12 +103,8 @@ const pages: Array<Component> = [
         PlaceImage
     ]),
     imports: [
-        IonicModule.forRoot(PetMatesApp, {
+        IonicModule.forRoot(PetMatesApp, Object.assign(config, {
             tabsPlacement: 'bottom',
-            // prodMode: true,
-            // API: 'http://79.124.64.127:3001',
-            // API: 'http://192.168.0.104:3001',
-            API: 'http://127.0.0.1:3001',
             emitCoordsIntervalMs: 15 * 1000,
             deleteInactiveIntervalMs: 30 * 1000,
             defaultPetImage: 'assets/img/default_pet.jpg',
@@ -112,7 +113,7 @@ const pages: Array<Component> = [
             defaultVetCardImage: 'assets/img/hospital_marker.png', // todo
             defaultShopImage: 'assets/img/hospital_marker.png', // todo
             defaultShopCardImage: 'assets/img/hospital_marker.png' // todo
-        })
+        }))
     ],
     bootstrap: [IonicApp],
     entryComponents: pages,

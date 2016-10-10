@@ -11,7 +11,8 @@ import { NearbyService } from '../../providers/nearby.service';
 import { vetIcon, UserIcon } from '../../common/icons';
 import { Place } from '../../models/place.model';
 import { LocationService } from '../../providers/location.service';
-L.Icon.Default.imagePath = 'build/img/leaflet';
+
+(<any>L.Icon.Default).imagePath = '../assets/img/leaflet/';
 
 @Component({
     selector: 'map-page',
@@ -27,9 +28,9 @@ export class MapPage {
     });
     control = L.control.layers(null, null, { collapsed: false });
     layers = {
-        walks: L.layerGroup(),
-        shops: L.layerGroup(),
-        vets: L.layerGroup()
+        walks: L.layerGroup([]),
+        shops: L.layerGroup([]),
+        vets: L.layerGroup([])
     };
 
     GEOaccess: boolean = true;
@@ -215,7 +216,7 @@ export class MapPage {
 
     private populate() {
         for (let i = 0; i < 50; i++) {
-            new L.Marker(this.getRandomLatLng(this.map), {
+            new L.marker(this.getRandomLatLng(this.map), {
                 icon: new UserIcon({
                     iconUrl: `${this.config.get('defaultPetImage')}`
                 })
@@ -229,7 +230,7 @@ export class MapPage {
             northEast = bounds.getNorthEast(),
             lngSpan = northEast.lng - southWest.lng,
             latSpan = northEast.lat - southWest.lat;
-        return new L.LatLng(
+        return new L.latLng(
             southWest.lat + latSpan * Math.random(),
             southWest.lng + lngSpan * Math.random());
     }

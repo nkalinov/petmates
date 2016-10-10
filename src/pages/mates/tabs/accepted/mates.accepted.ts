@@ -1,5 +1,5 @@
 import { NavController, AlertController, ModalController } from 'ionic-angular';
-import { forwardRef, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { MateImage } from '../../../../common/mate-image';
 import { MateViewPage } from '../../view/mate.view';
 import { Friendship } from '../../../../models/friendship.interface';
@@ -9,7 +9,7 @@ import { AuthService } from '../../../../providers/auth.service';
 import { MatesSearchPage } from '../../search/mates.search';
 
 @Component({
-    directives: [forwardRef(() => MateImage)],
+    directives: [MateImage],
     templateUrl: 'mates.accepted.html',
     pipes: [MessageTimePipe]
 })

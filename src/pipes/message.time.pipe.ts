@@ -1,21 +1,21 @@
-import {Pipe, ChangeDetectorRef} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {AsyncPipe} from '@angular/common';
+import { Pipe, ChangeDetectorRef } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { AsyncPipe } from '@angular/common';
 
 @Pipe({
     name: 'messageTime',
     pure: false
 })
 export class MessageTimePipe extends AsyncPipe {
-    value:Date;
-    prefix:string = '';
-    timer:Observable<string>;
+    value: Date;
+    prefix: string = '';
+    timer: Observable<string>;
 
-    constructor(ref:ChangeDetectorRef) {
+    constructor(ref: ChangeDetectorRef) {
         super(ref);
     }
 
-    transform(obj:any, args?:any[]):any {
+    transform(obj: any, args?: any[]): any {
         if (obj instanceof Date) {
             this.value = obj;
             if (args.length) {
@@ -33,8 +33,8 @@ export class MessageTimePipe extends AsyncPipe {
     }
 
     private getObservable() {
-        return Observable.interval(1000).startWith(0).map(()=> {
-            let result:string;
+        return Observable.interval(1000).startWith(0).map(() => {
+            let result: string;
             // current time
             let now = new Date().getTime();
 

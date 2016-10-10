@@ -1,4 +1,4 @@
-import { forwardRef, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { NavController, ModalController } from 'ionic-angular';
 import { MateImage } from '../../../../common/mate-image';
 import { MatesService } from '../../../../providers/mates.service';
@@ -6,7 +6,7 @@ import { MateViewPage } from '../../view/mate.view';
 import { MatesSearchPage } from '../../search/mates.search';
 
 @Component({
-    directives: [forwardRef(() => MateImage)],
+    directives: [MateImage],
     templateUrl: 'mates.pending.html'
 })
 

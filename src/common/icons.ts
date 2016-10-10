@@ -15,4 +15,4 @@ const VetIcon = L.Icon.extend({
     }
 });
 
-export const vetIcon = (customIcon?) => new VetIcon({ iconUrl: customIcon || 'build/img/hospital_marker.png' });
+export const vetIcon = (customIcon?) => new VetIcon({ iconUrl: customIcon || '../assets/img/hospital_marker.png' });

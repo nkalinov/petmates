@@ -1,8 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "build": "ionic-app-scripts build",
-    "watch": "ionic-app-scripts watch",
+    "build": "ionic-app-scripts build --dev --copy ./config/copy.config.prod.js",
+    "watch": "ionic-app-scripts watch --copy ./config/copy.config.dev.js",
     "serve:before": "watch",
     "emulate:before": "build",
     "deploy:before": "build",

@@ -7,7 +7,7 @@
         </ion-title>
         <ion-buttons end>
             <button ion-button color="secondary"
-                    [disabled]="!eventForm.valid || !place.location || !place.location.coordinates"
+                    [disabled]="!placeForm.valid || !place.location || !place.location.coordinates"
                     (click)="save()">
                 Save
             </button>
@@ -18,16 +18,23 @@
 <ion-content>
     <ion-row no-padding wrap center>
         <ion-col class="event-map-col" no-padding width-100>
-            <div id="event-map"></div>
+            <div id="place-map" class="event-map"></div>
         </ion-col>
     </ion-row>
-    <p no-padding text-center text-small>Click on the map or drag the marker to set the event coordinates.</p>
+    <p no-padding text-center text-small>Click on the map or drag the marker to set the place coordinates.</p>
 
-    <form (submit)="save()" #eventForm="ngForm">
+    <form (submit)="save()" #placeForm="ngForm">
         <ion-list>
             <ion-item>
                 <ion-label>Name</ion-label>
                 <ion-input name="name" required type="text" [(ngModel)]="place.name"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Type</ion-label>
+                <ion-select name="type" [(ngModel)]="place.type">
+                    <ion-option *ngFor="let t of placeTypes" value="m">Male</ion-option>
+                    <ion-option value="f">Female</ion-option>
+                </ion-select>
             </ion-item>
             <ion-item>
                 <ion-label>Description</ion-label>

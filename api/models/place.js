@@ -3,14 +3,21 @@ const Schema = mongoose.Schema;
 const helpers = require('../helpers');
 
 const PlaceSchema = new Schema({
+    creator: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     name: {
         type: String,
         required: true
     },
-    type: {
-        type: String,
-        enum: ['vet', 'shop', 'bar', 'park', 'restaurant']
-    },
+    type: [
+        {
+            type: String,
+            required: true,
+            enum: ['vet', 'shop', 'bar', 'park', 'resto', 'hotel', 'school']
+        }
+    ],
     location: {
         type: {
             type: String,
@@ -18,7 +25,10 @@ const PlaceSchema = new Schema({
         },
         coordinates: [Number]
     },
-    address: String,
+    address: {
+        type: String,
+        required: true
+    },
     picture: String,
     phone: String,
     hours: String,
@@ -32,7 +42,6 @@ const PlaceSchema = new Schema({
         virtuals: true,
         versionKey: false,
         transform: (doc, ret) => {
-            delete ret._id;
             delete ret.id;
             delete ret.picture;
             return ret;

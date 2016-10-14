@@ -4,8 +4,7 @@ import { LocationService } from '../../../providers/location.service';
 import { MateViewPage } from '../../mates/view/mate.view';
 import { MateImage } from '../../../common/mate-image';
 import { PlacesService } from '../../../providers/places.service';
-import { Place } from '../../../models/place.model';
-import LeafletMouseEvent = L.LeafletMouseEvent;
+import { Place, PlaceType } from '../../../models/place.model';
 import { ReportPlacePage } from './report-place/report-place';
 
 @Component({
@@ -19,13 +18,14 @@ export class PlaceEditPage {
     marker: L.Marker;
     min: string;
     max: string;
+    placeTypes = PlaceType;
 
     constructor(navParams: NavParams,
                 private navCtrl: NavController,
                 private places: PlacesService,
                 private location: LocationService,
                 private modalCtrl: ModalController) {
-        this.place = new Place(navParams.get('event'));
+        this.place = new Place(navParams.get('place'));
     }
 
     ionViewDidEnter() {
@@ -35,12 +35,12 @@ export class PlaceEditPage {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         });
 
-        this.map = L.map('event-map', {
+        this.map = L.map('place-map', {
             center: L.latLng(lastCoords[1], lastCoords[0]),
             zoom: 16,
             zoomControl: false,
             layers: [tiles]
-        }).on('click', (e: LeafletMouseEvent) => {
+        }).on('click', (e: any) => {
             e.originalEvent.preventDefault();
 
             if (this.marker) {
@@ -54,7 +54,7 @@ export class PlaceEditPage {
 
         if (this.place.location && this.place.location.coordinates.length > 0) {
             const coords = L.latLng(this.place.location.coordinates[1], this.place.location.coordinates[0]);
-            this.map.setView(coords);
+            this.map.setView(coords, 16);
             this.addMarker(coords);
         }
     }

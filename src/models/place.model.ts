@@ -1,7 +1,19 @@
+export enum PlaceType {
+    Vet = 'vet',
+    Shop = 'shop',
+    Bar = 'bar',
+    Park = 'park',
+    Restaurant = 'resto',
+    Hotel = 'hotel',
+    School = 'school'
+}
+
 export class Place {
-    _id: string;
+    readonly _id: string;
+    readonly creator: string;
+
     name: string;
-    type: string;
+    type: Array<PlaceType> = [];
     location: {
         coordinates: Array<number> // [lon, lat]
     };
@@ -11,6 +23,7 @@ export class Place {
     hours: string;
     link: string;
 
+    readonly approved: boolean;
     distance: string;
 
     constructor(data?) {

@@ -23,8 +23,8 @@ function seed() {
                 if (err) throw err;
                 jsonBreeds = JSON.parse(jsonBreeds);
 
-                var toImport = [];
-                for (var i = 0; i < jsonBreeds.length; i++) {
+                const toImport = [];
+                for (let i = 0; i < jsonBreeds.length; i++) {
                     toImport.push({
                         name: jsonBreeds[i]
                     });
@@ -39,18 +39,40 @@ function seed() {
         if (err) throw err;
 
         if (!res || res.length === 0) {
-            const place = new Place({
-                name: 'Централна Ветеринарна Клиника',
-                type: 'vet',
-                location: {
-                    coordinates: [23.334503, 42.657809]
+            const toImport = [
+                {
+                    name: 'Централна Ветеринарна Клиника',
+                    type: ['vet'],
+                    location: {
+                        coordinates: [23.334503, 42.657809]
+                    },
+                    address: 'ул. Чавдар Мутафов 25Б, Sofia',
+                    phone: '02 421 9999',
+                    hours: '24/7',
+                    link: 'http://centralvetclinic.com/',
+                    picture: 'http://centralvetclinic.com/imgs/rpt.jpg',
+                    approved: true
                 },
-                address: 'ул.Браила, София 1000',
-                phone: '+359 897 599 991',
-                hours: '24/7',
-                link: 'http://centralvetclinic.com/'
+                {
+                    name: "Солун магазин и вет клиника",
+                    type: ['vet', 'shop'],
+                    address: "ул. Солун 16, София 1000",
+                    phone: "+359 897 599 991",
+                    hours: "Mon-Sat / 8-20h",
+                    location: {
+                        coordinates: [
+                            23.294574,
+                            42.674557
+                        ],
+                        type: "Point"
+                    }
+                }
+            ];
+
+            toImport.forEach(p => {
+                const place = new Place(p);
+                place.save();
             });
-            place.save();
         }
     });
 }

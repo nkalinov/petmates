@@ -3,10 +3,10 @@ TODO
 - propose to add new pet after signup
 - profile settings to popover links
 - nearby
-    - places 
-        - report place
+    - places **(IN PROGRESS)**
         - create new (dog schools, hotels, parks, restos...)
         - moderation (enum accepted)
+        - report place
     - events
         - push notification on a new event nearby
         - bin/www "cron" delete events where date < now()

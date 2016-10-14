@@ -51,6 +51,7 @@ import { GenderInfo } from '../common/gender';
 import { LastActivity } from '../common/last-activity';
 import { PlaceImage } from '../common/place-image';
 import { config } from './config';
+import { PlaceType } from '../models/place.model';
 
 const pages: Array<Component> = [
     PetMatesApp,
@@ -107,12 +108,16 @@ const pages: Array<Component> = [
             tabsPlacement: 'bottom',
             emitCoordsIntervalMs: 15 * 1000,
             deleteInactiveIntervalMs: 30 * 1000,
-            defaultPetImage: 'assets/img/default_pet.jpg',
-            defaultMateImage: 'assets/img/default_user.gif',
-            defaultVetImage: 'assets/img/hospital_marker.png',
-            defaultVetCardImage: 'assets/img/hospital_marker.png', // todo
-            defaultShopImage: 'assets/img/hospital_marker.png', // todo
-            defaultShopCardImage: 'assets/img/hospital_marker.png' // todo
+            defaultImages: {
+                pet: 'assets/img/default_pet.jpg',
+                mate: 'assets/img/default_user.gif',
+
+                [PlaceType.Vet]: 'assets/img/hospital_marker.png',
+                [`${PlaceType.Vet}View`]: 'assets/img/hospital_marker.png', // todo
+
+                [PlaceType.Shop]: 'assets/img/hospital_marker.png', // todo
+                [`${PlaceType.Shop}View`]: 'assets/img/hospital_marker.png' // todo
+            }
         }))
     ],
     bootstrap: [IonicApp],

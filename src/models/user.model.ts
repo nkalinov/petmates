@@ -5,7 +5,7 @@ import LatLng = L.LatLng;
 const deg2rad = (deg) => deg * (Math.PI / 180);
 
 export class User {
-    _id: string;
+    readonly _id: string;
     name: string;
     email: string;
     password: string;

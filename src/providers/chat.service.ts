@@ -191,7 +191,7 @@ export class ChatService {
                                 let parsed = new Message(msg);
 
                                 // map authors (_id TO user)
-                                if (<string>parsed.author === this.auth.user._id) {
+                                if (parsed.author === this.auth.user._id) {
                                     parsed.author = this.auth.user;
                                 } else {
                                     // find in conversation.members
@@ -279,7 +279,7 @@ export class ChatService {
         socket.on('chat:receive', (message: Message, cid: string) => {
             LocalNotifications.schedule({
                 id: 1,
-                text: `${message.author.name}: ${message.msg}`
+                text: `${(<User>message.author).name}: ${message.msg}`
             });
 
             let c: Conversation = this.conversations.find((c) => c._id === cid);

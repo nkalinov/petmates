@@ -2,14 +2,12 @@ import { Component } from '@angular/core';
 import { NavParams, NavController, ModalController } from 'ionic-angular';
 import { LocationService } from '../../../providers/location.service';
 import { MateViewPage } from '../../mates/view/mate.view';
-import { MateImage } from '../../../common/mate-image';
 import { PlacesService } from '../../../providers/places.service';
 import { Place, PlaceType } from '../../../models/place.model';
 import { ReportPlacePage } from './report-place/report-place';
 
 @Component({
-    templateUrl: 'place-edit.html',
-    directives: [MateImage]
+    templateUrl: 'place-edit.html'
 })
 
 export class PlaceEditPage {

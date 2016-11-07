@@ -1,26 +1,17 @@
 import { Component } from '@angular/core';
-import { NavParams, Config } from 'ionic-angular';
+import { NavParams } from 'ionic-angular';
 import { LaunchNavigator } from 'ionic-native';
-import { PlaceImage } from '../../../common/place-image';
 import { Place } from '../../../models/place.model';
 
 @Component({
-    templateUrl: 'place-view.html',
-    directives: [PlaceImage]
+    templateUrl: 'place-view.html'
 })
 
 export class PlaceViewPage {
     place: Place;
 
-    constructor(navParams: NavParams,
-                config: Config) {
+    constructor(navParams: NavParams) {
         this.place = new Place(navParams.get('place'));
-
-        if (!this.place.pic) {
-            this.place.pic = this.place.type === 'vet' ?
-                config.get('defaultVetCardImage') :
-                config.get('defaultShopCardImage');
-        }
     }
 
     navigate() {

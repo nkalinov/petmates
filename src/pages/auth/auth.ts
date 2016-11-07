@@ -5,13 +5,11 @@ import { AuthService } from '../../providers/auth.service';
 import { ForgotForm } from './forgot/forgot.form';
 import { LocationService } from '../../providers/location.service';
 import { User } from '../../models/user.model';
-import { MateImage } from '../../common/mate-image';
 import { makeFileRequest } from '../../providers/common.service';
 
 @Component({
     selector: 'auth-page',
-    templateUrl: 'auth.html',
-    directives: [MateImage]
+    templateUrl: 'auth.html'
 })
 
 export class AuthModal {
@@ -102,7 +100,7 @@ export class AuthModal {
                         loader.dismiss();
                     },
                     err => {
-                        this.events.publish('alert:error', err.text());
+                        this.events.publish('alert:error', err.body);
                         loader.dismiss();
                     },
                     options

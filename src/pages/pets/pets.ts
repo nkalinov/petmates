@@ -2,14 +2,10 @@ import { ModalController, NavController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { AuthService } from '../../providers/auth.service';
 import { PetEditPage } from './edit/pet.edit';
-import { GenderInfo } from '../../common/gender';
-import { AgeInfo } from '../../common/age';
-import { PetImage } from '../../common/pet-image';
 
 @Component({
     selector: 'pets-list',
-    templateUrl: 'pets.html',
-    directives: [GenderInfo, AgeInfo, PetImage]
+    templateUrl: 'pets.html'
 })
 export class PetsPage {
 

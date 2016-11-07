@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 
 @Injectable()
 export class LocationService {
-    lastCoords: Array<Number>;
+    lastCoords: Array<number>;
 
     constructor(private http: Http,
                 private auth: AuthService,
@@ -17,7 +17,7 @@ export class LocationService {
         return this.lastCoords ? this.lastCoords : this.auth.user.location.coordinates;
     }
 
-    getGeolocation(opts?: any): Promise<Array<Number>> {
+    getGeolocation(opts?: any): Promise<Array<number>> {
         return Geolocation.getCurrentPosition(Object.assign({}, opts, {
             enableHighAccuracy: true
         })).then(
@@ -34,7 +34,7 @@ export class LocationService {
     getLocation(): Promise<{
         city?: string;
         country?: string;
-        coordinates?: Array<Number>;
+        coordinates?: Array<number>;
     }> {
         return new Promise((resolve, reject) => {
             this.getGeolocation().then(data => {

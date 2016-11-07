@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
-import { MateImage } from '../../../../common/mate-image';
 import { MatesService } from '../../../../providers/mates.service';
 import { NavController, ModalController } from 'ionic-angular';
 import { MateViewPage } from '../../view/mate.view';
 import { MatesSearchPage } from '../../search/mates.search';
 
 @Component({
-    directives: [MateImage],
     templateUrl: 'mates.requested.html'
 })
 

@@ -26,7 +26,7 @@ export class WalkService {
                 private sockets: SocketService) {
     }
 
-    init(coords: L.LatLngExpression, marker: L.Marker): void {
+    init(coords: any, marker: L.Marker): void {
         this.currentWalk.user = {
             _id: this.auth.user._id,
             name: this.auth.user.name
@@ -79,11 +79,11 @@ export class WalkService {
         }
     }
 
-    getCurrentWalkCoords(): L.LatLngExpression {
+    getCurrentWalkCoords() {
         return this.currentWalk.coords;
     }
 
-    updateCurrentWalkCoords(coords: L.LatLngExpression, emit: boolean = false): void {
+    updateCurrentWalkCoords(coords: any, emit: boolean = false): void {
         this.currentWalk.coords = coords;
         this.mustEmitCoords = emit;
     }

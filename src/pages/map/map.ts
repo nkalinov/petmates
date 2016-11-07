@@ -9,7 +9,7 @@ import { Walk } from '../../models/walk.model';
 import { getAge } from '../../providers/common.service';
 import { NearbyService } from '../../providers/nearby.service';
 import { vetIcon, UserIcon } from '../../common/icons';
-import { Place } from '../../models/place.model';
+import { Place, PlaceType } from '../../models/place.model';
 import { LocationService } from '../../providers/location.service';
 
 (<any>L.Icon.Default).imagePath = '../assets/img/leaflet/';
@@ -128,7 +128,7 @@ export class MapPage {
     private watchWalks() {
         // watch public walks and update walks
         this.walksSubscriber = this.walk.walks$.subscribe((walks: Array<Walk>) => {
-            walks.forEach((walk: Walk) => {
+            walks.forEach(walk => {
                 if (walk.id !== this.walk.currentWalk.id) {
                     if (this.walks[walk.id]) {
                         // move
@@ -176,7 +176,7 @@ export class MapPage {
 
     private addPlacesMarkers(coords) {
         return this.nearby.getNearbyPlaces(coords).then(places => {
-            places.forEach((place: Place) => {
+            places.forEach(place => {
                 const marker = L.marker([
                     place.location.coordinates[1],
                     place.location.coordinates[0]
@@ -184,19 +184,20 @@ export class MapPage {
                     `<b>${place.name}</b><br>${place.phone}<br>${place.hours}`
                 );
 
-                switch (place.type) {
-                    case 'vet':
-                        marker
-                            .setIcon(vetIcon())
-                            .addTo(this.layers.vets);
-                        break;
-                    case 'shop':
-                        marker
-                            .addTo(this.layers.shops);
-                        break;
-                    default:
-                        break;
-                }
+                // todo
+                // switch (place.type) {
+                //     case PlaceType.Vet:
+                //         marker
+                //             .setIcon(vetIcon())
+                //             .addTo(this.layers.vets);
+                //         break;
+                //     case PlaceType.Shop:
+                //         marker
+                //             .addTo(this.layers.shops);
+                //         break;
+                //     default:
+                //         break;
+                // }
             });
 
             this.mcgLayerSupportGroup.checkIn([this.layers.shops, this.layers.vets]);
@@ -216,11 +217,18 @@ export class MapPage {
 
     private populate() {
         for (let i = 0; i < 50; i++) {
-            new L.marker(this.getRandomLatLng(this.map), {
-                icon: new UserIcon({
-                    iconUrl: `${this.config.get('defaultPetImage')}`
+            this.layers.walks.addLayer(
+                L.marker(this.getRandomLatLng(this.map), {
+                    icon: new UserIcon({
+                        iconUrl: `${this.config.get('defaultPetImage')}`
+                    })
                 })
-            }).addTo(this.layers.walks);
+            );
+            // L.marker(this.getRandomLatLng(this.map), {
+            //     icon: new UserIcon({
+            //         iconUrl: `${this.config.get('defaultPetImage')}`
+            //     })
+            // }).addTo(this.layers.walks);
         }
     }
 
@@ -230,7 +238,7 @@ export class MapPage {
             northEast = bounds.getNorthEast(),
             lngSpan = northEast.lng - southWest.lng,
             latSpan = northEast.lat - southWest.lat;
-        return new L.latLng(
+        return L.latLng(
             southWest.lat + latSpan * Math.random(),
             southWest.lng + lngSpan * Math.random());
     }

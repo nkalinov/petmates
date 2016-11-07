@@ -1,18 +1,14 @@
 import { NavController, ModalController, Refresher } from 'ionic-angular';
-import { SlicePipe } from '@angular/common';
 import { Component } from '@angular/core';
-import { MateImage } from '../../common/mate-image';
 import { ChatService } from '../../providers/chat.service';
 import { ConversationPage } from './view/conversation';
 import { ConversationEditPage } from './edit/conversation.edit';
 import { AuthService } from '../../providers/auth.service';
-import { LastActivity } from '../../common/last-activity';
 
 @Component({
-    pipes: [SlicePipe],
-    directives: [MateImage, LastActivity],
     templateUrl: 'conversations.list.html'
 })
+
 export class ConversationsListPage {
     constructor(public chats: ChatService,
                 public auth: AuthService,

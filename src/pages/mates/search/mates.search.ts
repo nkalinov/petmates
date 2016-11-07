@@ -1,16 +1,12 @@
-import { Component, forwardRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { ViewController, NavController } from 'ionic-angular';
 import { MatesService } from '../../../providers/mates.service';
-import { MateImage } from '../../../common/mate-image';
 import { User } from '../../../models/user.model';
 import { Subscription } from 'rxjs/Subscription';
 import { MateViewPage } from '../view/mate.view';
 
 @Component({
-    templateUrl: 'mates.search.html',
-    directives: [
-        forwardRef(() => MateImage)
-    ]
+    templateUrl: 'mates.search.html'
 })
 export class MatesSearchPage {
     searchQuery: string = '';

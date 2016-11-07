@@ -1,21 +1,16 @@
 import { NavParams, NavController, AlertController, LoadingController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { AgeInfo } from '../../../common/age';
-import { GenderInfo } from '../../../common/gender';
-import { PetImage } from '../../../common/pet-image';
-import { MateImage } from '../../../common/mate-image';
 import { MatesService } from '../../../providers/mates.service';
 import { User } from '../../../models/user.model';
 import { AuthService } from '../../../providers/auth.service';
 import { STATUS_ACCEPTED, STATUS_PENDING, STATUS_REQUESTED } from '../../../models/friendship.interface';
 
 @Component({
-    templateUrl: 'mate.view.html',
-    directives: [GenderInfo, AgeInfo, PetImage, MateImage]
+    templateUrl: 'mate.view.html'
 })
 
 export class MateViewPage {
-    mate: User = new User();
+    mate = new User();
     friendshipId: string;
     friendshipStatus: string;
     friendshipStatuses = {

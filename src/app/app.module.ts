@@ -1,8 +1,7 @@
 import 'leaflet';
 import 'leaflet.markercluster';
 import '../vendor/rxjs.operators';
-
-import { NgModule, Component } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { IonicApp, IonicModule } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { PetMatesApp } from './app.component';
@@ -53,7 +52,7 @@ import { PlaceImage } from '../common/place-image';
 import { config } from './config';
 import { PlaceType } from '../models/place.model';
 
-const pages: Array<Component> = [
+const pages: Array<any> = [
     PetMatesApp,
 
     ForgotForm,

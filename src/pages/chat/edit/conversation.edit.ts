@@ -1,13 +1,11 @@
 import { ViewController, NavParams, ModalController, AlertController, NavController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { MateImage } from '../../../common/mate-image';
 import { Conversation } from '../../../models/conversation.model';
 import { ChatService } from '../../../providers/chat.service';
 import { ConversationEditMembersPage } from './conversation.edit.members';
 import { MateViewPage } from '../../mates/view/mate.view';
 
 @Component({
-    directives: [MateImage],
     templateUrl: 'conversation.edit.html'
 })
 

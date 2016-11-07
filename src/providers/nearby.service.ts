@@ -69,7 +69,7 @@ export class NearbyService {
         }
     }
 
-    getNearbyPlaces(coords, force = false) {
+    getNearbyPlaces(coords, force = false): Promise<Place[]> {
         return new Promise((resolve, reject) => {
             if (force || this.places$.getValue().length <= 0) {
 

@@ -2,12 +2,9 @@ import { AlertController, ActionSheetController, ModalController } from 'ionic-a
 import { Component } from '@angular/core';
 import { AuthService } from '../../providers/auth.service';
 import { ProfileEdit } from './edit/profile.edit';
-import { MateImage } from '../../common/mate-image';
-import { PetsPage } from '../pets/pets';
 
 @Component({
-    templateUrl: 'profile.html',
-    directives: [MateImage, PetsPage]
+    templateUrl: 'profile.html'
 })
 export class ProfilePage {
 

@@ -4,7 +4,6 @@ import { AuthModal } from '../pages/auth/auth';
 import { ProfilePage } from '../pages/profile/profile';
 import { HelpPage } from '../pages/help/help';
 import { ConversationsListPage } from '../pages/chat/conversations.list';
-import { Page } from '../models/page.interface';
 import { NearbyPage } from '../pages/nearby/nearby';
 
 export function localISO(dateString?: string) {
@@ -36,22 +35,26 @@ export function localISO(dateString?: string) {
         + ':' + pad(tzo % 60);
 }
 
-export function getMenu(auth: boolean = false): Array<Page> {
+export function getMenu(auth: boolean = false): any[] {
     let commonPages = [
         { title: 'Help', component: HelpPage }
         // {title: 'Donate', component: DonatePage} // todo
     ];
     let publicPages = [
-        { title: 'Login / sign-up', component: AuthModal }
+        { title: 'Login / sign-up', component: AuthModal },
+        { title: 'Help', component: HelpPage }
+        // {title: 'Donate', component: DonatePage} // todo
     ];
     let loggedInPages = [
         { title: 'Map', component: MapPage },
         { title: 'Nearby', component: NearbyPage },
         { title: 'Chats', component: ConversationsListPage },
         { title: 'Mates', component: MatesPage, id: 'mates' },
-        { title: 'My profile', component: ProfilePage }
+        { title: 'My profile', component: ProfilePage },
+        { title: 'Help', component: HelpPage }
+        // {title: 'Donate', component: DonatePage} // todo
     ];
-    return auth ? loggedInPages.concat(commonPages) : publicPages.concat(commonPages);
+    return auth ? loggedInPages : publicPages;
 }
 
 export function getTimeAgo(date) {

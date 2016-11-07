@@ -1,4 +1,4 @@
-export const UserIcon = L.Icon.extend({
+export const UserIcon = (<any>L.Icon).extend({
     options: {
         iconSize: [35, 35], // size of the icon
         iconAnchor: [18, 20], // point of the icon which will correspond to marker's location
@@ -7,7 +7,7 @@ export const UserIcon = L.Icon.extend({
     }
 });
 
-const VetIcon = L.Icon.extend({
+const VetIcon = (<any>L.Icon).extend({
     options: {
         iconSize: [25, 33], // size of the icon
         iconAnchor: [13, 20], // point of the icon which will correspond to marker's location

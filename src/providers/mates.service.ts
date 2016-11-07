@@ -11,7 +11,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class MatesService {
-    search$ = new Subject();
+    search$: Subject<Array<User>> = new Subject();
     pending$ = new BehaviorSubject(0);
     mates = {
         accepted: [],
@@ -27,7 +27,7 @@ export class MatesService {
                 private sockets: SocketService) {
     }
 
-    getById(id: string) {
+    getById(id: string): Promise<User> {
         return new Promise((resolve, reject) => {
             if (this.users[id]) {
                 return resolve(this.users[id]);

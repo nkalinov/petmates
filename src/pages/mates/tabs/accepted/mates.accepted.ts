@@ -1,17 +1,13 @@
 import { NavController, AlertController, ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { MateImage } from '../../../../common/mate-image';
 import { MateViewPage } from '../../view/mate.view';
 import { Friendship } from '../../../../models/friendship.interface';
 import { MatesService } from '../../../../providers/mates.service';
-import { MessageTimePipe } from '../../../../pipes/message.time.pipe';
 import { AuthService } from '../../../../providers/auth.service';
 import { MatesSearchPage } from '../../search/mates.search';
 
 @Component({
-    directives: [MateImage],
-    templateUrl: 'mates.accepted.html',
-    pipes: [MessageTimePipe]
+    templateUrl: 'mates.accepted.html'
 })
 
 export class MatesAcceptedPage {

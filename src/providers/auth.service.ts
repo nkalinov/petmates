@@ -69,14 +69,15 @@ export class AuthService {
         return Facebook.login([
             'public_profile',
             'email'
-        ]).then((res) => {
+        ]).then(res => {
             if (res.status === 'connected') {
                 const accessToken = res.authResponse.accessToken;
 
-                return this.http.get(`${this.config.get('API')}/auth/facebook?access_token=${accessToken}`)
-                    .toPromise()
-                    .then(
-                        (res: Response) => this.parseLoginResponse(res.json()),
+                // todo
+                this.http.get(`${this.config.get('API')}/auth/facebook?access_token=${accessToken}`)
+                    .map(res => res.json())
+                    .subscribe(
+                        res => this.parseLoginResponse(res),
                         (err: Response) => {
                             this.events.publish('alert:error', err.text());
                             return err;
@@ -209,7 +210,7 @@ export class AuthService {
             );
     }
 
-    checkResetToken(token: string): Observable {
+    checkResetToken(token: string): Observable<any> {
         return new Observable(observer => {
             this.http
                 .get(`${this.config.get('API')}/auth/reset/${token}`)
@@ -231,7 +232,7 @@ export class AuthService {
         });
     }
 
-    changePassword(token: string, password: string): Observable {
+    changePassword(token: string, password: string): Observable<any> {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
 

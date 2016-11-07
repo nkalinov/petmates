@@ -1,11 +1,11 @@
 export enum PlaceType {
-    Vet = 'vet',
-    Shop = 'shop',
-    Bar = 'bar',
-    Park = 'park',
-    Restaurant = 'resto',
-    Hotel = 'hotel',
-    School = 'school'
+    Vet,
+    Shop,
+    Bar,
+    Park,
+    Restaurant,
+    Hotel,
+    School
 }
 
 export class Place {

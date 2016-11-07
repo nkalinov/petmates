@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavParams, ViewController } from 'ionic-angular';
 import { BreedService } from '../../../../providers/breed.service';
 import { Pet } from '../../../../models/pet.model';
+import { Breed } from '../../../../models/breed.interface';
 
 @Component({
     templateUrl: 'breed.html',
@@ -10,8 +11,8 @@ import { Pet } from '../../../../models/pet.model';
 export class BreedPage {
     pet: Pet;
     selectedBreed: string;
-    filteredItems: Array<any> = [];
-    allItems: Array<any> = [];
+    filteredItems: Breed[] = [];
+    allItems: Breed[] = [];
 
     constructor(public viewCtrl: ViewController,
                 private breeds: BreedService,

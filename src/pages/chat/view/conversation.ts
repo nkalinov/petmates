@@ -2,16 +2,13 @@ import { NavParams, NavController, Content } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
 import { ChatService } from '../../../providers/chat.service';
 import { AuthService } from '../../../providers/auth.service';
-import { MateImage } from '../../../common/mate-image';
 import { Message } from '../../../models/message.model';
 import { Conversation } from '../../../models/conversation.model';
 import { ConversationEditPage } from '../edit/conversation.edit';
-import { LastActivity } from '../../../common/last-activity';
 
 @Component({
     selector: 'conversation-page',
-    templateUrl: 'conversation.html',
-    directives: [MateImage, LastActivity]
+    templateUrl: 'conversation.html'
 })
 export class ConversationPage {
     @ViewChild(Content) content: Content;

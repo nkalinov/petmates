@@ -1,20 +1,32 @@
 module.exports = {
     include: [
         {
-            src: 'src/assets/',
-            dest: 'www/assets/'
+            src: '{{SRC}}/assets/',
+            dest: '{{WWW}}/assets/'
         },
         {
-            src: 'src/index.html',
-            dest: 'www/index.html'
+            src: '{{SRC}}/index.html',
+            dest: '{{WWW}}/index.html'
+        },
+        {
+            src: '{{SRC}}/manifest.json',
+            dest: '{{WWW}}/manifest.json'
+        },
+        {
+            src: '{{SRC}}/service-worker.js',
+            dest: '{{WWW}}/service-worker.js'
         },
         {
             src: 'node_modules/ionic-angular/polyfills/polyfills.js',
-            dest: 'www/build/polyfills.js'
+            dest: '{{BUILD}}/polyfills.js'
         },
         {
             src: 'node_modules/ionicons/dist/fonts/',
-            dest: 'www/assets/fonts/'
+            dest: '{{WWW}}/assets/fonts/'
+        },
+        {
+            src: '{{SRC}}/vendor/leaflet.markercluster.layersupport-src.js',
+            dest: '{{BUILD}}/leaflet.markercluster.layersupport-src.js'
         },
         {
             src: 'config/config.prod.ts',

@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 
 @Injectable()
 export class BreedService {
-    private cache: Array<Breed>;
+    private cache: Breed[];
 
     constructor(private http: Http,
                 private events: Events,
@@ -20,7 +20,7 @@ export class BreedService {
         }
     }
 
-    getAll() {
+    getAll(): Promise<Breed[]> {
         return new Promise((resolve, reject) => {
             if (this.cache) {
                 resolve(this.cache);

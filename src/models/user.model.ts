@@ -1,6 +1,5 @@
 import { Pet } from './pet.model';
 import { Friendship } from './friendship.interface';
-import LatLng = L.LatLng;
 
 const deg2rad = (deg) => deg * (Math.PI / 180);
 
@@ -23,7 +22,7 @@ export class User {
 
     lastActive: Date = null;
     distance: string;
-    latLng: LatLng;
+    latLng: L.LatLng;
 
     constructor(data?, myCoordinates?) {
         if (data) {

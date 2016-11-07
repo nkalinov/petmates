@@ -7,14 +7,12 @@ import { Component } from '@angular/core';
 import { BreedService } from '../../../providers/breed.service';
 import { PetService } from '../../../providers/pet.service';
 import { Pet } from '../../../models/pet.model';
-import { PetImage } from '../../../common/pet-image';
 import { BreedPage } from './breed/breed';
 import { makeFileRequest } from '../../../providers/common.service';
 import { AuthService } from '../../../providers/auth.service';
 
 @Component({
     providers: [PetService],
-    directives: [PetImage],
     templateUrl: 'pet.edit.html'
 })
 export class PetEditPage {
@@ -34,7 +32,9 @@ export class PetEditPage {
     }
 
     save() {
-        this.pets.save(this.pet).then(this.goBack());
+        this.pets.save(this.pet).then(() => {
+            this.goBack();
+        });
     }
 
     remove() {
@@ -52,7 +52,9 @@ export class PetEditPage {
                     handler: () => {
                         this.pets.deletePet(this.pet)
                             .then(() => alert.dismiss())
-                            .then(this.goBack());
+                            .then(() => {
+                                this.goBack();
+                            });
                     }
                 }
             ]
@@ -78,17 +80,17 @@ export class PetEditPage {
                 let ft = new FileTransfer();
                 ft.upload(images[0], encodeURI(`${this.config.get('API')}/upload`),
                     res => {
-                        res.response = JSON.parse(res.response);
+                        const parsed = JSON.parse(res.response);
 
-                        if (res.response.success) {
-                            this.pet.pic = res.response.data.url;
-                            this.pet.picture = res.response.data.filename;
+                        if (parsed.success) {
+                            this.pet.pic = parsed.data.url;
+                            this.pet.picture = parsed.data.filename;
                         } else {
-                            this.events.publish('alert:error', res.response.msg);
+                            this.events.publish('alert:error', parsed.msg);
                         }
                     },
                     err => {
-                        this.events.publish('alert:error', err.text());
+                        this.events.publish('alert:error', err.body);
                     }, options);
             },
             err => {

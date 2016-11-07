@@ -1,5 +1,3 @@
-import LatLngExpression = L.LatLngExpression;
-import Marker = L.Marker;
 // import * as uuid from 'node-uuid/uuid.js';
 
 export interface WalkPet {
@@ -15,7 +13,7 @@ export class Walk {
         _id: string,
         name: string
     };
-    coords: LatLngExpression;
+    coords: L.LatLngTuple;
     pet: WalkPet;
     started: boolean = false;
 

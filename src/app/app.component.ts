@@ -7,7 +7,6 @@ import { getMenu } from '../providers/common.service';
 import { SocketService } from '../providers/socket.service';
 import { MatesService } from '../providers/mates.service';
 import { ChatService } from '../providers/chat.service';
-import { Page } from '../models/page.interface';
 import { NearbyPage } from '../pages/nearby/nearby';
 
 @Component({
@@ -17,7 +16,7 @@ import { NearbyPage } from '../pages/nearby/nearby';
 export class PetMatesApp {
     @ViewChild(Nav) nav: Nav;
     rootPage: any;
-    pages: Array<Page>;
+    pages: Array<any>;
     newRequests: number;
     private defaultRootPage: any = NearbyPage;
 
@@ -40,7 +39,7 @@ export class PetMatesApp {
     openPage(page) {
         if (!page.active) {
             if (this.pages) {
-                this.pages.forEach((page: Page) => page.active = false);
+                this.pages.forEach(page => page.active = false);
             }
             // Reset the content nav to have just this page
             // we wouldn't want the back button to show in this scenario
@@ -74,7 +73,7 @@ export class PetMatesApp {
         this.pages = getMenu(true); // set logged in menu
 
         // open default logged in page
-        let page = this.pages.find((page: Page) => page.component === this.defaultRootPage);
+        let page = this.pages.find(page => page.component === this.defaultRootPage);
         this.openPage(page);
 
         this.mates.pending$.subscribe((count) => {

@@ -3,11 +3,9 @@ import { Component } from '@angular/core';
 import { User } from '../../../models/user.model';
 import { MatesService } from '../../../providers/mates.service';
 import { Conversation } from '../../../models/conversation.model';
-import { MateImage } from '../../../common/mate-image';
 
 @Component({
-    templateUrl: 'conversation.edit.members.html',
-    directives: [MateImage]
+    templateUrl: 'conversation.edit.members.html'
 })
 
 export class ConversationEditMembersPage {

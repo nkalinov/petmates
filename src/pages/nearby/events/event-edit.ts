@@ -3,13 +3,11 @@ import { NavParams, NavController, AlertController } from 'ionic-angular';
 import { Event } from '../../../models/event.model';
 import { LocationService } from '../../../providers/location.service';
 import { MateViewPage } from '../../mates/view/mate.view';
-import { MateImage } from '../../../common/mate-image';
 import { localISO } from '../../../providers/common.service';
 import { EventsService } from '../../../providers/events.service';
 
 @Component({
-    templateUrl: 'event-edit.html',
-    directives: [MateImage]
+    templateUrl: 'event-edit.html'
 })
 
 export class EventEditPage {

@@ -5,13 +5,11 @@ import { Event } from '../../../models/event.model';
 import { AuthService } from '../../../providers/auth.service';
 import { EventEditPage } from './event-edit';
 import { MateViewPage } from '../../mates/view/mate.view';
-import { MateImage } from '../../../common/mate-image';
 import { EventsService } from '../../../providers/events.service';
 import { LocationService } from '../../../providers/location.service';
 
 @Component({
-    templateUrl: 'event-view.html',
-    directives: [MateImage]
+    templateUrl: 'event-view.html'
 })
 
 export class EventViewPage {

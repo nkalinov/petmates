@@ -4,12 +4,10 @@ import { Component } from '@angular/core';
 import { AuthService } from '../../../providers/auth.service';
 import { User } from '../../../models/user.model';
 import { makeFileRequest } from '../../../providers/common.service';
-import { MateImage } from '../../../common/mate-image';
 import { LocationService } from '../../../providers/location.service';
 
 @Component({
-    templateUrl: 'profile.edit.html',
-    directives: [MateImage]
+    templateUrl: 'profile.edit.html'
 })
 
 export class ProfileEdit {
@@ -38,8 +36,9 @@ export class ProfileEdit {
 
     save() {
         const { name, email, picture, password, location, city, country } = this.user;
-        this.auth.update({ name, email, picture, password, location, city, country })
-            .then(this.cancel());
+        this.auth.update({ name, email, picture, password, location, city, country }).then(() => {
+            this.cancel();
+        });
     }
 
     changePicture() {
@@ -74,7 +73,7 @@ export class ProfileEdit {
                         loader.dismiss();
                     },
                     err => {
-                        this.events.publish('alert:error', err.text());
+                        this.events.publish('alert:error', err.body);
                         loader.dismiss();
                     },
                     options

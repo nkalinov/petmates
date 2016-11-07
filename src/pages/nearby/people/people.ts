@@ -1,14 +1,10 @@
-import { Component, forwardRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { NavController, Refresher } from 'ionic-angular';
 import { NearbyService } from '../../../providers/nearby.service';
 import { MateViewPage } from '../../mates/view/mate.view';
-import { MateImage } from '../../../common/mate-image';
 
 @Component({
-    templateUrl: 'people.html',
-    directives: [
-        forwardRef(() => MateImage)
-    ]
+    templateUrl: 'people.html'
 })
 
 export class PeoplePage {

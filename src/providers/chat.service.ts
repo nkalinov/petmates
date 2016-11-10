@@ -13,16 +13,13 @@ import { LocalNotifications } from 'ionic-native';
 export class ChatService {
     conversations$ = new BehaviorSubject([]);
     conversations: Array<Conversation> = []; // cache
+    mappedConversations: Object = {};
 
     constructor(private http: Http,
                 private sockets: SocketService,
                 private events: Events,
                 private config: Config,
                 private auth: AuthService) {
-    }
-
-    findConversationById(id: string) {
-        return this.conversations.find(c => c._id === id);
     }
 
     createOrUpdateConversation(c: Conversation) {
@@ -45,9 +42,9 @@ export class ChatService {
                 }),
                 { headers: headers }
             ).map(res => res.json()).subscribe(
-                (res: any) => {
+                res => {
                     if (res.success) {
-                        let newConversation = new Conversation(res.data);
+                        const newConversation = new Conversation(res.data);
                         newConversation.members = c.members.concat(this.auth.user);
                         this.conversations.unshift(newConversation);
                         this.conversations$.next(this.conversations);
@@ -57,7 +54,7 @@ export class ChatService {
                         reject(res.msg);
                     }
                 },
-                (err) => {
+                err => {
                     this.events.publish('alert:error', err.text());
                     reject(err);
                 }
@@ -71,34 +68,32 @@ export class ChatService {
             headers.append('Content-Type', 'application/json');
             headers.append('Authorization', this.auth.token);
 
-            this.http.put(
-                `${this.config.get('API')}/conversations/${c._id}`,
-                JSON.stringify({
-                    name: c.name,
-                    members: c.members.map(f => f._id)
-                }),
-                { headers: headers }
-            ).map(res => res.json()).subscribe(
-                (res: any) => {
-                    if (res.success) {
-                        const index = this.conversations.findIndex((sc) => sc._id === c._id);
-                        if (index > -1) {
-                            // get messages and replace
-                            c.messages = this.conversations[index].messages;
-                            this.conversations[index] = c;
+            this.http.put(`${this.config.get('API')}/conversations/${c._id}`, JSON.stringify({
+                name: c.name,
+                members: c.members.map(f => f._id)
+            }), { headers: headers })
+                .map(res => res.json())
+                .subscribe(
+                    res => {
+                        if (res.success) {
+                            // get messages (there were maybe new while editing the copy)
+                            c.messages = this.mappedConversations[c._id].messages;
+
+                            // replace
+                            this.mappedConversations[c._id] = c;
+
                             this.conversations$.next(this.conversations);
+                            resolve();
+                        } else {
+                            this.events.publish('alert:error', res.msg);
+                            reject(res.msg);
                         }
-                        resolve();
-                    } else {
-                        this.events.publish('alert:error', res.msg);
-                        reject(res.msg);
+                    },
+                    err => {
+                        this.events.publish('alert:error', err.text());
+                        reject(err.text());
                     }
-                },
-                (err) => {
-                    this.events.publish('alert:error', err.text());
-                    reject(err.text());
-                }
-            );
+                );
         });
     }
 
@@ -108,26 +103,28 @@ export class ChatService {
             headers.append('Content-Type', 'application/json');
             headers.append('Authorization', this.auth.token);
 
-            this.http.delete(`${this.config.get('API')}/conversations/${c._id}`, { headers: headers }).subscribe(
-                (res: any) => {
-                    res = res.json();
-                    if (res.success) {
-                        let index = this.conversations.findIndex((sc) => sc._id === c._id);
-                        if (index > -1) {
-                            this.conversations.splice(index, 1);
+            this.http.delete(`${this.config.get('API')}/conversations/${c._id}`, { headers: headers })
+                .map(res => res.json())
+                .subscribe(
+                    res => {
+                        if (res.success) {
+                            let index = this.conversations.findIndex(sc => sc._id === c._id);
+                            if (index > -1) {
+                                this.conversations.splice(index, 1);
+                                delete this.mappedConversations[c._id];
+                            }
+                            this.conversations$.next(this.conversations);
+                            resolve();
+                        } else {
+                            this.events.publish('alert:error', res.msg);
+                            reject(res.msg);
                         }
-                        this.conversations$.next(this.conversations);
-                        resolve();
-                    } else {
-                        this.events.publish('alert:error', res.msg);
-                        reject(res.msg);
+                    },
+                    err => {
+                        this.events.publish('alert:error', err.text());
+                        reject(err.text());
                     }
-                },
-                (err) => {
-                    this.events.publish('alert:error', err.text());
-                    reject(err.text());
-                }
-            );
+                );
         });
     }
 
@@ -136,90 +133,53 @@ export class ChatService {
             let headers = new Headers();
             headers.append('Authorization', this.auth.token);
 
-            this.http.get(`${this.config.get('API')}/conversations`, {
-                headers: headers
-            }).map(res => res.json()).subscribe(
-                (res: any) => {
-                    if (res.success) {
-                        let newConversations = res.data.map(data => new Conversation(data));
-
-                        // if we already have something in cache
-                        if (this.conversations) {
-
-                            // get the messages
-                            this.conversations.forEach(c => {
-                                if (c.messages.length > 0) {
-                                    let find = newConversations.find((nc: Conversation) => nc._id === c._id);
-                                    if (find) {
-                                        find.messages = c.messages;
-                                    }
-                                }
+            this.http.get(`${this.config.get('API')}/conversations`, { headers: headers })
+                .map(res => res.json())
+                .subscribe(
+                    res => {
+                        if (res.success) {
+                            this.conversations = res.data.map(data => {
+                                const c = new Conversation(data);
+                                this.mappedConversations[c._id] = c;
+                                return c;
                             });
+                            this.conversations$.next(this.conversations);
+                            resolve();
+                        } else {
+                            this.events.publish('alert:error', res.msg);
+                            reject();
                         }
-                        this.conversations = newConversations;
-                        this.conversations$.next(this.conversations);
-                        resolve();
-                    } else {
-                        this.events.publish('alert:error', res.msg);
+                    },
+                    err => {
+                        this.events.publish('alert:error', err.text());
                         reject();
                     }
-                },
-                (err) => {
-                    this.events.publish('alert:error', err.text());
-                    reject();
-                }
-            );
+                );
         });
     }
 
-    getMessages(id: string) {
+    getMessages(conversation: Conversation) {
         return new Promise((resolve, reject) => {
             let headers = new Headers();
             headers.append('Authorization', this.auth.token);
 
-            this.http.get(
-                `${this.config.get('API')}/conversations/${id}`,
-                { headers: headers }
-            ).map(res => res.json()).subscribe(
-                (res: any) => {
-                    if (res.success) {
-                        // find conversation
-                        const conversation = this.conversations.find(c => c._id === id);
-
-                        if (conversation) {
-                            conversation.messages = (<Array<any>>res.data).map(msg => {
-                                let parsed = new Message(msg);
-
-                                // map authors (_id TO user)
-                                if (parsed.author === this.auth.user._id) {
-                                    parsed.author = this.auth.user;
-                                } else {
-                                    // find in conversation.members
-                                    let findAuthor = conversation.members.find(m => m._id === parsed.author);
-                                    if (findAuthor) {
-                                        parsed.author = findAuthor;
-                                    } else {
-                                        // what todo with messages from members leaved the group ?
-                                        parsed.author = new User({
-                                            _id: parsed.author,
-                                            name: ''
-                                        });
-                                    }
-                                }
-                                return parsed;
-                            });
+            this.http.get(`${this.config.get('API')}/conversations/${conversation._id}`, { headers: headers })
+                .map(res => res.json())
+                .subscribe(
+                    res => {
+                        if (res.success) {
+                            conversation.messages = res.data.map(msg => new Message(msg));
+                            resolve();
+                        } else {
+                            this.events.publish('alert:error', res.msg);
+                            reject(res.msg);
                         }
-                        resolve();
-                    } else {
-                        this.events.publish('alert:error', res.msg);
-                        reject(res.msg);
+                    },
+                    err => {
+                        this.events.publish('alert:error', err.text());
+                        reject(err.text());
                     }
-                },
-                (err) => {
-                    this.events.publish('alert:error', err.text());
-                    reject(err.text());
-                }
-            );
+                );
         });
     }
 
@@ -229,22 +189,32 @@ export class ChatService {
             headers.append('Content-Type', 'application/json');
             headers.append('Authorization', this.auth.token);
 
+            // add immediately
+            message.added = new Date();
+            conversation.messages.push(message);
+            conversation.lastMessage = message;
+
             this.http.post(`${this.config.get('API')}/conversations/${conversation._id}`, JSON.stringify({
                 msg: message.msg
             }), { headers: headers }).map(res => res.json()).subscribe(
-                (res: any) => {
+                res => {
                     if (res.success) {
-                        message.added = new Date();
-                        conversation.messages.push(message);
-                        conversation.lastMessage = message;
-                        this.sockets.socket.emit('chat:send', message, conversation);
-                        resolve(res);
+                        this.sockets.socket.emit('chat:msg:send', message, conversation._id);
+                        resolve();
                     } else {
+                        conversation.messages.splice(
+                            conversation.messages.indexOf(message),
+                            1
+                        );
                         this.events.publish('alert:error', res.msg);
                         reject(res.msg);
                     }
                 },
-                (err) => {
+                err => {
+                    conversation.messages.splice(
+                        conversation.messages.indexOf(message),
+                        1
+                    );
                     this.events.publish('alert:error', err.text());
                     reject(err.text());
                 }
@@ -253,36 +223,22 @@ export class ChatService {
     }
 
     registerSocketEvents(socket) {
-        // update conversations members last activity
-        socket.on('users', (data) => {
-            console.info('users', data);
-            if (data && data !== {}) {
-                this.conversations.forEach((c: Conversation) => {
-                    // todo make this more "global" information
-                    c.members.forEach((m: User) => {
-                        if (data[m._id]) {
-                            // if online
-                            m.lastActive = new Date(data[m._id]);
-                        }
-                    });
-                });
-                this.conversations$.next(this.conversations);
-            }
-        });
-
         // update conversations
-        socket.on('chat:conversation', () => {
+        socket.on('chat:conversations:update', () => {
+            console.info('chat:conversations:update');
             this.getConversations();
         });
 
         // new message in conversation
-        socket.on('chat:receive', (message: Message, cid: string) => {
+        socket.on('chat:msg:new', (message: Message, cid: string) => {
+            console.info('chat:msg:new', message, cid);
+
             LocalNotifications.schedule({
                 id: 1,
-                text: `${(<User>message.author).name}: ${message.msg}`
+                text: `${message.author.name}: ${message.msg}`
             });
 
-            let c: Conversation = this.conversations.find((c) => c._id === cid);
+            const c = this.mappedConversations[cid];
             if (c) {
                 // add to conversation
                 c.messages.push(message);
@@ -294,17 +250,20 @@ export class ChatService {
     }
 
     getConversationTitle(c: Conversation) {
-        if (c.name) {
-            return c.name;
-        }
-        if (c.members.length === 2) {
+        if (c) {
+            if (c.name) {
+                return c.name;
+            }
+            if (c.members.length === 2) {
+                return c.members
+                    .filter((m: User) => m._id !== this.auth.user._id)[0].name;
+            }
             return c.members
-                .filter((m: User) => m._id !== this.auth.user._id)[0].name;
+                .filter((m: User) => m._id !== this.auth.user._id)
+                .map((m: User) => m.name)
+                .join(', ');
         }
-        return c.members
-            .filter((m: User) => m._id !== this.auth.user._id)
-            .map((m: User) => m.name)
-            .join(', ');
+        return '';
     }
 
     getMembersPic(c: Conversation) {

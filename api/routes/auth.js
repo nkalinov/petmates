@@ -14,9 +14,9 @@ const passport = require('passport');
 // send Facebook users an endless local JWT token
 // todo get profile info
 router.get('/facebook',
-    passport.authenticate('facebook-token', {session: false}),
+    passport.authenticate('facebook-token', { session: false }),
     (req, res) => {
-        var token = jwt.sign({_id: req.user._id}, auth.Jwt.secretOrKey);
+        const token = jwt.sign({ _id: req.user._id }, auth.Jwt.secretOrKey);
 
         // return the information including token as JSON
         return res.json({
@@ -32,47 +32,47 @@ router.get('/facebook',
 // login by email
 router.post('/', (req, res) => {
     User.findOne(
-        {email: req.body.email.toString().toLowerCase().trim()},
+        { email: req.body.email.toString().toLowerCase().trim() },
         (err, profile) => {
             if (err)
-                return res.json({success: false, msg: err});
+                return res.json({ success: false, msg: err });
 
-            if (!profile) {
-                return res.json({success: false, msg: 'Wrong email or password'});
-            } else {
-                // check if password matches
-                profile.comparePassword(req.body.password, function (err, isMatch) {
-                    if (isMatch && !err) {
-                        // if user is found and password is right create a token
-                        var token = jwt.sign({
-                            _id: profile._id
-                        }, auth.Jwt.secretOrKey);
+            if (!profile)
+                return res.json({ success: false, msg: 'Wrong email or password' });
 
-                        // return the information including token as JSON
-                        return res.json({
-                            success: true,
-                            data: {
-                                token: 'JWT ' + token,
-                                profile
-                            }
-                        });
-                    }
+            // check if password matches
+            profile.comparePassword(req.body.password, function (err, isMatch) {
+                if (isMatch && !err) {
+                    // if user is found and password is right create a token
+                    var token = jwt.sign({
+                        _id: profile._id
+                    }, auth.Jwt.secretOrKey);
 
-                    return res.json({success: false, msg: 'Wrong email or password'});
-                });
-            }
+                    // return the information including token as JSON
+                    return res.json({
+                        success: true,
+                        data: {
+                            token: 'JWT ' + token,
+                            profile
+                        }
+                    });
+                }
+
+                return res.json({ success: false, msg: 'Wrong email or password' });
+            });
         });
 });
 
 // create
 router.post('/signup', (req, res) => {
-    const {name, email, location: {coordinates}, password, picture, city, country} = req.body;
+    const { name, email, location: { coordinates }, password, picture, city, region, country } = req.body;
 
     var user = new User({
         name,
         password,
         email,
         city,
+        region,
         country,
         picture,
         location: {
@@ -82,9 +82,9 @@ router.post('/signup', (req, res) => {
 
     user.save(err => {
         if (err)
-            return res.json({success: false, msg: err});
+            return res.json({ success: false, msg: err });
 
-        return res.json({success: true});
+        return res.json({ success: true });
     });
 });
 
@@ -98,10 +98,10 @@ router.post('/forgot', (req, res, next) => {
             });
         },
         function (token, done) {
-            User.findOne({email: req.body.email}, function (err, user) {
-                if (!user) {
-                    return res.json({success: false, msg: 'No account with that email address exists.'});
-                }
+            User.findOne({ email: req.body.email }, function (err, user) {
+                if (!user)
+                    return res.json({ success: false, msg: 'No account with that email address exists.' });
+
                 user.resetPasswordToken = token;
                 user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
 
@@ -142,9 +142,9 @@ router.get('/reset/:token', function (req, res) {
         }
     }, function (err, user) {
         if (!user) {
-            return res.json({success: false, msg: 'Password reset token is invalid or has expired.'});
+            return res.json({ success: false, msg: 'Password reset token is invalid or has expired.' });
         }
-        res.json({success: true});
+        res.json({ success: true });
     });
 });
 
@@ -157,7 +157,7 @@ router.post('/reset/:token', function (req, res) {
         }
     }, function (err, user) {
         if (!user) {
-            return res.json({success: false, msg: 'Password reset token is invalid or has expired.'});
+            return res.json({ success: false, msg: 'Password reset token is invalid or has expired.' });
         }
 
         user.password = req.body.password;
@@ -166,9 +166,9 @@ router.post('/reset/:token', function (req, res) {
 
         user.save(err => {
             if (err)
-                return res.json({success: false, msg: err});
+                return res.json({ success: false, msg: err });
 
-            return res.json({success: true, msg: 'Your password has been changed.', data: {name: user.email}});
+            return res.json({ success: true, msg: 'Your password has been changed.', data: { name: user.email } });
         });
     });
 });

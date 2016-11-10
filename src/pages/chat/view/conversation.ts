@@ -12,7 +12,7 @@ import { ConversationEditPage } from '../edit/conversation.edit';
 })
 export class ConversationPage {
     @ViewChild(Content) content: Content;
-    conversation: Conversation = new Conversation();
+    conversation: Conversation;
     message: Message;
 
     constructor(public auth: AuthService,
@@ -20,15 +20,24 @@ export class ConversationPage {
                 private nav: NavController,
                 private navParams: NavParams) {
         this.newMessage();
+        this.conversation = this.navParams.get('conversation');
 
-        // load conversation messages
-        this.chats.getMessages(this.navParams.get('id')).then(() => {
+        // get other member's lastActivity
+        if (this.conversation.members.length === 2) {
+            const otherMemberIndex = this.conversation.members.findIndex(m => m._id !== this.auth.user._id),
+                otherMember = this.conversation.members[otherMemberIndex];
+
+            const find = this.auth.user.mates.find(
+                m => m.friend._id === otherMember._id
+            );
+            if (find) {
+                otherMember.lastActive = find.friend.lastActive;
+            }
+        }
+
+        this.chats.getMessages(this.conversation).then(() => {
             this.scrollToBottom(0);
         }, () => this.nav.pop());
-    }
-
-    ionViewWillEnter() {
-        this.conversation = this.chats.findConversationById(this.navParams.get('id')) || new Conversation();
     }
 
     ionViewWillLeave() {
@@ -56,8 +65,11 @@ export class ConversationPage {
     }
 
     private newMessage() {
-        this.message = new Message({
-            author: this.auth.user
-        });
+        const author = {
+            _id: this.auth.user._id,
+            name: this.auth.user.name,
+            pic: this.auth.user.pic
+        };
+        this.message = new Message({ author });
     }
 }

@@ -11,7 +11,7 @@ import { LocationService } from '../../../providers/location.service';
 })
 
 export class ProfileEdit {
-    user: User;
+    user: User; // copy
 
     constructor(private viewCtrl: ViewController,
                 private auth: AuthService,
@@ -30,13 +30,14 @@ export class ProfileEdit {
         this.location.getLocation().then(location => {
             this.user.location.coordinates = location.coordinates;
             this.user.city = location.city;
+            this.user.region = location.region;
             this.user.country = location.country;
         });
     }
 
     save() {
-        const { name, email, picture, password, location, city, country } = this.user;
-        this.auth.update({ name, email, picture, password, location, city, country }).then(() => {
+        const { name, email, picture, password, location, city, region, country } = this.user;
+        this.auth.update({ name, email, picture, password, location, city, region, country }).then(() => {
             this.cancel();
         });
     }

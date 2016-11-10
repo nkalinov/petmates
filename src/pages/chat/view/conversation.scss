@@ -2,52 +2,52 @@ last-activity {
   display: block;
 }
 
-.conversations-list {
-  last-activity {
-    margin-top: -4px;
-  }
-}
-
 conversation-page {
   .messages {
-    width: 100%;
-    position: absolute;
-    padding-bottom: 5px;
 
     .message {
       width: 70%;
-      padding: 5px 10px;
       background: color($colors, light);
       color: color($colors, dark);
       border-radius: 5px;
-      margin: 5px;
-      float: left;
+      margin: 3px 6px;
+      padding: 0;
+
+      .item-inner {
+        padding: 0;
+      }
+
+      ion-label {
+        margin: 7px;
+      }
 
       .date {
         display: block;
-        font-size: 10px;
+        font-size: 70%;
       }
+
       ion-avatar {
         float: left;
-        margin: 0 5px 0 -5px;
+        margin: 0 5px 0 0;
       }
+
       p {
-        margin: 0 0 5px 0;
+        margin: 0 0 4px 0;
         color: #000;
+        font-size: 90%;
       }
 
       &.me {
         float: right;
-        //background: #387ef5;
         background: color($colors, primary);
-        border: 1px solid color($colors, primary);
         color: color($colors, light);
         text-align: right;
 
         ion-avatar {
           float: right;
-          margin: 0 -5px 0 5px;
+          margin: 0 0 0 5px;
         }
+
         p {
           color: #fff;
         }

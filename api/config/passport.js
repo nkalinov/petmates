@@ -12,14 +12,13 @@ module.exports = passport => {
         auth.Jwt,
         (jwt_payload, cb) => {
             User.findById(jwt_payload._id, function (err, user) {
-                if (err) {
+                if (err)
                     return cb(err, false);
-                }
-                if (user) {
+
+                if (user)
                     return cb(null, user);
-                } else {
-                    cb(null, false);
-                }
+
+                cb(null, false);
             });
         })
     );
@@ -43,8 +42,8 @@ module.exports = passport => {
 
             User.findOne({
                 $or: [
-                    {facebookId: fbUser.id},
-                    {email: fbUser.email}
+                    { facebookId: fbUser.id },
+                    { email: fbUser.email }
                 ]
             }, (err, user) => {
                 if (err) {

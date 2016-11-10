@@ -1,7 +1,7 @@
 import { User } from './user.model';
 
 export class Message {
-    author: User | string;
+    author: User;
     msg: string = '';
     added: Date;
 

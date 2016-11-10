@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 const app = require('../app');
 const http = require('http');
-const sockets = require('./sockets');
-const Conversation = require('../models/conversation');
+const cron = require('./cron');
 
 /**
  * Get port from environment and store in Express.
@@ -10,34 +9,13 @@ const Conversation = require('../models/conversation');
 const port = process.env.PORT || '3001';
 app.set('port', port);
 
-/**
- * Create HTTP server and socket.io listener
- */
-var server = http.createServer(app);
-sockets.init(server);
+// Create HTTP server
+const server = http.createServer(app);
 
+// Init socket.io
+require('./socket')(server);
 
-// remove old messages
-const cleanUpMessages = () => {
-    var lastTwoDays = new Date();
-    lastTwoDays.setDate(lastTwoDays.getDate() - 2);
-
-    Conversation.update({}, {
-        $pull: {
-            messages: {
-                added: {$lt: lastTwoDays}
-            }
-        }
-    }, {multi: true}, (err, res) => {
-        if (err)
-            return console.error('Clean old messages ERROR:', err);
-        console.log('Clean old messages:', res);
-    });
-};
-
-cleanUpMessages();
-setInterval(cleanUpMessages, 86400 * 1000); // check every 24h
-
+cron();
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -54,7 +32,7 @@ function onError(error) {
         throw error;
     }
 
-    var bind = typeof port === 'string'
+    const bind = typeof port === 'string'
         ? 'Pipe ' + port
         : 'Port ' + port;
 
@@ -77,8 +55,8 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 function onListening() {
-    var addr = server.address();
-    var bind = typeof addr === 'string'
+    const addr = server.address();
+    const bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
     console.log('Listening on ' + bind);

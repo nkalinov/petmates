@@ -18,14 +18,13 @@
     </ion-refresher>
     <ion-list class="conversations-list">
         <button ion-item *ngFor="let chat of chats.conversations$ | async"
-                (click)="openConversation(chat._id)">
+                (click)="openConversation(chat)">
             <ion-avatar item-left>
                 <mate-image [image]="chats.getMembersPic(chat)"></mate-image>
             </ion-avatar>
             <h2>
                 {{chats.getConversationTitle(chat) | slice:0:21}}
             </h2>
-            <last-activity prefix="Active" [chat]="chat" text-small></last-activity>
             <p *ngIf="chat.lastMessage">
                 <span *ngIf="chat.lastMessage.author._id === auth.user._id">You:</span>
                 <span *ngIf="chat.lastMessage.author._id !== auth.user._id">{{chat.lastMessage.author.name}}:</span>

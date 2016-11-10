@@ -103,21 +103,24 @@ const pages: Array<any> = [
         PlaceImage
     ]),
     imports: [
-        IonicModule.forRoot(PetMatesApp, Object.assign(config, {
-            tabsPlacement: 'bottom',
-            emitCoordsIntervalMs: 15 * 1000,
-            deleteInactiveIntervalMs: 30 * 1000,
-            defaultImages: {
-                pet: 'assets/img/default_pet.jpg',
-                mate: 'assets/img/default_user.gif',
+        IonicModule.forRoot(
+            PetMatesApp,
+            Object.assign(config, {
+                tabsPlacement: 'bottom',
+                images: {
+                    pet: 'assets/img/default_pet.jpg',
+                    mate: 'assets/img/default_user.gif',
 
-                [PlaceType.Vet]: 'assets/img/hospital_marker.png',
-                [`${PlaceType.Vet}View`]: 'assets/img/hospital_marker.png', // todo
+                    places: {
+                        [PlaceType.Vet]: 'assets/img/hospital_marker.png',
+                        [`${PlaceType.Vet}View`]: 'assets/img/hospital_marker.png', // todo
 
-                [PlaceType.Shop]: 'assets/img/hospital_marker.png', // todo
-                [`${PlaceType.Shop}View`]: 'assets/img/hospital_marker.png' // todo
-            }
-        }))
+                        [PlaceType.Shop]: 'assets/img/hospital_marker.png', // todo
+                        [`${PlaceType.Shop}View`]: 'assets/img/hospital_marker.png' // todo
+                    }
+                }
+            })
+        )
     ],
     bootstrap: [IonicApp],
     entryComponents: pages,

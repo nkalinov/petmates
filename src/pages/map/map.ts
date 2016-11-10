@@ -37,7 +37,7 @@ export class MapPage {
 
     private positionSubscriber: Subscription;
     private walksSubscriber: Subscription;
-    private clearInactiveInterval: number;
+    private clearInactiveInterval: any;
 
     constructor(private auth: AuthService,
                 public walk: WalkService,
@@ -74,9 +74,8 @@ export class MapPage {
         if (this.walksSubscriber) {
             this.walksSubscriber.unsubscribe();
         }
-        if (this.clearInactiveInterval) {
-            clearInterval(this.clearInactiveInterval);
-        }
+
+        clearInterval(this.clearInactiveInterval);
     }
 
     openWalkModal() {
@@ -157,7 +156,7 @@ export class MapPage {
         this.layers.walks.addTo(this.mcgLayerSupportGroup);
 
         // Remove inactive walks interval
-        this.clearInactiveInterval = <number>setInterval(() => {
+        this.clearInactiveInterval = setInterval(() => {
             for (let uid in this.walks) {
                 if (this.walks.hasOwnProperty(uid)) {
                     let key = uid;
@@ -171,7 +170,7 @@ export class MapPage {
                     }
                 }
             }
-        }, this.config.get('deleteInactiveIntervalMs'));
+        }, 30 * 1000);
     }
 
     private addPlacesMarkers(coords) {

@@ -13,6 +13,7 @@ export class User {
     pets: Array<Pet> = [];
     mates: Array<Friendship> = [];
     city: string = '';
+    region: string = '';
     country: string = '';
     location: {
         coordinates: Array<number> // [lon, lat]

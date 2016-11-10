@@ -22,11 +22,6 @@ export class AuthModal {
                 private loadingCtrl: LoadingController,
                 private config: Config,
                 private events: Events) {
-        // this.locationService.getLocation().then(location => this.location = location);
-    }
-
-    login() {
-        this.auth.login(this.user.email, this.user.password);
     }
 
     loginFacebook() {
@@ -40,23 +35,12 @@ export class AuthModal {
         );
     }
 
-    signup() {
-        this.auth.signup({
-            name: this.user.name,
-            email: this.user.email,
-            password: this.user.password,
-            picture: this.user.picture,
-            city: this.user.city,
-            country: this.user.country,
-            location: this.user.location
-        });
-    }
-
     geoLocalizeMe() {
         if (!this.user.location.coordinates) {
             this.locationService.getLocation().then(
                 location => {
                     this.user.city = location.city;
+                    this.user.region = location.region;
                     this.user.country = location.country;
                     this.user.location.coordinates = location.coordinates;
                 }

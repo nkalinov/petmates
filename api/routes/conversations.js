@@ -1,111 +1,113 @@
-var express = require('express');
-var router = express.Router();
-var Message = require('../models/message');
-var Conversation = require('../models/conversation');
-var passport = require('passport');
-var sockets = require('../bin/sockets');
+const express = require('express');
+const router = express.Router();
+const Message = require('../models/message');
+const Conversation = require('../models/conversation');
+const passport = require('passport');
+const users = require('../bin/users').users;
 
 // get conversations in which I'm in the members
-router.get('/', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
     Conversation.find({
         members: req.user._id
     }, '_id name members lastMessage').exec().then(
-        (data) => res.json({success: true, data: data}),
-        (err) => res.json({success: false, msg: err})
+        data => {
+            if (data && data.length) {
+                // join rooms
+                data.forEach(c => {
+                    users[req.user._id].socket.join(c.id);
+                });
+            }
+
+            return res.json({ success: true, data })
+        },
+        (err) => res.json({ success: false, msg: err })
     );
 });
 
 // create new conversation
-router.post('/', passport.authenticate('jwt', {session: false}), (req, res) => {
-    var members = req.body.members;
+router.post('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const { name, members } = req.body;
+
     if (members && members.length > 0) {
         // todo check if group with exactly the same members already exists
 
-        var conversationModel = new Conversation();
-        conversationModel.name = req.body.name;
-        conversationModel.members = req.body.members.concat([req.user.id]);
+        const conversationModel = new Conversation();
+        conversationModel.name = name;
+        conversationModel.members = members.concat([req.user.id]);
         conversationModel.save((err, data) => {
             if (err)
-                return res.json({success: false, msg: err});
+                return res.json({ success: false, msg: err });
 
-            // notify each member
-            members.forEach((uid) => {
-                if (sockets.connections[uid]) {
-                    sockets.connections[uid].socket.emit('chat:conversation');
+            res.json({ success: true, data });
+
+            // join the conversation room
+            users[req.user._id].socket.join(data._id);
+
+            // notify members to re-request and join conversations
+            members.forEach(uid => {
+                if (users[uid]) {
+                    users[uid].socket.emit('chat:conversations:update');
                 }
             });
-
-            res.json({success: true, data: data});
         });
     } else {
-        return res.json({success: false, msg: 'Select at least 1 participant.'});
+        return res.json({ success: false, msg: 'Select at least 1 participant.' });
     }
 });
 
-// update conversation (add members, change name)
-router.put('/:cid', passport.authenticate('jwt', {session: false}), (req, res) => {
-    const {name, members} = req.body;
+// update conversation (add more members, change name)
+router.put('/:cid', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const { name, members } = req.body,
+        cid = req.params.cid,
+        me = req.user._id;
 
     Conversation.findOneAndUpdate({
-        _id: req.params.cid,
-        members: req.user._id
+        _id: cid,
+        members: me
     }, {
         members,
         name
-    }, (err, data) => {
+    }, err => {
         if (err)
-            return res.json({success: false, msg: err});
+            return res.json({ success: false, msg: err });
 
-        res.json({success: true, data: data});
+        res.json({ success: true });
 
-        // broadcast to members
-        members
-            .filter((uid) => uid !== req.user.id)
-            .forEach((uid) => {
-                if (sockets.connections[uid]) {
-                    sockets.connections[uid].socket.emit('chat:conversation');
-                }
-            });
+        // notify members to re-request and join conversations
+        members.forEach(uid => {
+            if (users[uid]) {
+                users[uid].socket.emit('chat:conversations:update');
+            }
+        });
     });
 });
 
 // leave group
-router.delete('/:cid', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.delete('/:cid', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const cid = req.params.cid,
+        me = req.user._id;
+
     Conversation.findOneAndUpdate({
-        _id: req.params.cid,
-        members: req.user._id
+        _id: cid,
+        members: me
     }, {
-        $pull: {
-            members: req.user._id
-        }
-    }, {new: true}, (err, data) => {
+        $pull: { members: me }
+    }, {
+        new: true
+    }, (err, data) => {
         if (err)
-            return res.json({success: false, msg: err});
-        res.json({success: true});
+            return res.json({ success: false, msg: err });
 
-        var leftMembers = data.members || [];
+        res.json({ success: true });
 
-        // remove if last member
-        if (leftMembers.length <= 1) {
-            Conversation.remove({_id: data._id}, notify);
-        } else {
-            notify();
-        }
-
-        function notify() {
-            leftMembers
-                .forEach((uid) => {
-                    if (sockets.connections[uid]) {
-                        sockets.connections[uid].socket.emit('chat:conversation');
-                    }
-                });
-        }
+        // leave room
+        users[me].socket.leave(cid);
     });
 });
 
 // add new message to conversation
-router.post('/:cid', passport.authenticate('jwt', {session: false}), (req, res) => {
-    var message = {
+router.post('/:cid', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const message = {
         author: req.user._id,
         msg: req.body.msg
     };
@@ -114,25 +116,26 @@ router.post('/:cid', passport.authenticate('jwt', {session: false}), (req, res) 
         _id: req.params.cid,
         members: req.user._id
     }, {
-        $push: {messages: message},
+        $push: { messages: message },
         lastMessage: message
     }, (err) => {
         if (err)
-            return res.json({success: false, data: err, msg: 'Message could not be send! Try again.'});
+            return res.json({ success: false, data: err, msg: 'Message could not be send! Try again.' });
 
-        return res.json({success: true});
+        return res.json({ success: true });
     });
 });
 
 // get messages from conversation id
-router.get('/:cid', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.get('/:cid', passport.authenticate('jwt', { session: false }), (req, res) => {
     Conversation.findOne({
         _id: req.params.cid,
         members: req.user._id
     }, 'messages', (err, c) => {
         if (err)
-            return res.json({success: false, msg: 'Cannot see others conversations!'});
-        return res.json({success: true, data: c.messages || []});
+            return res.json({ success: false, msg: 'Cannot see others conversations!' });
+
+        return res.json({ success: true, data: c.messages || [] });
     });
 });
 

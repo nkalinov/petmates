@@ -63,7 +63,7 @@ export class WalkService {
         // start emitting my coordinates
         this.emitCoordsInterval = setInterval(() => {
             this.emitCoords();
-        }, this.config.get('emitCoordsIntervalMs'));
+        }, 15 * 1000);
     }
 
     stop() {

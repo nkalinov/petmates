@@ -1,68 +1,71 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const upload = require('../config/upload');
 const fs = require('fs');
 const User = require('../models/user');
+const Conversation = require('../models/conversation');
 
 // check token validity and that user exists
-router.post('/check', passport.authenticate('jwt', {session: false}), (req, res) => res.json({
+router.post('/check', passport.authenticate('jwt', { session: false }), (req, res) => res.json({
     success: true,
     data: req.user
 }));
 
 // get user info by id
-router.get('/:id', passport.authenticate('jwt', {session: false}), (req, res) => {
-    const {id} = req.params;
+router.get('/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const { id } = req.params;
 
     if (!id)
-        return res.json({success: false, msg: 'Supply user id'});
+        return res.json({ success: false, msg: 'Supply user id' });
 
-    User.findOne({_id: id}, (err, user) => {
+    User.findOne({ _id: id }, (err, user) => {
         if (err)
-            return res.json({success: false, msg: err});
+            return res.json({ success: false, msg: err });
 
         if (!user)
-            return res.json({success: false, msg: 'User not found'});
+            return res.json({ success: false, msg: 'User not found' });
 
-        return res.json({success: true, data: user});
+        return res.json({ success: true, data: user });
     });
 });
 
 // delete
-router.delete('/', passport.authenticate('jwt', {session: false}), (req, res) => {
-    var user = req.user;
+router.delete('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const me = req.user._id;
 
     req.user.remove(err => {
         if (err)
-            return res.json({success: false, msg: err});
+            return res.json({ success: false, msg: err });
 
-        res.json({success: true});
+        res.json({ success: true });
 
         // remove user from other's mates
-        if (user.mates && user.mates.length) {
+        if (req.user.mates && req.user.mates.length) {
             User.update(
                 {
                     _id: {
-                        $in: user.mates.map(m => m.friend._id) // friend is populated at this point
+                        $in: req.user.mates.map(m => m.friend._id) // friend is populated at this point
                     }
                 },
                 {
-                    $pull: {
-                        mates: {
-                            friend: user._id
-                        }
-                    }
+                    $pull: { mates: { friend: me } }
                 },
-                {multi: true}
+                { multi: true }
             ).exec();
         }
+
+        // pull member from conversations
+        Conversation.update(
+            { members: me },
+            { $pull: { members: me } },
+            { multi: true }
+        ).exec();
     });
 });
 
 // update
-router.put('/', passport.authenticate('jwt', {session: false}), (req, res) => {
-    const {name, email, location, password, picture, city, country} = req.body;
+router.put('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const { name, email, location, password, picture, city, region, country } = req.body;
 
     if (name && name !== req.user.name) {
         req.user.name = name;
@@ -76,6 +79,9 @@ router.put('/', passport.authenticate('jwt', {session: false}), (req, res) => {
     if (city && city !== req.user.city) {
         req.user.city = city;
     }
+    if (region && region !== req.user.region) {
+        req.user.region = region;
+    }
     if (country && country !== req.user.country) {
         req.user.country = country;
     }
@@ -87,13 +93,13 @@ router.put('/', passport.authenticate('jwt', {session: false}), (req, res) => {
     }
 
     if (!req.user.isModified())
-        return res.json({success: true});
+        return res.json({ success: true });
 
     req.user.save((err, data) => {
         if (err)
-            return res.json({success: false, msg: err});
+            return res.json({ success: false, msg: err });
 
-        return res.json({success: true, data});
+        return res.json({ success: true, data });
     });
 });
 

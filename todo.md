@@ -11,10 +11,11 @@ TODO
         - push notification on a new event nearby
         - bin/www "cron" delete events where date < now()
 - PetViewPage
+- api DEV/PROD configurations (config/**/*)
 
 Future
 ======================
-- refactor api/bin/sockets.js
+- ??? refactor api/bin/sockets.js
 - wall (activities)
 - custom map shops icons
 - donate

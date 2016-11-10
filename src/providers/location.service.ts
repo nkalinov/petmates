@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 
 @Injectable()
 export class LocationService {
-    lastCoords: Array<number>;
+    lastCoords: L.LatLngTuple;
 
     constructor(private http: Http,
                 private auth: AuthService,
@@ -17,7 +17,7 @@ export class LocationService {
         return this.lastCoords ? this.lastCoords : this.auth.user.location.coordinates;
     }
 
-    getGeolocation(opts?: any): Promise<Array<number>> {
+    getGeolocation(opts?: any): Promise<L.LatLngTuple> {
         return Geolocation.getCurrentPosition(Object.assign({}, opts, {
             enableHighAccuracy: true
         })).then(
@@ -33,6 +33,7 @@ export class LocationService {
 
     getLocation(): Promise<{
         city?: string;
+        region?: string;
         country?: string;
         coordinates?: Array<number>;
     }> {
@@ -49,12 +50,19 @@ export class LocationService {
                             if (item.types[0] === 'administrative_area_level_1') {
                                 location.city = item.long_name;
                             }
+                            if (item.types[0] === 'locality') {
+                                location.region = item.long_name;
+                            }
                             if (item.types[0] === 'country') {
                                 location.country = item.long_name;
                             }
                         });
                     }, err => {
-                        // LIMIT probably reached todo something
+                        // Google API LIMIT probably reached
+                        // todo something
+                        location.city = this.auth.user.city;
+                        location.region = this.auth.user.region;
+                        location.country = this.auth.user.country;
                     }, () => resolve(location));
             });
         });

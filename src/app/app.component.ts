@@ -7,7 +7,7 @@ import { getMenu } from '../providers/common.service';
 import { SocketService } from '../providers/socket.service';
 import { MatesService } from '../providers/mates.service';
 import { ChatService } from '../providers/chat.service';
-import { NearbyPage } from '../pages/nearby/nearby';
+import { ConversationsListPage } from '../pages/chat/conversations.list';
 
 @Component({
     templateUrl: 'app.html',
@@ -18,7 +18,8 @@ export class PetMatesApp {
     rootPage: any;
     pages: Array<any>;
     newRequests: number;
-    private defaultRootPage: any = NearbyPage;
+
+    private defaultRootPage: any = ConversationsListPage;
 
     constructor(public auth: AuthService,
                 public walk: WalkService,
@@ -49,8 +50,14 @@ export class PetMatesApp {
     }
 
     private initializeApp() {
-        this.events.subscribe('user:login', () => {
-            this.loggedIn();
+        this.auth.init().then((user) => {
+            this.loggedIn(user);
+        }, (err) => {
+            this.loggedOut(err);
+        });
+
+        this.events.subscribe('user:login', user => {
+            this.loggedIn(user);
         });
         this.events.subscribe('user:logout', () => {
             this.loggedOut();
@@ -61,21 +68,9 @@ export class PetMatesApp {
         this.events.subscribe('alert:info', (msg) => {
             this.showAlert(msg, 'Info');
         });
-
-        this.auth.init().then((user) => {
-            this.loggedIn();
-        }, (err) => {
-            this.loggedOut(err);
-        });
     }
 
-    private loggedIn() {
-        this.pages = getMenu(true); // set logged in menu
-
-        // open default logged in page
-        let page = this.pages.find(page => page.component === this.defaultRootPage);
-        this.openPage(page);
-
+    private loggedIn(user) {
         this.mates.pending$.subscribe((count) => {
             this.newRequests = count;
         });
@@ -83,16 +78,23 @@ export class PetMatesApp {
 
         // todo get conversations list and show badge in menu on unread msgs
 
-        // register socket events handlers
-        this.sockets.init().then((socket) => {
-            this.mates.registerSocketEvents(socket);
+        this.sockets.init(user.country).then(socket => {
+            this.pages = getMenu(true); // set logged in menu
+
+            // open default logged in page
+            this.openPage(
+                this.pages.find(page => page.component === this.defaultRootPage)
+            );
+
+            // register socket events
             this.chat.registerSocketEvents(socket);
+            this.mates.registerSocketEvents(socket);
             this.walk.registerSocketEvents(socket);
         });
     }
 
     private loggedOut(err?) {
-        this.pages = null;
+        this.pages = [];
         this.sockets.disconnect();
         this.openPage({ component: AuthModal, active: false });
     }

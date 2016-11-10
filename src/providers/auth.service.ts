@@ -1,6 +1,6 @@
 import { Events, Config } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { Http, Headers, Response } from '@angular/http';
 import { Pet } from '../models/pet.model';
 import { Observable } from 'rxjs/Observable';
@@ -11,6 +11,7 @@ import { Facebook, FacebookLoginResponse } from 'ionic-native';
 export class AuthService {
     user: User;
     token: string;
+    regionUpdated: EventEmitter<string> = new EventEmitter();
 
     constructor(private http: Http,
                 private events: Events,
@@ -18,7 +19,7 @@ export class AuthService {
                 private storage: Storage) {
     }
 
-    init() {
+    init(): Promise<User> {
         return new Promise((resolve, reject) => {
             this.storage.get('id_token').then((token) => {
                 if (token) {
@@ -65,6 +66,7 @@ export class AuthService {
         );
     }
 
+    // todo
     loginFacebook(): Promise<FacebookLoginResponse> {
         return Facebook.login([
             'public_profile',
@@ -134,10 +136,13 @@ export class AuthService {
                 )
                 .map(res => res.json())
                 .subscribe(
-                    (res: any) => {
+                    res => {
                         if (res.success) {
                             if (res.data) {
                                 this.parseUser(res.data);
+                                if (data.region && data.region !== this.user.region) {
+                                    this.regionUpdated.emit(data.region);
+                                }
                             }
                             resolve(this.user);
                         } else {
@@ -145,7 +150,7 @@ export class AuthService {
                             reject(res.msg);
                         }
                     },
-                    (err) => {
+                    err => {
                         this.events.publish('alert:error', err.text());
                         reject(err.text());
                     }
@@ -178,12 +183,6 @@ export class AuthService {
     logout() {
         this.cleanUser();
         this.events.publish('user:logout');
-    }
-
-    getPetIndexById(id: string) {
-        return this.user.pets.findIndex((el) => {
-            return el._id === id;
-        });
     }
 
     submitForgotRequest(email: string) {
@@ -270,7 +269,7 @@ export class AuthService {
             this.storage.set('id_token', token);
             this.parseUser(res.data.profile);
             this.token = token;
-            this.events.publish('user:login');
+            this.events.publish('user:login', this.user);
         } else {
             this.events.publish('alert:error', res.msg);
             return new Error(res.msg);
@@ -279,8 +278,7 @@ export class AuthService {
 
     private cleanUser() {
         this.storage.remove('id_token');
-        this.user = new User();
-        this.token = null;
+        this.user = this.token = null;
     }
 
     private parseUser(data: any) {

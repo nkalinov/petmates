@@ -9,7 +9,7 @@ const fs = require('fs');
 const upload = require('../config/upload');
 
 // set up a mongoose model
-var UserSchema = new Schema({
+const UserSchema = new Schema({
     facebookId: String,
     name: {
         type: String,
@@ -28,6 +28,7 @@ var UserSchema = new Schema({
         trim: true
     },
     city: String,
+    region: String,
     country: String,
     location: {
         type: {

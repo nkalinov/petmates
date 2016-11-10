@@ -1,11 +1,13 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const autopopulate = require('mongoose-autopopulate');
 
-var Message = new Schema({
+const Message = new Schema({
     _id: false,
     author: {
         type: Schema.Types.ObjectId,
         ref: 'User',
+        autopopulate: { select: '_id name picture' },
         required: true
     },
     msg: {
@@ -17,5 +19,7 @@ var Message = new Schema({
         default: Date.now
     }
 });
+
+Message.plugin(autopopulate);
 
 module.exports = Message;

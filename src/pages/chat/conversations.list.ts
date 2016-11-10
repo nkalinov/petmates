@@ -4,19 +4,23 @@ import { ChatService } from '../../providers/chat.service';
 import { ConversationPage } from './view/conversation';
 import { ConversationEditPage } from './edit/conversation.edit';
 import { AuthService } from '../../providers/auth.service';
+import { Conversation } from '../../models/conversation.model';
 
 @Component({
     templateUrl: 'conversations.list.html'
 })
 
 export class ConversationsListPage {
+
     constructor(public chats: ChatService,
                 public auth: AuthService,
                 private modalCtrl: ModalController,
                 private nav: NavController) {
-        // todo cond ok ?
-        if (chats.conversations.length === 0) {
-            chats.getConversations();
+    }
+
+    ionViewWillEnter() {
+        if (!this.chats.conversations.length) {
+            this.chats.getConversations();
         }
     }
 
@@ -27,8 +31,8 @@ export class ConversationsListPage {
         );
     }
 
-    openConversation(id: string) {
-        this.nav.push(ConversationPage, { id });
+    openConversation(conversation: Conversation) {
+        this.nav.push(ConversationPage, { conversation });
     }
 
     createConversation() {

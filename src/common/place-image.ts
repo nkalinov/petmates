@@ -19,7 +19,7 @@ export class PlaceImage {
     private defaultImages: any;
 
     constructor(config: Config) {
-        this.defaultImages = config.get('defaultImages');
+        this.defaultImages = config.get('images').places;
     }
 
     ngOnInit() {

@@ -9,6 +9,10 @@ export class SocketService {
 
     constructor(private config: Config,
                 private auth: AuthService) {
+        this.auth.regionUpdated.subscribe(region => {
+            // reconnect socket to proper room on region change
+            this.init(region);
+        });
     }
 
     disconnect() {
@@ -18,21 +22,17 @@ export class SocketService {
         }
     }
 
-    init() {
+    init(region) {
         return new Promise((resolve, reject) => {
             this.disconnect();
+
             if (!this.socket) {
-                let socket = io.connect(`${this.config.get('API')}`);
+                let socket = io.connect(`${this.config.get('API')}`, {
+                    query: `region=${region}`
+                });
                 socket.on('connect', () => {
                     socket.on('authenticated', () => {
-                        console.info('socket authenticated');
                         this.socket = socket;
-                        // global socket event handlers
-
-                        // socket.io.engine.on('heartbeat', () => {
-                        //     console.log('heartbeat');
-                        // });
-
                         resolve(this.socket);
                     }).emit('authenticate', { token: this.auth.token.split(' ')[1] }); // send the jwt
                 });

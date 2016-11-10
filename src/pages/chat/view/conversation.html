@@ -14,23 +14,24 @@
 </ion-header>
 
 <ion-content>
-    <div class="messages">
-        <div class="message"
-             *ngFor="let m of conversation.messages"
-             [ngClass]="{'me': m.author._id === auth.user._id}">
+    <ion-list class="messages">
+        <ion-item class="message"
+                  *ngFor="let m of (conversation && conversation.messages)"
+                  [ngClass]="{'me': m.author._id === auth.user._id}">
+
             <ion-avatar class="avatar">
                 <mate-image [image]="m.author.pic"></mate-image>
             </ion-avatar>
+
             <span text-small *ngIf="conversation.members.length > 2 && m.author._id !== auth.user._id">
                 {{m.author.name}}
             </span>
+
             <p>{{ m.msg }}</p>
-            <span class="date">
-                {{ m.added | date: 'short' }}
-            </span>
-        </div>
-    </div>
-    <div class="new-messages" text-center *ngIf="conversation.newMessages > 0">
+            <span class="date">{{ m.added | date: 'short' }}</span>
+        </ion-item>
+    </ion-list>
+    <div class="new-messages" text-center *ngIf="conversation && conversation.newMessages > 0">
         <button ion-button small round color="primary"
                 (click)="scrollToBottom()">
             New messages

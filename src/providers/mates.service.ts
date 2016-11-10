@@ -158,14 +158,36 @@ export class MatesService {
     }
 
     registerSocketEvents(socket) {
+        socket.on('online', activities => {
+            console.info('online', activities);
+
+            if (activities !== {}) {
+                this.auth.user.mates.forEach(mate => {
+                    const lastActiveTimestamp = activities[mate.friend._id];
+
+                    if (lastActiveTimestamp) {
+                        mate.friend.lastActive = new Date(lastActiveTimestamp);
+                    }
+                });
+
+                // re-filter
+                this.sortMatesByStatus();
+            }
+        }).emit('online:get', this.auth.user.mates.map(m => m.friend._id));
+
+        setInterval(() => {
+            // get my friends last activity timestamp
+            socket.emit('online:get', this.auth.user.mates.map(m => m.friend._id));
+        }, 90 * 1000);
+
         socket.on('mate:', (action: string, data: {fRequest: Friendship, myRequest: Friendship}) => {
             console.info('mate:', action, data);
             let index = -1;
+
             switch (action) {
                 case 'requested':
                     // someone sent me friend request
                     this.auth.user.mates.push(data.fRequest);
-                    // TODO test
                     LocalNotifications.schedule({
                         id: 1,
                         text: `New mate request from ${data.fRequest.friend.name}.`
@@ -180,9 +202,8 @@ export class MatesService {
                     });
                     if (index > -1) {
                         this.auth.user.mates[index] = data.fRequest;
-                        // TODO test
                         LocalNotifications.schedule({
-                            id: 1,
+                            id: 2,
                             text: `${data.fRequest.friend.name} accepted your mate request.`
                         });
                         this.sortMatesByStatus();
@@ -206,12 +227,12 @@ export class MatesService {
         setTimeout(() => {
             if (sortOnly === 'accepted' || sortOnly === 'all') {
                 this.mates.accepted = this.auth.user.mates.filter(
-                    (f: Friendship) => f.status === STATUS_ACCEPTED
+                    f => f.status === STATUS_ACCEPTED
                 );
             }
             if (sortOnly === 'requested' || sortOnly === 'all') {
                 this.mates.requested = this.auth.user.mates.filter(
-                    (f: Friendship) => f.status === STATUS_REQUESTED
+                    f => f.status === STATUS_REQUESTED
                 );
             }
             if (sortOnly === 'pending' || sortOnly === 'all') {

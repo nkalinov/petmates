@@ -18,7 +18,7 @@ export class MateImage {
 
     ngOnChanges() {
         if (!this.image) {
-            return this.src = this.config.get('defaultMateImage');
+            return this.src = this.config.get('images').mate;
         } else if (this.image === 'group') {
             return;
             // this.src = this.config.get('defaultGroupChatImage');

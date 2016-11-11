@@ -81,11 +81,11 @@
                 </ion-item>
                 <ion-item (click)="geoLocalizeMe()">
                     <ion-icon item-left name="locate"></ion-icon>
-                    <ion-input readonly required type="text" placeholder="Click to get your location"
+                    <ion-input disabled readonly type="text" placeholder="Click to get your location"
                                [value]="user.city ? (user.city + ', ' + user.country) : undefined"></ion-input>
                 </ion-item>
                 <button ion-item type="submit"
-                        [disabled]="!signupForm.valid">
+                        [disabled]="!signupForm.valid || !user.pic || !user.city || !user.country || !user.region">
                     Submit
                 </button>
             </ion-list>

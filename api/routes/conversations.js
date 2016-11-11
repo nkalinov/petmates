@@ -14,7 +14,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
             if (data && data.length) {
                 // join rooms
                 data.forEach(c => {
-                    users[req.user._id].socket.join(c.id);
+                    users[req.user.id].socket.join(c.id);
                 });
             }
 
@@ -41,7 +41,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
             res.json({ success: true, data });
 
             // join the conversation room
-            users[req.user._id].socket.join(data._id);
+            users[req.user.id].socket.join(data._id);
 
             // notify members to re-request and join conversations
             members.forEach(uid => {
@@ -94,7 +94,7 @@ router.delete('/:cid', passport.authenticate('jwt', { session: false }), (req, r
         $pull: { members: me }
     }, {
         new: true
-    }, (err, data) => {
+    }, err => {
         if (err)
             return res.json({ success: false, msg: err });
 

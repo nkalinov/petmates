@@ -278,7 +278,8 @@ export class AuthService {
 
     private cleanUser() {
         this.storage.remove('id_token');
-        this.user = this.token = null;
+        this.user = new User();
+        this.token = null;
     }
 
     private parseUser(data: any) {

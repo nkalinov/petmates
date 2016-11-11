@@ -55,7 +55,7 @@ function onSocketAuthenticated(socket) {
 
     let currentWalk;
 
-    socket.join(region.toLowerCase());
+    socket.join(region);
 
     // setTimeout(() => {
     //     socket.emit('walks', walks)

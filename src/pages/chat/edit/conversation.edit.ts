@@ -23,7 +23,9 @@ export class ConversationEditPage {
 
     saveConversation() {
         this.chat.createOrUpdateConversation(this.conversation)
-            .then(() => this.nav.pop());
+            .then(() => {
+                this.nav.pop();
+            });
     }
 
     addMatesModal() {

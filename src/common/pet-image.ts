@@ -3,7 +3,7 @@ import { Config } from 'ionic-angular';
 
 @Component({
     selector: 'pet-image',
-    template: `<img [attr.src]="src">`
+    template: `<img [attr.src]="src" />`
 })
 
 export class PetImage {
@@ -15,7 +15,7 @@ export class PetImage {
 
     ngOnChanges() {
         if (!this.image) {
-            return this.src = this.config.get('defaultPetImage');
+            return this.src = this.config.get('images').pet;
         }
         this.src = this.image;
     }

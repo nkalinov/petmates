@@ -77,21 +77,19 @@ export class ChatService {
                     res => {
                         if (res.success) {
                             // get messages (there were maybe new while editing the copy)
-                            c.messages = this.mappedConversations[c._id].messages;
+                            // c.messages = this.mappedConversations[c._id].messages;
 
-                            // replace
-                            this.mappedConversations[c._id] = c;
-
-                            this.conversations$.next(this.conversations);
+                            // extend (replacing will cause the pointer to change)
+                            this.mappedConversations[c._id] = Object.assign(this.mappedConversations[c._id], c);
                             resolve();
                         } else {
                             this.events.publish('alert:error', res.msg);
-                            reject(res.msg);
+                            reject();
                         }
                     },
                     err => {
                         this.events.publish('alert:error', err.text());
-                        reject(err.text());
+                        reject();
                     }
                 );
         });
@@ -113,7 +111,7 @@ export class ChatService {
                                 this.conversations.splice(index, 1);
                                 delete this.mappedConversations[c._id];
                             }
-                            this.conversations$.next(this.conversations);
+                            // this.conversations$.next(this.conversations);
                             resolve();
                         } else {
                             this.events.publish('alert:error', res.msg);

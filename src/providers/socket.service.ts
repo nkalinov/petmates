@@ -28,7 +28,7 @@ export class SocketService {
 
             if (!this.socket) {
                 let socket = io.connect(`${this.config.get('API')}`, {
-                    query: `region=${region}`
+                    query: `region=${encodeURIComponent(region.toLowerCase())}`
                 });
                 socket.on('connect', () => {
                     socket.on('authenticated', () => {

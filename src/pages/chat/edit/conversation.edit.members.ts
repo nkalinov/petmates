@@ -19,12 +19,11 @@ export class ConversationEditMembersPage {
 
         // get friends not in members
         this.friends = this.mates.mates.accepted
-            .map(f => f.friend)
-            .filter((u: User) => !this.conversation.members.find((m: User) => m._id === u._id));
-    }
-
-    ionViewWillLeave() {
-        this.friends.forEach((f: any) => f.checked = false);
+            .map(f => {
+                f.friend.checked = false;
+                return f.friend;
+            })
+            .filter(u => !this.conversation.members.find(m => m._id === u._id));
     }
 
     haveCheckedFriends() {

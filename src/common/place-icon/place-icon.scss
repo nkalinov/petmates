@@ -1,0 +1,21 @@
+place-icon {
+  display: block;
+  margin: 0;
+}
+
+.item {
+  & > place-icon {
+
+    & > ion-icon {
+      min-height: 2.4rem;
+      font-size: 2.4rem;
+      line-height: 1;
+
+      &:first-child {
+        min-width: 24px;
+        text-align: center;
+      }
+    }
+  }
+}
+

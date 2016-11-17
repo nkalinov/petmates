@@ -23,13 +23,14 @@ export class User {
 
     lastActive: Date = null;
     distance: string;
-    latLng: L.LatLng;
 
     constructor(data?, myCoordinates?) {
         if (data) {
             Object.assign(this, data);
 
-            this.latLng = L.latLng(this.location.coordinates[1], this.location.coordinates[0]);
+            if (data.distance) {
+                this.setDistance(data.distance);
+            }
 
             if (myCoordinates && this.location && this.location.coordinates.length > 0) {
                 const lat1 = this.location.coordinates[1];

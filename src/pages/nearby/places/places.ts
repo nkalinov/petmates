@@ -1,34 +1,54 @@
 import { Component } from '@angular/core';
-import { NavController, Refresher } from 'ionic-angular';
-import { NearbyService } from '../../../providers/nearby.service';
+import { NavController, Refresher, ModalController } from 'ionic-angular';
+import { LaunchNavigator } from 'ionic-native';
 import { Place } from '../../../models/place.model';
-import { PlaceViewPage } from './place-view';
 import { PlaceEditPage } from './place-edit';
+import { ReportPlacePage } from './report-place/report-place';
+import { PlacesService } from '../../../providers/places.service';
 
 @Component({
     templateUrl: 'places.html'
 })
 export class PlacesPage {
     constructor(private navCtrl: NavController,
-                public nearby: NearbyService) {
+                private modalCtrl: ModalController,
+                public places: PlacesService) {
     }
 
     ionViewDidEnter() {
-        this.nearby.getLocationThenNearbyPlaces();
+        this.onSegmentChange();
     }
 
-    viewPlace(place: Place) {
-        this.navCtrl.push(PlaceViewPage, { place });
+    onSegmentChange(force = false) {
+        if (this.places.mode === 'nearby') {
+            return this.places.getNearbyPlaces(force);
+        } else {
+            return this.places.getCreatedPlaces();
+        }
+    }
+
+    doRefresh(refresher: Refresher) {
+        this.onSegmentChange(true).then(
+            () => refresher.complete(),
+            err => refresher.complete()
+        );
     }
 
     addPlace() {
         this.navCtrl.push(PlaceEditPage);
     }
 
-    doRefresh(refresher: Refresher) {
-        this.nearby.getLocationThenNearbyPlaces(true).then(
-            () => refresher.complete(),
-            err => refresher.complete()
+    navigate(place: Place) {
+        LaunchNavigator.navigate([
+            place.location.coordinates[1],
+            place.location.coordinates[0]
+        ]).then(
+            success => console.log('Launched navigator'),
+            error => console.log('Error launching navigator', error)
         );
+    }
+
+    report(place) {
+        this.modalCtrl.create(ReportPlacePage).present();
     }
 }

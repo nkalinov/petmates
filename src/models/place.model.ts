@@ -1,24 +1,38 @@
 export enum PlaceType {
-    Vet,
-    Shop,
-    Bar,
-    Park,
-    Restaurant,
-    Hotel,
-    School
+    vet,
+    shop,
+    bar,
+    park,
+    restaurant,
+    hotel,
+    school
 }
+
+export const placeTypes = [
+    PlaceType[PlaceType.vet],
+    PlaceType[PlaceType.shop],
+    PlaceType[PlaceType.bar],
+    PlaceType[PlaceType.park],
+    PlaceType[PlaceType.restaurant],
+    PlaceType[PlaceType.hotel],
+    PlaceType[PlaceType.school],
+].map(value => ({
+    label: value.charAt(0).toUpperCase() + value.slice(1),
+    value
+}));
 
 export class Place {
     readonly _id: string;
     readonly creator: string;
 
     name: string;
-    type: Array<PlaceType> = [];
+    type: string[] = [];
     location: {
         coordinates: Array<number> // [lon, lat]
     };
     address: string;
     pic: string;
+    picture: string;
     phone: string;
     hours: string;
     link: string;
@@ -29,6 +43,10 @@ export class Place {
     constructor(data?) {
         if (data) {
             Object.assign(this, data);
+
+            if (data.distance) {
+                this.setDistance(data.distance);
+            }
         }
     }
 

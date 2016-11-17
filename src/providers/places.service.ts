@@ -1,23 +1,77 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
-import { AuthService } from './auth.service';
-import { Config, Events } from 'ionic-angular';
+import { ImagePicker } from 'ionic-native';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Config, Events } from 'ionic-angular';
+
+import { AuthService } from './auth.service';
 import { Place } from '../models/place.model';
+import { LocationService } from './location.service';
 
 @Injectable()
 export class PlacesService {
-    mode: string = 'nearby';
+    mode: 'nearby' | 'mine' = 'nearby';
     nearby$ = new BehaviorSubject([]);
     mine$ = new BehaviorSubject([]);
-    going$ = new BehaviorSubject([]);
-
-    _places: Array<Place> = []; // events with populated details
 
     constructor(private http: Http,
                 private events: Events,
                 private config: Config,
-                private auth: AuthService) {
+                private auth: AuthService,
+                private location: LocationService) {
+    }
+
+    getNearbyPlaces(force = false) {
+        return new Promise((resolve, reject) => {
+            if (force || this.nearby$.getValue().length <= 0) {
+
+                this.location.getGeolocation().then(coords => {
+
+                    let headers = new Headers();
+                    headers.append('Authorization', this.auth.token);
+
+                    this.http.get(`${this.config.get('API')}/nearby/places?coords=${coords}`, { headers: headers })
+                        .map(res => res.json())
+                        .subscribe(
+                            res => {
+                                this.nearby$.next(res.data.map(p => new Place(p)));
+                                resolve();
+                            },
+                            err => {
+                                this.events.publish('alert:error', err.text());
+                                reject();
+                            }
+                        );
+                });
+            } else {
+                resolve();
+            }
+        });
+    }
+
+    getCreatedPlaces(force = false) {
+        return new Promise((resolve, reject) => {
+            if (force || this.mine$.getValue().length <= 0) {
+
+                let headers = new Headers();
+                headers.append('Authorization', this.auth.token);
+
+                this.http.get(`${this.config.get('API')}/events`, { headers: headers })
+                    .map(res => res.json())
+                    .subscribe(
+                        res => {
+                            this[`${this.mode}$`].next(res.data.map(obj => new Event(obj)));
+                            resolve();
+                        },
+                        err => {
+                            this.events.publish('alert:error', err.text());
+                            reject();
+                        }
+                    );
+            } else {
+                resolve();
+            }
+        });
     }
 
     editOrCreatePlace(place: Place) {
@@ -28,11 +82,7 @@ export class PlacesService {
 
             if (place._id) {
                 // update
-                this.http.put(
-                    `${this.config.get('API')}/events/${place._id}`,
-                    JSON.stringify(place),
-                    { headers: headers }
-                )
+                this.http.put(`${this.config.get('API')}/places/${place._id}`, JSON.stringify(place), { headers: headers })
                     .map(res => res.json())
                     .subscribe(
                         res => {
@@ -55,11 +105,7 @@ export class PlacesService {
                     );
             } else {
                 // create
-                this.http.post(
-                    `${this.config.get('API')}/events`,
-                    JSON.stringify(place),
-                    { headers: headers }
-                )
+                this.http.post(`${this.config.get('API')}/places`, JSON.stringify(place), { headers: headers })
                     .map(res => res.json())
                     .subscribe(
                         res => {
@@ -80,5 +126,37 @@ export class PlacesService {
                     );
             }
         });
+    }
+
+    uploadPicture(place: Place) {
+        ImagePicker.getPictures({
+            maximumImagesCount: 1,
+            width: 500,
+            height: 500
+        }).then(images => {
+                let options = new FileUploadOptions();
+                options.fileKey = 'picture';
+                options.headers = {
+                    'Authorization': this.auth.token
+                };
+                let ft = new FileTransfer();
+                ft.upload(images[0], encodeURI(`${this.config.get('API')}/upload`),
+                    res => {
+                        const parsed = JSON.parse(res.response);
+
+                        if (parsed.success) {
+                            place.pic = parsed.data.url;
+                            place.picture = parsed.data.filename;
+                        } else {
+                            this.events.publish('alert:error', parsed.msg);
+                        }
+                    },
+                    err => {
+                        this.events.publish('alert:error', err.body);
+                    }, options);
+            },
+            err => {
+                this.events.publish('alert:error', err);
+            });
     }
 }

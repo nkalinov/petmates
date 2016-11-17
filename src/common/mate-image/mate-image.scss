@@ -1,0 +1,8 @@
+mate-image {
+  display: block;
+  text-align: center;
+
+  & > ion-icon {
+    font-size: 30px;
+  }
+}

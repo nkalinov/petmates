@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
-import { NavParams, NavController, ModalController } from 'ionic-angular';
+import { NavParams, NavController, ActionSheetController, AlertController, Events } from 'ionic-angular';
 import { LocationService } from '../../../providers/location.service';
-import { MateViewPage } from '../../mates/view/mate.view';
 import { PlacesService } from '../../../providers/places.service';
-import { Place, PlaceType } from '../../../models/place.model';
-import { ReportPlacePage } from './report-place/report-place';
+import { Place, placeTypes } from '../../../models/place.model';
 
 @Component({
     templateUrl: 'place-edit.html'
@@ -14,15 +12,16 @@ export class PlaceEditPage {
     place: Place;
     map: L.Map;
     marker: L.Marker;
-    min: string;
-    max: string;
-    placeTypes = PlaceType;
+
+    placeTypes = placeTypes;
 
     constructor(navParams: NavParams,
                 private navCtrl: NavController,
                 private places: PlacesService,
                 private location: LocationService,
-                private modalCtrl: ModalController) {
+                private events: Events,
+                private actionSheetCtrl: ActionSheetController,
+                private alertCtrl: AlertController) {
         this.place = new Place(navParams.get('place'));
     }
 
@@ -57,17 +56,60 @@ export class PlaceEditPage {
         }
     }
 
-    viewMate(id: string) {
-        this.navCtrl.push(MateViewPage, { id });
-    }
-
     save() {
         this.places.editOrCreatePlace(this.place)
             .then(() => this.navCtrl.pop());
     }
 
-    reportPlace() {
-        this.modalCtrl.create(ReportPlacePage).present();
+    changePicture() {
+        const actionSheet = this.actionSheetCtrl.create({
+            buttons: [
+                {
+                    text: 'Upload from Photos',
+                    handler: () => {
+                        this.places.uploadPicture(this.place);
+                    }
+                },
+                {
+                    text: 'Set an URL',
+                    handler: () => {
+                        this.alertCtrl.create({
+                            title: 'Place photo',
+                            inputs: [
+                                {
+                                    name: 'url',
+                                    placeholder: 'URL to place photo'
+                                }
+                            ],
+                            buttons: [
+                                {
+                                    text: 'Cancel',
+                                    role: 'cancel'
+                                },
+                                {
+                                    text: 'Save',
+                                    handler: data => {
+                                        if (data.url && data.url.match(/\.(jpeg|jpg|gif|png)$/) !== null) {
+                                            this.place.picture = this.place.pic = data.url;
+                                            return true;
+                                        } else {
+                                            // invalid login
+                                            this.events.publish('alert:error', 'Invalid URL');
+                                            return false;
+                                        }
+                                    }
+                                }
+                            ]
+                        }).present();
+                    }
+                },
+                {
+                    text: 'Cancel',
+                    role: 'cancel'
+                }
+            ]
+        });
+        actionSheet.present();
     }
 
     private addMarker(latlng) {

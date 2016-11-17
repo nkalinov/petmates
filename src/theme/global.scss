@@ -3,10 +3,6 @@ button[disabled] {
   opacity: 0.5;
 }
 
-[text-small] {
-  font-size: 10px !important;
-}
-
 ion-menu#main-menu {
 
   .menu-inner {
@@ -14,13 +10,12 @@ ion-menu#main-menu {
   }
 
   ion-title {
-    padding: 0 70px 1px;
+    padding: 0;
     top: 6px;
 
-    .outline {
+    h1 {
       font-family: $font-primary;
       color: #fff;
-      font-size: 24px;
     }
   }
 
@@ -43,10 +38,28 @@ ion-menu#main-menu {
   }
 }
 
-[margin-bottom] {
-  margin-bottom: 16px !important;
-}
+.profile-picture {
+  position: relative;
+  max-height: 200px;
 
-[margin-bottom-small] {
-  margin-bottom: 8px !important;
+  img {
+    display: block;
+    margin: 0 auto;
+    max-height: 200px;
+  }
+
+  .change-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    text-align: center;
+    width: 100%;
+    padding: 3px 0;
+    margin: 0;
+    background: transparentize(#000, 0.9);
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
 }

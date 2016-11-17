@@ -51,6 +51,6 @@ $font-primary: 'Crafty Girls', cursive;
 $ionicons-font-path: '../assets/fonts';
 @import 'ionicons';
 
+@import 'helpers';
 @import 'global';
-@import 'components';
 @import '../pages/map/map';

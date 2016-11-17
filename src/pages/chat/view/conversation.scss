@@ -6,7 +6,7 @@ conversation-page {
   .messages {
 
     .message {
-      width: 70%;
+      width: 75%;
       background: color($colors, light);
       color: color($colors, dark);
       border-radius: 5px;
@@ -19,16 +19,16 @@ conversation-page {
 
       ion-label {
         margin: 7px;
+        white-space: normal;
       }
 
       .date {
         display: block;
-        font-size: 70%;
       }
 
       ion-avatar {
         float: left;
-        margin: 0 5px 0 0;
+        margin: 0 7px 0 0;
       }
 
       p {
@@ -45,7 +45,7 @@ conversation-page {
 
         ion-avatar {
           float: right;
-          margin: 0 0 0 5px;
+          margin: 0 0 0 7px;
         }
 
         p {

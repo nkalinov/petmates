@@ -15,7 +15,7 @@ const PlaceSchema = new Schema({
         {
             type: String,
             required: true,
-            enum: ['vet', 'shop', 'bar', 'park', 'resto', 'hotel', 'school']
+            enum: ['vet', 'shop', 'bar', 'park', 'restaurant', 'hotel', 'school']
         }
     ],
     location: {
@@ -49,7 +49,7 @@ const PlaceSchema = new Schema({
     }
 });
 
-PlaceSchema.index({location: '2dsphere'});
+PlaceSchema.index({ location: '2dsphere' });
 
 PlaceSchema.virtual('pic').get(function () {
     return helpers.uploadPath(this.picture);

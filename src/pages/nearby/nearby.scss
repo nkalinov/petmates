@@ -23,4 +23,30 @@ nearby-page {
       }
     }
   }
+
+  .place-card {
+    place-icon {
+      margin-bottom: 0;
+    }
+
+    .place-type-badges-wrapper {
+      position: relative;
+
+      .place-type-badges {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 1;
+      }
+    }
+
+    ion-item {
+      min-height: 0;
+
+      ion-label {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+  }
 }

@@ -28,31 +28,32 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 router.post('/', passport.authenticate('jwt', { session: false }), (req, res) => {
     const { name, members } = req.body;
 
-    if (members && members.length > 0) {
-        // todo check if group with exactly the same members already exists
-
-        const conversationModel = new Conversation();
-        conversationModel.name = name;
-        conversationModel.members = members.concat([req.user.id]);
-        conversationModel.save((err, data) => {
-            if (err)
-                return res.json({ success: false, msg: err });
-
-            res.json({ success: true, data });
-
-            // join the conversation room
-            users[req.user.id].socket.join(data._id);
-
-            // notify members to re-request and join conversations
-            members.forEach(uid => {
-                if (users[uid]) {
-                    users[uid].socket.emit('chat:conversations:update');
-                }
-            });
-        });
-    } else {
+    if (!members || !members.length)
         return res.json({ success: false, msg: 'Select at least 1 participant.' });
-    }
+
+    // todo check if group with exactly the same members already exists
+
+    const conversation = new Conversation({
+        name,
+        members: members.concat([req.user.id])
+    });
+
+    conversation.save((err, data) => {
+        if (err)
+            return res.json({ success: false, msg: err });
+
+        res.json({ success: true, data });
+
+        // join the conversation room
+        users[req.user.id].socket.join(data._id);
+
+        // notify members to re-request and join conversations
+        members.forEach(id => {
+            if (users[id]) {
+                users[id].socket.emit('chat:conversations:update');
+            }
+        });
+    });
 });
 
 // update conversation (add more members, change name)
@@ -73,12 +74,14 @@ router.put('/:cid', passport.authenticate('jwt', { session: false }), (req, res)
 
         res.json({ success: true });
 
-        // notify members to re-request and join conversations
-        members.forEach(uid => {
-            if (users[uid]) {
-                users[uid].socket.emit('chat:conversations:update');
-            }
-        });
+        // notify other members to re-request and join conversations
+        members
+            .filter(id => id !== req.user.id)
+            .forEach(id => {
+                if (users[id]) {
+                    users[id].socket.emit('chat:conversations:update');
+                }
+            });
     });
 });
 

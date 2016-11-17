@@ -18,7 +18,6 @@
         <ion-item class="message"
                   *ngFor="let m of (conversation && conversation.messages)"
                   [ngClass]="{'me': m.author._id === auth.user._id}">
-
             <ion-avatar class="avatar">
                 <mate-image [image]="m.author.pic"></mate-image>
             </ion-avatar>
@@ -26,9 +25,8 @@
             <span text-small *ngIf="conversation.members.length > 2 && m.author._id !== auth.user._id">
                 {{m.author.name}}
             </span>
-
             <p>{{ m.msg }}</p>
-            <span class="date">{{ m.added | date: 'short' }}</span>
+            <time-ago text-small class="date" [time]="m.added"></time-ago>
         </ion-item>
     </ion-list>
     <div class="new-messages" text-center *ngIf="conversation && conversation.newMessages > 0">

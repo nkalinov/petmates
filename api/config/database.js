@@ -55,7 +55,7 @@ function seed() {
                 },
                 {
                     name: "Солун магазин и вет клиника",
-                    type: ['vet', 'shop'],
+                    type: ['shop', 'vet'],
                     address: "ул. Солун 16, София 1000",
                     phone: "+359 897 599 991",
                     hours: "Mon-Sat / 8-20h",

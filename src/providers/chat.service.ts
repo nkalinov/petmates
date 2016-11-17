@@ -38,15 +38,13 @@ export class ChatService {
                 `${this.config.get('API')}/conversations`,
                 JSON.stringify({
                     name: c.name,
-                    members: c.members.map((f) => f._id)
+                    members: c.members.map(f => f._id)
                 }),
                 { headers: headers }
             ).map(res => res.json()).subscribe(
                 res => {
                     if (res.success) {
-                        const newConversation = new Conversation(res.data);
-                        newConversation.members = c.members.concat(this.auth.user);
-                        this.conversations.unshift(newConversation);
+                        this.conversations.unshift(new Conversation(res.data));
                         this.conversations$.next(this.conversations);
                         resolve(this.conversations[0]);
                     } else {
@@ -76,11 +74,10 @@ export class ChatService {
                 .subscribe(
                     res => {
                         if (res.success) {
-                            // get messages (there were maybe new while editing the copy)
-                            // c.messages = this.mappedConversations[c._id].messages;
-
-                            // extend (replacing will cause the pointer to change)
-                            this.mappedConversations[c._id] = Object.assign(this.mappedConversations[c._id], c);
+                            this.mappedConversations[c._id] = Object.assign(this.mappedConversations[c._id], {
+                                name: c.name,
+                                members: c.members
+                            });
                             resolve();
                         } else {
                             this.events.publish('alert:error', res.msg);
@@ -136,6 +133,7 @@ export class ChatService {
                 .subscribe(
                     res => {
                         if (res.success) {
+                            // todo merge name and members
                             this.conversations = res.data.map(data => {
                                 const c = new Conversation(data);
                                 this.mappedConversations[c._id] = c;
@@ -194,29 +192,31 @@ export class ChatService {
 
             this.http.post(`${this.config.get('API')}/conversations/${conversation._id}`, JSON.stringify({
                 msg: message.msg
-            }), { headers: headers }).map(res => res.json()).subscribe(
-                res => {
-                    if (res.success) {
-                        this.sockets.socket.emit('chat:msg:send', message, conversation._id);
-                        resolve();
-                    } else {
+            }), { headers: headers })
+                .map(res => res.json())
+                .subscribe(
+                    res => {
+                        if (res.success) {
+                            this.sockets.socket.emit('chat:msg:send', message, conversation._id);
+                            resolve();
+                        } else {
+                            conversation.messages.splice(
+                                conversation.messages.indexOf(message),
+                                1
+                            );
+                            this.events.publish('alert:error', res.msg);
+                            reject(res.msg);
+                        }
+                    },
+                    err => {
                         conversation.messages.splice(
                             conversation.messages.indexOf(message),
                             1
                         );
-                        this.events.publish('alert:error', res.msg);
-                        reject(res.msg);
+                        this.events.publish('alert:error', err.text());
+                        reject(err.text());
                     }
-                },
-                err => {
-                    conversation.messages.splice(
-                        conversation.messages.indexOf(message),
-                        1
-                    );
-                    this.events.publish('alert:error', err.text());
-                    reject(err.text());
-                }
-            );
+                );
         });
     }
 
@@ -240,7 +240,7 @@ export class ChatService {
             if (c) {
                 // add to conversation
                 c.messages.push(message);
-                message.added = new Date(<any>message.added);
+                message.added = new Date(message.added);
                 c.lastMessage = message;
                 c.newMessages += 1;
             }

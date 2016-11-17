@@ -3,7 +3,7 @@
         <ion-title>
             <span *ngIf="place._id">Edit</span>
             <span *ngIf="!place._id">New</span>
-            event
+            place
         </ion-title>
         <ion-buttons end>
             <button ion-button color="secondary"
@@ -17,6 +17,13 @@
 
 <ion-content>
     <ion-row no-padding wrap center>
+        <ion-col no-padding width-100 class="profile-picture" (click)="changePicture()">
+            <img [attr.src]="place.pic || 'assets/img/place-placeholder.jpg'">
+            <p class="change-text">Change picture</p>
+        </ion-col>
+    </ion-row>
+
+    <ion-row no-padding wrap center>
         <ion-col class="event-map-col" no-padding width-100>
             <div id="place-map" class="event-map"></div>
         </ion-col>
@@ -26,41 +33,33 @@
     <form (submit)="save()" #placeForm="ngForm">
         <ion-list>
             <ion-item>
-                <ion-label>Name</ion-label>
+                <ion-label>Name *</ion-label>
                 <ion-input name="name" required type="text" [(ngModel)]="place.name"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>Type</ion-label>
-                <ion-select name="type" [(ngModel)]="place.type">
-                    <ion-option *ngFor="let t of placeTypes" value="m">Male</ion-option>
-                    <ion-option value="f">Female</ion-option>
+                <ion-label>Type *</ion-label>
+                <ion-select name="type" [(ngModel)]="place.type" multiple="true">
+                    <ion-option *ngFor="let t of placeTypes" value="{{t.value}}">
+                        {{t.label}}
+                    </ion-option>
                 </ion-select>
             </ion-item>
             <ion-item>
-                <ion-label>Description</ion-label>
-                <ion-textarea name="description" required [(ngModel)]="place.description"></ion-textarea>
-            </ion-item>
-            <ion-item>
-                <ion-label>Address</ion-label>
+                <ion-label>Address *</ion-label>
                 <ion-input name="address" required type="text" [(ngModel)]="place.address"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>Start Date</ion-label>
-                <ion-datetime name="date" [(ngModel)]="place.date"
-                              min="{{min}}" max="{{max}}"></ion-datetime>
+                <ion-label>Phone</ion-label>
+                <ion-input name="phone" type="text" [(ngModel)]="place.phone"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>Start Time</ion-label>
-                <ion-datetime name="time" displayFormat="h:mm:A" pickerFormat="hh mm A"
-                              [(ngModel)]="place.date"></ion-datetime>
+                <ion-label>Working hours</ion-label>
+                <ion-input name="hours" type="text" [(ngModel)]="place.hours"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Website</ion-label>
+                <ion-input name="url" type="url" [(ngModel)]="place.link"></ion-input>
             </ion-item>
         </ion-list>
     </form>
-
-    <div padding-horizontal margin-bottom *ngIf="place._id">
-        <button ion-button small block color="danger" outline
-                (click)="reportPlace()">
-            Report place
-        </button>
-    </div>
 </ion-content>

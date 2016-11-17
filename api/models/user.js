@@ -65,7 +65,7 @@ const UserSchema = new Schema({
     }
 });
 
-UserSchema.index({location: '2dsphere'});
+UserSchema.index({ location: '2dsphere' });
 
 UserSchema.virtual('pic').get(function () {
     return helpers.uploadPath(this.picture);
@@ -158,7 +158,7 @@ UserSchema.methods.requestFriend = function (uid, cb) {
                 'mates.$.status': Friendship.Status.ACCEPTED,
                 'mates.$.added': Date.now()
             }
-        }, {new: true}, (err, friendUpdated) => {
+        }, { new: true }, (err, friendUpdated) => {
             var myRequest = this.mates.id(find._id);
             if (err) {
                 // delete
@@ -188,7 +188,7 @@ UserSchema.methods.requestFriend = function (uid, cb) {
                     friend: this._id
                 }
             }
-        }, {new: true}, (err, friendUpdated) => {
+        }, { new: true }, (err, friendUpdated) => {
             if (err)
                 return cb('User deleted');
 
@@ -218,9 +218,9 @@ UserSchema.methods.removeFriend = function (fid) {
                 friendship.remove();
                 this.save().then(() => {
                     // remove friendship from OTHER side
-                    this.model('User').findOneAndUpdate({_id: uid}, {
+                    this.model('User').findOneAndUpdate({ _id: uid }, {
                         $pull: {
-                            mates: {friend: this._id}
+                            mates: { friend: this._id }
                         }
                     }).exec().then((friendUpdated) => {
                         resolve({

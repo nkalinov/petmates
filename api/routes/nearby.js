@@ -6,7 +6,7 @@ const Place = require('../models/place');
 const Event = require('../models/event');
 const helpers = require('../helpers');
 
-router.get('/people', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.get('/people', passport.authenticate('jwt', { session: false }), (req, res) => {
     const point = {
         type: 'Point',
         coordinates: req.query.coords ?
@@ -46,31 +46,57 @@ router.get('/people', passport.authenticate('jwt', {session: false}), (req, res)
                 return d;
             })
         }),
-        err => res.json({success: false, msg: err})
+        err => res.json({ success: false, msg: err })
     );
 });
 
-router.get('/places', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.get('/places', passport.authenticate('jwt', { session: false }), (req, res) => {
     const point = {
         type: 'Point',
         coordinates: req.query.coords ?
             req.query.coords.split(',').map(c => parseFloat(c)) :
             req.user.location.coordinates
     };
-    Place.geoNear(
-        point,
+    Place.aggregate(
         {
-            spherical: true,
-            $maxDistance: 500 * 1000
+            $geoNear: {
+                distanceField: 'distance',
+                near: point,
+                maxDistance: 500 * 1000,
+                spherical: true,
+                query: {
+                    approved: true
+                }
+            }
         },
-        (err, data) => res.json(err ?
-            {success: false, msg: err} :
-            {success: true, data}
-        )
+        {
+            $project: {
+                creator: 1,
+                name: 1,
+                type: 1,
+                location: 1,
+                address: 1,
+                picture: 1,
+                phone: 1,
+                hours: 1,
+                link: 1,
+                distance: 1
+            }
+        }
+    ).exec().then(
+        data => res.json({
+            success: true,
+            data: data.map(d => {
+                d.pic = helpers.uploadPath(d.picture);
+                delete d.picture;
+                return d;
+            })
+        }),
+        err => res.json({ success: false, msg: err })
     );
 });
 
-router.get('/events', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.get('/events', passport.authenticate('jwt', { session: false }), (req, res) => {
     const point = {
         type: 'Point',
         coordinates: req.query.coords ?
@@ -84,8 +110,8 @@ router.get('/events', passport.authenticate('jwt', {session: false}), (req, res)
             $maxDistance: 500 * 1000
         },
         (err, data) => res.json(err ?
-            {success: false, msg: err} :
-            {success: true, data}
+            { success: false, msg: err } :
+            { success: true, data }
         )
     );
 });

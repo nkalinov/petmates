@@ -35,7 +35,6 @@ import { EventEditPage } from '../pages/nearby/events/event-edit';
 import { EventViewPage } from '../pages/nearby/events/event-view';
 import { PeoplePage } from '../pages/nearby/people/people';
 import { PlacesPage } from '../pages/nearby/places/places';
-import { PlaceViewPage } from '../pages/nearby/places/place-view';
 import { PlaceEditPage } from '../pages/nearby/places/place-edit';
 import { ReportPlacePage } from '../pages/nearby/places/report-place/report-place';
 import { PetsPage } from '../pages/pets/pets';
@@ -43,14 +42,15 @@ import { PetEditPage } from '../pages/pets/edit/pet.edit';
 import { BreedPage } from '../pages/pets/edit/breed/breed';
 import { ProfilePage } from '../pages/profile/profile';
 import { ProfileEdit } from '../pages/profile/edit/profile.edit';
-import { MateImage } from '../common/mate-image';
-import { PetImage } from '../common/pet-image';
+import { MateImage } from '../common/mate-image/mate-image';
+import { PetImage } from '../common/pet-image/pet-image';
 import { AgeInfo } from '../common/age';
 import { GenderInfo } from '../common/gender';
 import { LastActivity } from '../common/last-activity';
-import { PlaceImage } from '../common/place-image';
+import { PlaceIcon } from '../common/place-icon/place-icon';
 import { config } from './config';
-import { PlaceType } from '../models/place.model';
+import { TimeAgo } from 'ng2-timeago';
+import { PlacesService } from '../providers/places.service';
 
 const pages: Array<any> = [
     PetMatesApp,
@@ -81,7 +81,6 @@ const pages: Array<any> = [
     EventViewPage,
     PeoplePage,
     PlacesPage,
-    PlaceViewPage,
     PlaceEditPage,
     ReportPlacePage,
 
@@ -100,7 +99,8 @@ const pages: Array<any> = [
         AgeInfo,
         GenderInfo,
         LastActivity,
-        PlaceImage
+        PlaceIcon,
+        TimeAgo
     ]),
     imports: [
         IonicModule.forRoot(
@@ -109,15 +109,7 @@ const pages: Array<any> = [
                 tabsPlacement: 'bottom',
                 images: {
                     pet: 'assets/img/default_pet.jpg',
-                    mate: 'assets/img/default_user.gif',
-
-                    places: {
-                        [PlaceType.Vet]: 'assets/img/hospital_marker.png',
-                        [`${PlaceType.Vet}View`]: 'assets/img/hospital_marker.png', // todo
-
-                        [PlaceType.Shop]: 'assets/img/hospital_marker.png', // todo
-                        [`${PlaceType.Shop}View`]: 'assets/img/hospital_marker.png' // todo
-                    }
+                    mate: 'assets/img/default_user.gif'
                 }
             })
         )
@@ -134,7 +126,8 @@ const pages: Array<any> = [
         ChatService,
         NearbyService,
         LocationService,
-        EventsService
+        EventsService,
+        PlacesService
     ]
 })
 export class AppModule {

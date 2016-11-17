@@ -8,7 +8,7 @@ import { Event } from '../models/event.model';
 
 @Injectable()
 export class EventsService {
-    mode: string = 'nearby';
+    mode: 'nearby' | 'going' | 'mine' = 'nearby';
     nearby$ = new BehaviorSubject([]);
     mine$ = new BehaviorSubject([]);
     going$ = new BehaviorSubject([]);

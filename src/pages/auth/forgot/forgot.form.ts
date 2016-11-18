@@ -7,7 +7,7 @@ import { AuthService } from '../../../providers/auth.service';
 })
 
 export class ForgotForm {
-    mode: string = 'request';
+    mode: 'request' | 'verify' = 'request';
     email: string = '';
     token: string = '';
     tokenValid = false;
@@ -15,7 +15,7 @@ export class ForgotForm {
     password2: string = '';
 
     constructor(public viewCtrl: ViewController,
-                public auth: AuthService) {
+                private auth: AuthService) {
     }
 
     checkResetToken() {
@@ -35,5 +35,10 @@ export class ForgotForm {
                 }
             }
         );
+    }
+
+    submitForgotRequest(email: string) {
+        this.auth.submitForgotRequest(email)
+            .then(() => this.mode = 'verify');
     }
 }

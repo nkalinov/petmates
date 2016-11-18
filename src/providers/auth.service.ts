@@ -186,27 +186,28 @@ export class AuthService {
     }
 
     submitForgotRequest(email: string) {
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        this.http
-            .post(
-                `${this.config.get('API')}/auth/forgot`,
-                JSON.stringify({ email }),
-                { headers: headers }
-            )
-            .map(res => res.json())
-            .subscribe(
-                (res: any) => {
-                    if (res.success) {
-                        this.events.publish('alert:info', res.msg);
-                    } else {
-                        this.events.publish('alert:error', res.msg);
+        return new Promise((resolve, reject) => {
+            const headers = new Headers();
+            headers.append('Content-Type', 'application/json');
+            this.http
+                .post(`${this.config.get('API')}/auth/forgot`, JSON.stringify({ email }), { headers })
+                .map(res => res.json())
+                .subscribe(
+                    res => {
+                        if (res.success) {
+                            this.events.publish('alert:info', res.msg);
+                            resolve();
+                        } else {
+                            this.events.publish('alert:error', res.msg);
+                            reject();
+                        }
+                    },
+                    err => {
+                        this.events.publish('alert:error', err);
+                        reject();
                     }
-                },
-                (err) => {
-                    this.events.publish('alert:error', err);
-                }
-            );
+                );
+        });
     }
 
     checkResetToken(token: string): Observable<any> {
@@ -246,7 +247,7 @@ export class AuthService {
                 .subscribe(
                     (res: any) => {
                         if (res.success) {
-                            this.events.publish('alert:info', res.msg);
+                            this.events.publish('alert:info', 'Your password has been changed.');
                             this.login(res.data.email, password);
                         } else {
                             this.events.publish('alert:error', res.msg);

@@ -21,7 +21,7 @@
         </ion-segment>
     </div>
     <div [ngSwitch]="mode" *ngIf="!tokenValid">
-        <form (ngSubmit)="auth.submitForgotRequest(email)" *ngSwitchCase="'request'" #tokenForm="ngForm">
+        <form (ngSubmit)="submitForgotRequest(email)" *ngSwitchCase="'request'" #tokenForm="ngForm">
             <ion-list>
                 <ion-item>
                     <ion-input required type="email" placeholder="Account email"
@@ -36,10 +36,11 @@
                 </button>
             </div>
         </form>
+
         <form (ngSubmit)="checkResetToken()" *ngSwitchCase="'verify'" #checkTokenForm="ngForm">
             <ion-list>
                 <ion-item>
-                    <ion-input required type="text" placeholder="Reset token"
+                    <ion-input required type="text" placeholder="Copy the received token"
                                name="token"
                                [(ngModel)]="token"></ion-input>
                 </ion-item>
@@ -47,7 +48,7 @@
             <div padding-horizontal>
                 <button ion-button small block color="light" type="submit"
                         [disabled]="!checkTokenForm.valid">
-                    Check token
+                    Verify token
                 </button>
             </div>
         </form>
@@ -56,15 +57,23 @@
     <form *ngIf="tokenValid" (ngSubmit)="changePassword()" #passwordForm="ngForm">
         <ion-list>
             <ion-item>
-                <ion-input required type="password" [(ngModel)]="password"
+                <ion-input required type="password"
+                           [(ngModel)]="password"
+                           name="password"
                            placeholder="New password"></ion-input>
             </ion-item>
-            <div padding-horizontal>
-                <button ion-button small block color="light" type="submit"
-                        [disabled]="!passwordForm.valid">
-                    Change password
-                </button>
-            </div>
+            <ion-item>
+                <ion-input required type="password"
+                           [(ngModel)]="password2"
+                           name="password2"
+                           placeholder="Repeat new password"></ion-input>
+            </ion-item>
         </ion-list>
+        <div padding-horizontal>
+            <button ion-button small block color="light" type="submit"
+                    [disabled]="!passwordForm.valid || password !== password2">
+                Change password
+            </button>
+        </div>
     </form>
 </ion-content>

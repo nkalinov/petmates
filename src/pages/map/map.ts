@@ -7,10 +7,10 @@ import { WalkService } from '../../providers/walk.service';
 import { WalkModal } from './walk-modal/walk-modal';
 import { Walk } from '../../models/walk.model';
 import { getAge } from '../../providers/common.service';
-import { NearbyService } from '../../providers/nearby.service';
-import { vetIcon, UserIcon } from '../../common/icons';
-import { Place, PlaceType } from '../../models/place.model';
+import { UserIcon, vetIcon } from '../../common/icons';
 import { LocationService } from '../../providers/location.service';
+import { PlacesService } from '../../providers/places.service';
+import { Place, PlaceType } from '../../models/place.model';
 
 (<any>L.Icon.Default).imagePath = '../assets/img/leaflet/';
 
@@ -37,11 +37,12 @@ export class MapPage {
 
     private positionSubscriber: Subscription;
     private walksSubscriber: Subscription;
+    private places$: Subscription;
     private clearInactiveInterval: any;
 
     constructor(private auth: AuthService,
                 public walk: WalkService,
-                private nearby: NearbyService,
+                private places: PlacesService,
                 private modalCtrl: ModalController,
                 private location: LocationService,
                 private config: Config) {
@@ -67,6 +68,9 @@ export class MapPage {
     }
 
     ionViewDidLeave() {
+        if (this.places$) {
+            this.places$.unsubscribe();
+        }
         if (this.positionSubscriber) {
             // todo track position even when not on this page
             this.positionSubscriber.unsubscribe();
@@ -174,8 +178,8 @@ export class MapPage {
     }
 
     private addPlacesMarkers(coords) {
-        return this.nearby.getNearbyPlaces(coords).then(places => {
-            places.forEach(place => {
+        this.places$ = this.places.nearby$.subscribe(places => {
+            places.forEach((place: Place) => {
                 const marker = L.marker([
                     place.location.coordinates[1],
                     place.location.coordinates[0]
@@ -183,27 +187,32 @@ export class MapPage {
                     `<b>${place.name}</b><br>${place.phone}<br>${place.hours}`
                 );
 
-                // todo
-                // switch (place.type) {
-                //     case PlaceType.Vet:
-                //         marker
-                //             .setIcon(vetIcon())
-                //             .addTo(this.layers.vets);
-                //         break;
-                //     case PlaceType.Shop:
-                //         marker
-                //             .addTo(this.layers.shops);
-                //         break;
-                //     default:
-                //         break;
-                // }
+                // add to corresponding layers
+                place.type.forEach(type => {
+                    switch (type) {
+                        case PlaceType[PlaceType.vet]:
+                            marker
+                                .setIcon(vetIcon())
+                                .addTo(<any>this.layers.vets);
+                            break;
+                        case PlaceType[PlaceType.shop]:
+                            marker
+                                .addTo(<any>this.layers.shops);
+                            break;
+                        default:
+                            break;
+                    }
+                });
             });
 
+            // todo
             this.mcgLayerSupportGroup.checkIn([this.layers.shops, this.layers.vets]);
             this.mcgLayerSupportGroup.addLayers([this.layers.shops, this.layers.vets]);
             this.control.addOverlay(this.layers.shops, 'Animal shops');
             this.control.addOverlay(this.layers.vets, 'Vets');
         });
+
+        this.places.getNearbyPlaces(coords);
     }
 
     private geolocalizationErrorCb(err?) {

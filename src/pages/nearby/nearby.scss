@@ -25,19 +25,16 @@ nearby-page {
   }
 
   .place-card {
+    position: relative;
+
     place-icon {
       margin-bottom: 0;
     }
 
-    .place-type-badges-wrapper {
-      position: relative;
-
-      .place-type-badges {
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 1;
-      }
+    .actions {
+      position: absolute;
+      top: 0;
+      right: 0;
     }
 
     ion-item {

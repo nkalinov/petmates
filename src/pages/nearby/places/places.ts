@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, Refresher, ModalController } from 'ionic-angular';
+import { NavController, Refresher, ModalController, PopoverController } from 'ionic-angular';
 import { LaunchNavigator } from 'ionic-native';
 import { Place } from '../../../models/place.model';
 import { PlaceEditPage } from './place-edit';
@@ -10,6 +10,8 @@ import { PlacesService } from '../../../providers/places.service';
     templateUrl: 'places.html'
 })
 export class PlacesPage {
+    mode: 'nearby' | 'mine' = 'nearby';
+
     constructor(private navCtrl: NavController,
                 private modalCtrl: ModalController,
                 public places: PlacesService) {
@@ -20,10 +22,10 @@ export class PlacesPage {
     }
 
     onSegmentChange(force = false) {
-        if (this.places.mode === 'nearby') {
-            return this.places.getNearbyPlaces(force);
+        if (this.mode === 'nearby') {
+            return this.places.getLocationThenNearbyPlaces(force);
         } else {
-            return this.places.getCreatedPlaces();
+            return this.places.getCreatedPlaces(force);
         }
     }
 
@@ -36,6 +38,14 @@ export class PlacesPage {
 
     addPlace() {
         this.navCtrl.push(PlaceEditPage);
+    }
+
+    editPlace(place: Place) {
+        this.navCtrl.push(PlaceEditPage, { place });
+    }
+
+    deletePlace(place: Place) {
+
     }
 
     navigate(place: Place) {

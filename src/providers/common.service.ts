@@ -47,7 +47,7 @@ export function getMenu(auth: boolean = false): any[] {
     ];
     let loggedInPages = [
         { title: 'Map', component: MapPage },
-        { title: 'Nearby', component: NearbyPage },
+        { title: 'Explore', component: NearbyPage },
         { title: 'Chats', component: ConversationsListPage },
         { title: 'Mates', component: MatesPage, id: 'mates' },
         { title: 'My profile', component: ProfilePage },

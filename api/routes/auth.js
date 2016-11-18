@@ -3,9 +3,9 @@ const router = express.Router();
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const auth = require('../config/auth');
-const email = require('../config/email');
+const emailConfig = require('../config/email');
 const helpers = require('../helpers');
-const async = require('async');
+const q = require('q');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const mg = require('nodemailer-mailgun-transport');
@@ -32,7 +32,7 @@ router.get('/facebook',
 // login by email
 router.post('/', (req, res) => {
     User.findOne(
-        { email: req.body.email.toString().toLowerCase().trim() },
+        { email: req.body.email.toLowerCase().trim() },
         (err, profile) => {
             if (err)
                 return res.json({ success: false, msg: err });
@@ -70,7 +70,7 @@ router.post('/signup', (req, res) => {
     var user = new User({
         name,
         password,
-        email,
+        email: email.toLowerCase(),
         city,
         region,
         country,
@@ -89,48 +89,49 @@ router.post('/signup', (req, res) => {
 });
 
 // reset password request
-router.post('/forgot', (req, res, next) => {
-    async.waterfall([
-        function (done) {
-            crypto.randomBytes(20, function (err, buf) {
-                var token = buf.toString('hex');
-                done(err, token);
-            });
-        },
-        function (token, done) {
-            User.findOne({ email: req.body.email }, function (err, user) {
-                if (!user)
-                    return res.json({ success: false, msg: 'No account with that email address exists.' });
+router.post('/forgot', (req, res) => {
+    const email = req.body.email.toLowerCase();
 
-                user.resetPasswordToken = token;
-                user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    User.findOne({ email })
+        .exec()
+        .then(user => {
+            if (!user)
+                throw 'No account with that email address exists.';
 
-                user.save(function (err) {
-                    done(err, token, user);
-                });
-            });
-        },
-        function (token, user, done) {
-            var nodemailerMailgun = nodemailer.createTransport(mg(email.mailgun));
+            return q.nfcall(crypto.randomBytes, 20).then(buf => ({
+                user,
+                token: buf.toString('hex')
+            }));
+        })
+        .then(({ user, token }) => {
+            user.resetPasswordToken = token;
+            user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
 
-            var mailOptions = {
-                to: user.email,
-                from: email.from,
-                subject: 'PetMates Password Reset',
-                text: 'You are receiving this because you (or someone else) have requested the reset of the password for your PetMates account.\n\n' +
-                'Please paste the following token into the app forgot password section to complete the process:\n\n' +
-                'Reset password token: ' + token + '\n\n' +
-                'If you did not request this, please ignore this email and your password will remain unchanged.\n'
-            };
-            nodemailerMailgun.sendMail(mailOptions, function (err) {
+            return user.save().then(() => token);
+        })
+        .then(token => {
+            const nodemailerMailgun = nodemailer.createTransport(mg(emailConfig.mailgun)),
+                mailOptions = {
+                    to: email,
+                    from: emailConfig.from,
+                    subject: 'PetMates Password Reset Token',
+                    text: 'You are receiving this because you (or someone else) have requested the reset of the password for your PetMates account.\n\n' +
+                    'Please paste the following token into the app forgot password section to complete the process:\n\n' +
+                    'Reset password token: ' + token + '\n\n' +
+                    'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+                };
+
+            nodemailerMailgun.sendMail(mailOptions, err => {
+                if (err)
+                    throw err;
+
                 res.json({
                     success: true,
-                    msg: 'An e-mail has been sent to ' + user.email + ' with the reset token.'
+                    msg: `An e-mail has been sent to ${email} with the reset token.`
                 });
-                done(err, 'done');
             });
-        }
-    ], (err) => err ? next(err) : '');
+        })
+        .catch(msg => res.json({ success: false, msg }));
 });
 
 // check reset token
@@ -141,9 +142,9 @@ router.get('/reset/:token', function (req, res) {
             $gt: Date.now()
         }
     }, function (err, user) {
-        if (!user) {
+        if (!user)
             return res.json({ success: false, msg: 'Password reset token is invalid or has expired.' });
-        }
+
         res.json({ success: true });
     });
 });
@@ -156,9 +157,8 @@ router.post('/reset/:token', function (req, res) {
             $gt: Date.now()
         }
     }, function (err, user) {
-        if (!user) {
+        if (!user)
             return res.json({ success: false, msg: 'Password reset token is invalid or has expired.' });
-        }
 
         user.password = req.body.password;
         user.resetPasswordToken = undefined;
@@ -168,7 +168,7 @@ router.post('/reset/:token', function (req, res) {
             if (err)
                 return res.json({ success: false, msg: err });
 
-            return res.json({ success: true, msg: 'Your password has been changed.', data: { name: user.email } });
+            return res.json({ success: true, data: { email: user.email } });
         });
     });
 });

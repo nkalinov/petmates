@@ -3,14 +3,12 @@ import { Http, Headers } from '@angular/http';
 import { ImagePicker } from 'ionic-native';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Config, Events } from 'ionic-angular';
-
 import { AuthService } from './auth.service';
 import { Place } from '../models/place.model';
 import { LocationService } from './location.service';
 
 @Injectable()
 export class PlacesService {
-    mode: 'nearby' | 'mine' = 'nearby';
     nearby$ = new BehaviorSubject([]);
     mine$ = new BehaviorSubject([]);
 
@@ -21,46 +19,50 @@ export class PlacesService {
                 private location: LocationService) {
     }
 
-    getNearbyPlaces(force = false) {
+    getNearbyPlaces(coords, force = false) {
         return new Promise((resolve, reject) => {
             if (force || this.nearby$.getValue().length <= 0) {
+                let headers = new Headers();
+                headers.append('Authorization', this.auth.token);
 
-                this.location.getGeolocation().then(coords => {
-
-                    let headers = new Headers();
-                    headers.append('Authorization', this.auth.token);
-
-                    this.http.get(`${this.config.get('API')}/nearby/places?coords=${coords}`, { headers: headers })
-                        .map(res => res.json())
-                        .subscribe(
-                            res => {
-                                this.nearby$.next(res.data.map(p => new Place(p)));
-                                resolve();
-                            },
-                            err => {
-                                this.events.publish('alert:error', err.text());
-                                reject();
-                            }
-                        );
-                });
+                this.http.get(`${this.config.get('API')}/nearby/places?coords=${coords}`, { headers })
+                    .map(res => res.json())
+                    .subscribe(
+                        res => {
+                            const places = res.data.map(p => new Place(p));
+                            this.nearby$.next(places);
+                            resolve(places);
+                        },
+                        err => {
+                            this.events.publish('alert:error', err.text());
+                            reject();
+                        }
+                    );
             } else {
                 resolve();
             }
         });
     }
 
+    getLocationThenNearbyPlaces(force = false) {
+        if (force || this.nearby$.getValue().length <= 0) {
+            return this.location.getGeolocation().then(coords => this.getNearbyPlaces(coords, force));
+        } else {
+            return Promise.resolve();
+        }
+    }
+
     getCreatedPlaces(force = false) {
         return new Promise((resolve, reject) => {
             if (force || this.mine$.getValue().length <= 0) {
-
                 let headers = new Headers();
                 headers.append('Authorization', this.auth.token);
 
-                this.http.get(`${this.config.get('API')}/events`, { headers: headers })
+                this.http.get(`${this.config.get('API')}/places`, { headers })
                     .map(res => res.json())
                     .subscribe(
                         res => {
-                            this[`${this.mode}$`].next(res.data.map(obj => new Event(obj)));
+                            this.mine$.next(res.data.map(p => new Place(p)));
                             resolve();
                         },
                         err => {

@@ -51,9 +51,11 @@ import { PlaceIcon } from '../common/place-icon/place-icon';
 import { config } from './config';
 import { TimeAgo } from 'ng2-timeago';
 import { PlacesService } from '../providers/places.service';
+import { EditDeletePopoverPage } from '../common/edit-delete-popover-page/edit-delete-popover-page';
 
 const pages: Array<any> = [
     PetMatesApp,
+    EditDeletePopoverPage,
 
     ForgotForm,
     AuthModal,

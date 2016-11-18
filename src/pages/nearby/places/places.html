@@ -19,12 +19,9 @@
     </ion-refresher>
 
     <div padding>
-        <ion-segment [(ngModel)]="events.mode" (ionChange)="onSegmentChange()">
+        <ion-segment [(ngModel)]="mode" (ionChange)="onSegmentChange()">
             <ion-segment-button value="nearby">
                 Nearby
-            </ion-segment-button>
-            <ion-segment-button value="going">
-                Going
             </ion-segment-button>
             <ion-segment-button value="mine">
                 Created
@@ -32,72 +29,101 @@
         </ion-segment>
     </div>
 
-    <div [ngSwitch]="places.mode">
-
+    <div [ngSwitch]="mode">
         <div *ngSwitchCase="'nearby'">
-            <ion-list [virtualScroll]="places.nearby$ | async" [approxItemHeight]="'367px'">
-                <ion-card *virtualItem="let item" class="place-card">
+            <ion-card *ngFor="let item of places.nearby$ | async" class="place-card">
+                <img *ngIf="item.pic" [attr.src]="item.pic"/>
 
-                    <ion-img *ngIf="item.pic" [src]="item.pic"></ion-img>
+                <ion-item text-wrap>
+                    <place-icon [type]="item.type" item-left></place-icon>
+                    <h3>{{item.name}}</h3>
+                </ion-item>
 
-                    <!--<div class="place-type-badges-wrapper" *ngIf="item.type.length > 1">-->
-                    <!--<div class="place-type-badges">-->
-                    <!--<ion-chip *ngFor="let type of item.type">-->
-                    <!--<place-icon [type]="type" item-left></place-icon>-->
-                    <!--<ion-label>{{type}}</ion-label>-->
-                    <!--</ion-chip>-->
-                    <!--</div>-->
-                    <!--</div>-->
+                <ion-item text-wrap>
+                    <ion-icon name="pin" item-left></ion-icon>
+                    <h3>{{item.address}}</h3>
+                </ion-item>
 
-                    <ion-item text-wrap>
-                        <place-icon [type]="item.type" item-left></place-icon>
-                        <h2>{{item.name}}</h2>
-                    </ion-item>
+                <ion-item text-wrap>
+                    <ion-icon name="time-outline" item-left></ion-icon>
+                    <h3>{{item.hours}}</h3>
+                </ion-item>
 
-                    <ion-item text-wrap>
-                        <ion-icon name="pin" item-left></ion-icon>
-                        <h3>{{item.address}}</h3>
-                    </ion-item>
+                <ion-item text-wrap>
+                    <ion-icon name="call" item-left></ion-icon>
+                    <h3>{{item.phone}}</h3>
+                </ion-item>
 
-                    <ion-item text-wrap>
-                        <ion-icon name="time-outline" item-left></ion-icon>
-                        <h3>{{item.hours}}</h3>
-                    </ion-item>
+                <ion-item>
+                    <a [attr.href]="item.link" target="_blank">
+                        {{item.link}}
+                    </a>
+                </ion-item>
 
-                    <ion-item text-wrap>
-                        <ion-icon name="call" item-left></ion-icon>
-                        <h3>{{item.phone}}</h3>
-                    </ion-item>
+                <ion-item>
+                    <strong item-left>~{{item.distance}}</strong>
+                    <button ion-button icon-left color="primary" clear item-right
+                            (click)="navigate(item)">
+                        <ion-icon name="navigate"></ion-icon>
+                        Directions
+                    </button>
+                </ion-item>
 
-                    <ion-item>
-                        <a [attr.href]="item.link" target="_blank">
-                            {{item.link}}
-                        </a>
-                    </ion-item>
-
-                    <ion-item>
-                        <strong item-left>~{{item.distance}}</strong>
-                        <button ion-button icon-left color="primary" clear item-right
-                                (click)="navigate(item)">
-                            <ion-icon name="navigate"></ion-icon>
-                            Directions
-                        </button>
-                    </ion-item>
-
-                    <!--<div padding-horizontal margin-bottom *ngIf="place._id">-->
-                    <!--<button ion-button small block color="danger" outline-->
-                    <!--(click)="report(item)">-->
-                    <!--Report place-->
-                    <!--</button>-->
-                    <!--</div>-->
-                </ion-card>
-            </ion-list>
-
+                <!--<div padding-horizontal margin-bottom *ngIf="place._id">-->
+                <!--<button ion-button small block color="danger" outline-->
+                <!--(click)="report(item)">-->
+                <!--Report place-->
+                <!--</button>-->
+                <!--</div>-->
+            </ion-card>
             <p text-center *ngIf="!places.nearby$.getValue().length">No places nearby...</p>
         </div>
 
         <div *ngSwitchCase="'mine'">
+            <ion-card *ngFor="let item of places.mine$ | async" class="place-card">
+                <img *ngIf="item.pic" [attr.src]="item.pic"/>
 
+                <!--<ion-icon class="actions" large color="secondary" name="more" (click)="presentPopover($event, item)"></ion-icon>-->
+
+                <ion-item text-wrap>
+                    <place-icon [type]="item.type" item-left></place-icon>
+                    <h3>{{item.name}}</h3>
+                </ion-item>
+
+                <ion-item text-wrap>
+                    <ion-icon name="pin" item-left></ion-icon>
+                    <h3>{{item.address}}</h3>
+                </ion-item>
+
+                <ion-item text-wrap>
+                    <ion-icon name="time-outline" item-left></ion-icon>
+                    <h3>{{item.hours}}</h3>
+                </ion-item>
+
+                <ion-item text-wrap>
+                    <ion-icon name="call" item-left></ion-icon>
+                    <h3>{{item.phone}}</h3>
+                </ion-item>
+
+                <ion-item>
+                    <a [attr.href]="item.link" target="_blank">
+                        {{item.link}}
+                    </a>
+                </ion-item>
+
+                <ion-item>
+                    <button item-left ion-button color="danger" clear
+                            (click)="deletePlace(item)">
+                        Delete
+                    </button>
+                    <span text-small *ngIf="!item.approved" color="energized">Pending review</span>
+                    <button item-right ion-button color="primary" clear
+                            (click)="editPlace(item)">
+                        Edit
+                    </button>
+                </ion-item>
+            </ion-card>
+            <p text-center *ngIf="!places.mine$.getValue().length">No created places...</p>
         </div>
     </div>
 </ion-content>

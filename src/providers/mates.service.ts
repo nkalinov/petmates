@@ -11,7 +11,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class MatesService {
-    search$: Subject<Array<User>> = new Subject();
+    search$: Subject<Array<User>> = new Subject<Array<User>>();
     pending$ = new BehaviorSubject(0);
     mates = {
         accepted: [],

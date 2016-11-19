@@ -76,14 +76,12 @@
                 <!--</button>-->
                 <!--</div>-->
             </ion-card>
-            <p text-center *ngIf="!places.nearby$.getValue().length">No places nearby...</p>
+            <p text-center *ngIf="!(places.nearby$ | async).length">No places nearby...</p>
         </div>
 
         <div *ngSwitchCase="'mine'">
             <ion-card *ngFor="let item of places.mine$ | async" class="place-card">
                 <img *ngIf="item.pic" [attr.src]="item.pic"/>
-
-                <!--<ion-icon class="actions" large color="secondary" name="more" (click)="presentPopover($event, item)"></ion-icon>-->
 
                 <ion-item text-wrap>
                     <place-icon [type]="item.type" item-left></place-icon>
@@ -116,14 +114,16 @@
                             (click)="deletePlace(item)">
                         Delete
                     </button>
-                    <span text-small *ngIf="!item.approved" color="energized">Pending review</span>
+                    <span ion-text text-small *ngIf="!item.approved" color="energized">
+                        Pending review
+                    </span>
                     <button item-right ion-button color="primary" clear
                             (click)="editPlace(item)">
                         Edit
                     </button>
                 </ion-item>
             </ion-card>
-            <p text-center *ngIf="!places.mine$.getValue().length">No created places...</p>
+            <p text-center *ngIf="!(places.mine$ | async).length">No created places...</p>
         </div>
     </div>
 </ion-content>

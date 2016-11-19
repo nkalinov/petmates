@@ -15,12 +15,65 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 
 // create
 router.post('/', passport.authenticate('jwt', { session: false }), (req, res) => {
-    const {} = req.body;
+    const { name, type, location, address, picture, phone, hours, link } = req.body;
+
+    const place = new Place({
+        creator: req.user._id,
+        name,
+        type,
+        location: {
+            type: 'Point',
+            coordinates: location.coordinates
+        },
+        address,
+        picture,
+        phone,
+        hours,
+        link
+    });
+
+    place.save((err) => {
+        if (err)
+            return res.json({ success: false, msg: err });
+
+        return res.json({ success: true });
+    });
 });
 
 // update
 router.put('/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const id = req.params.id;
+    const { name, type, location, address, picture, phone, hours, link } = req.body;
 
+    if (!id)
+        return res.json({ success: false, msg: 'Supply place id' });
+
+    Place.findOneAndUpdate({
+            _id: id,
+            creator: req.user._id
+        },
+        {
+            name,
+            type,
+            location: {
+                type: 'Point',
+                coordinates: location.coordinates
+            },
+            address,
+            picture,
+            phone,
+            hours,
+            link,
+            approved: false
+        },
+        { new: true },
+        (err, data) => {
+            if (err)
+                return res.json({ success: false, msg: err });
+
+            return res.json({ success: true, data });
+        }
+    );
 });
 
 // delete

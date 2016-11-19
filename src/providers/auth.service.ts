@@ -11,7 +11,7 @@ import { Facebook, FacebookLoginResponse } from 'ionic-native';
 export class AuthService {
     user: User;
     token: string;
-    regionUpdated: EventEmitter<string> = new EventEmitter();
+    regionUpdated: EventEmitter<string> = new EventEmitter<string>();
 
     constructor(private http: Http,
                 private events: Events,

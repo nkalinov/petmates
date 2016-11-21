@@ -7,9 +7,9 @@ const passport = require('passport');
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
     Breed.find({}, (err, data) => {
         if (err)
-            throw err;
+            res.json({ success: false, msg: err });
 
-        res.json({ data });
+        return res.json({ success: true, data });
     });
 });
 

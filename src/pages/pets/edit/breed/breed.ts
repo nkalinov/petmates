@@ -9,8 +9,8 @@ import { Breed } from '../../../../models/breed.interface';
 })
 
 export class BreedPage {
+    searchQuery: string = '';
     pet: Pet;
-    selectedBreed: string;
     filteredItems: Breed[] = [];
     allItems: Breed[] = [];
 

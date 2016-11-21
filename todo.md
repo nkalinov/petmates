@@ -2,19 +2,18 @@ TODO
 ==================
 ## UI
 - propose to add new pet after signup
-- profile settings to popover links
 - chat with mate from his profile page
 - PetViewPage
+- multiple photos
 - custom map shops icons
 - donate
-- PlaceViewPage
-    - admin controlled (some kind of CMS)
-    - ability to promote their products
+- ads
+- profile settings to popover links
 
 ## API
+- refactor api/bin/walks.js
 - DEV/PROD configurations (config/**/*)
 - uploads/places; uploads/pets; uploads/users; ....
-- refactor api/bin/walks.js
 - cron task deleting public/tmp/* every 24h
 
 ## UI + API
@@ -24,9 +23,12 @@ TODO
         - bin/www "cron" delete events where date < now()
 - Wall
 
-Ideas (To analyse)
+Ideas
 ==================
 - търсене на изгубени кучета по регион/снимка
+- PlaceViewPage
+    - admin controlled (some kind of CMS)
+    - ability to promote their products
 
 Help
 ==================

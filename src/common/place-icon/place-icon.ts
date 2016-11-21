@@ -14,7 +14,7 @@ export class PlaceIcon {
 
     src: string;
     icon: string;
-    color: string;
+    color: string = 'primary2';
 
     ngOnInit() {
         // todo mixed place icon or no icon
@@ -24,7 +24,21 @@ export class PlaceIcon {
                 break;
             case PlaceType[PlaceType.shop]:
                 this.icon = 'cart';
-                this.color = 'primary2';
+                break;
+            case PlaceType[PlaceType.bar]:
+                this.icon = 'beer';
+                break;
+            case PlaceType[PlaceType.park]:
+                this.icon = 'leaf';
+                break;
+            case PlaceType[PlaceType.restaurant]:
+                this.icon = 'restaurant';
+                break;
+            case PlaceType[PlaceType.hotel]:
+                this.icon = 'home';
+                break;
+            case PlaceType[PlaceType.school]:
+                this.icon = 'school';
                 break;
         }
     }

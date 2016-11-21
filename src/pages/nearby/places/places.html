@@ -62,6 +62,11 @@
 
                 <ion-item>
                     <strong item-left>~{{item.distance}}</strong>
+                    <button ion-button color="danger" clear item-left
+                            (click)="report(item)"
+                            *ngIf="item.creator !== auth.user._id">
+                        Report
+                    </button>
                     <button ion-button icon-left color="primary" clear item-right
                             (click)="navigate(item)">
                         <ion-icon name="navigate"></ion-icon>
@@ -69,12 +74,6 @@
                     </button>
                 </ion-item>
 
-                <!--<div padding-horizontal margin-bottom *ngIf="place._id">-->
-                <!--<button ion-button small block color="danger" outline-->
-                <!--(click)="report(item)">-->
-                <!--Report place-->
-                <!--</button>-->
-                <!--</div>-->
             </ion-card>
             <p text-center *ngIf="!(places.nearby$ | async).length">No places nearby...</p>
         </div>

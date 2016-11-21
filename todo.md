@@ -22,10 +22,6 @@ TODO
     - events
         - push notification on a new event nearby
         - bin/www "cron" delete events where date < now()
-- reports
-    - user
-    - place
-    - cron delete reports where object id could not be resolved (place, user deleted)
 - Wall
 
 Ideas (To analyse)

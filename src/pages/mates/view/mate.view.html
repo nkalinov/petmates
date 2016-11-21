@@ -13,14 +13,11 @@
         </ion-col>
     </ion-row>
 
-    <p text-center>
-        <span *ngIf="mate.distance">{{ mate.distance }} away<br></span>
-        {{ mate.city + ', ' + mate.country }}
-    </p>
+    <p text-center>{{ mate.city + ', ' + mate.country }}</p>
 
-    <div padding-horizontal>
+    <div padding-horizontal *ngIf="mate._id !== auth.user._id">
         <button ion-button icon-left block color="primary"
-                *ngIf="!friendshipStatus && mate._id !== auth.user._id"
+                *ngIf="!friendshipStatus"
                 (click)="addMate()">
             <ion-icon name="person-add"></ion-icon>
             Send mate request
@@ -41,17 +38,20 @@
             <p *ngIf="friendshipStatus === friendshipStatuses.requested">
                 Request sent!
             </p>
-            <button ion-button icon-left small block color="danger" outline
+            <button ion-button small block color="danger" outline
                     (click)="cancelMate()">
-                <ion-icon name="close"></ion-icon>
                 Cancel
             </button>
         </div>
-        <button ion-button icon-left small block color="danger" outline
+        <button ion-button small block color="danger" outline
                 *ngIf="friendshipStatus === friendshipStatuses.accepted"
                 (click)="removeMate()">
-            <ion-icon name="close"></ion-icon>
             Remove from my mates
+        </button>
+
+        <button ion-button small block color="danger" outline
+                (click)="report(item)">
+            Report
         </button>
     </div>
 

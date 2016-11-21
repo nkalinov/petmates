@@ -1,9 +1,10 @@
-import { NavParams, NavController, AlertController, LoadingController } from 'ionic-angular';
+import { NavParams, NavController, AlertController, LoadingController, ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { MatesService } from '../../../providers/mates.service';
 import { User } from '../../../models/user.model';
 import { AuthService } from '../../../providers/auth.service';
 import { STATUS_ACCEPTED, STATUS_PENDING, STATUS_REQUESTED } from '../../../models/friendship.interface';
+import { ReportModalPage } from '../../../common/report-modal/report-modal';
 
 @Component({
     templateUrl: 'mate.view.html'
@@ -24,6 +25,7 @@ export class MateViewPage {
                 private nav: NavController,
                 private mates: MatesService,
                 private alertCtrl: AlertController,
+                private modalCtrl: ModalController,
                 private loadingCtrl: LoadingController) {
     }
 
@@ -88,6 +90,13 @@ export class MateViewPage {
             ]
         });
         alert.present();
+    }
+
+    report() {
+        this.modalCtrl.create(ReportModalPage, {
+            id: this.mate._id,
+            type: 'user'
+        }).present();
     }
 
     private mapFriendship() {

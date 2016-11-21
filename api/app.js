@@ -1,24 +1,25 @@
-const express = require('express');
-const path = require('path');
-const logger = require('morgan');
-const bodyParser = require('body-parser');
-const passport = require('passport');
-const users = require('./routes/users');
-const auth = require('./routes/auth');
-const mates = require('./routes/mates');
-const conversations = require('./routes/conversations');
-const pets = require('./routes/pets');
-const breeds = require('./routes/breeds');
-const nearby = require('./routes/nearby');
-const events = require('./routes/events');
-const places = require('./routes/places');
-const upload = require('./routes/upload');
-const cors = require('cors');
-const helmet = require('helmet');
-const compression = require('compression');
-const serveStatic = require('serve-static');
+const express = require('express'),
+    path = require('path'),
+    logger = require('morgan'),
+    bodyParser = require('body-parser'),
+    passport = require('passport'),
+    cors = require('cors'),
+    helmet = require('helmet'),
+    compression = require('compression'),
+    serveStatic = require('serve-static'),
+    app = express();
 
-const app = express();
+const users = require('./routes/users'),
+    auth = require('./routes/auth'),
+    mates = require('./routes/mates'),
+    conversations = require('./routes/conversations'),
+    pets = require('./routes/pets'),
+    breeds = require('./routes/breeds'),
+    nearby = require('./routes/nearby'),
+    events = require('./routes/events'),
+    places = require('./routes/places'),
+    upload = require('./routes/upload'),
+    reports = require('./routes/reports');
 
 app.use(cors());
 app.use(helmet());
@@ -42,6 +43,7 @@ app.use('/nearby', nearby);
 app.use('/events', events);
 app.use('/places', places);
 app.use('/upload', upload);
+app.use('/reports', reports);
 
 // connect db
 require('./config/database');

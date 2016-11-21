@@ -21,7 +21,7 @@ export class BreedPage {
         breeds.getAll().then(res => {
             this.allItems = res;
             this.filteredItems = res;
-        });
+        }, () => this.viewCtrl.dismiss());
     }
 
     getItems(ev: any) {

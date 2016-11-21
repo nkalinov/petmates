@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { Config } from 'ionic-angular';
 
 @Component({
     selector: 'pet-image',
@@ -10,12 +9,10 @@ export class PetImage {
     @Input() image;
     src: string;
 
-    constructor(private config: Config) {
-    }
-
     ngOnChanges() {
         if (!this.image) {
-            return this.src = this.config.get('images').pet;
+            this.src = 'assets/img/default_pet.jpg';
+            return;
         }
         this.src = this.image;
     }

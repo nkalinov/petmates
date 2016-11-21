@@ -1,0 +1,29 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons start>
+            <button ion-button color="modalClose"
+                    (click)="viewCtrl.dismiss()">
+                Close
+            </button>
+        </ion-buttons>
+        <ion-title>Report {{type}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <form (ngSubmit)="submit()">
+        <ion-list>
+            <ion-item>
+                <ion-textarea name="description"
+                              rows="5"
+                              placeholder="Report description"
+                              [(ngModel)]="description"></ion-textarea>
+            </ion-item>
+        </ion-list>
+        <div padding-horizontal>
+            <button ion-button block color="danger" outline type="submit" [disabled]="!description.length">
+                Submit
+            </button>
+        </div>
+    </form>
+</ion-content>

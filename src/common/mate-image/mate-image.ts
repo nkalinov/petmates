@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { Config } from 'ionic-angular';
 
 @Component({
     selector: 'mate-image',
@@ -13,12 +12,10 @@ export class MateImage {
     @Input('image') image;
     src: string;
 
-    constructor(private config: Config) {
-    }
-
     ngOnChanges() {
         if (!this.image) {
-            return this.src = this.config.get('images').mate;
+            this.src = 'assets/img/default_user.gif';
+            return;
         } else if (this.image === 'group') {
             return;
             // this.src = this.config.get('defaultGroupChatImage');

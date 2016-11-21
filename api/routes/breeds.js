@@ -1,17 +1,16 @@
-var express = require('express');
-var router = express.Router();
-var Breed = require('../models/breed');
-var fs = require('fs');
-var passport = require('passport');
+const express = require('express');
+const router = express.Router();
+const Breed = require('../models/breed');
+const fs = require('fs');
+const passport = require('passport');
 
-// get all breeds
-router.get('/', passport.authenticate('jwt', {session: false}),
-    function (req, res) {
-        Breed.find({}, function (err, breeds) {
-            if (err) throw err;
-            var result = breeds;
-            res.json({data: result});
-        });
+router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+    Breed.find({}, (err, data) => {
+        if (err)
+            throw err;
+
+        res.json({ data });
     });
+});
 
 module.exports = router;

@@ -36,7 +36,7 @@ import { EventViewPage } from '../pages/nearby/events/event-view';
 import { PeoplePage } from '../pages/nearby/people/people';
 import { PlacesPage } from '../pages/nearby/places/places';
 import { PlaceEditPage } from '../pages/nearby/places/place-edit';
-import { ReportPlacePage } from '../pages/nearby/places/report-place/report-place';
+import { ReportModalPage } from '../common/report-modal/report-modal';
 import { PetsPage } from '../pages/pets/pets';
 import { PetEditPage } from '../pages/pets/edit/pet.edit';
 import { BreedPage } from '../pages/pets/edit/breed/breed';
@@ -51,11 +51,10 @@ import { PlaceIcon } from '../common/place-icon/place-icon';
 import { config } from './config';
 import { TimeAgo } from 'ng2-timeago';
 import { PlacesService } from '../providers/places.service';
-import { EditDeletePopoverPage } from '../common/edit-delete-popover-page/edit-delete-popover-page';
+import { ReportsService } from '../providers/reports.service';
 
 const pages: Array<any> = [
     PetMatesApp,
-    EditDeletePopoverPage,
 
     ForgotForm,
     AuthModal,
@@ -84,7 +83,7 @@ const pages: Array<any> = [
     PeoplePage,
     PlacesPage,
     PlaceEditPage,
-    ReportPlacePage,
+    ReportModalPage,
 
     PetsPage,
     PetEditPage,
@@ -108,11 +107,7 @@ const pages: Array<any> = [
         IonicModule.forRoot(
             PetMatesApp,
             Object.assign(config, {
-                tabsPlacement: 'bottom',
-                images: {
-                    pet: 'assets/img/default_pet.jpg',
-                    mate: 'assets/img/default_user.gif'
-                }
+                tabsPlacement: 'bottom'
             })
         )
     ],
@@ -129,7 +124,8 @@ const pages: Array<any> = [
         NearbyService,
         LocationService,
         EventsService,
-        PlacesService
+        PlacesService,
+        ReportsService
     ]
 })
 export class AppModule {

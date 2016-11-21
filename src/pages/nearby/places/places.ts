@@ -3,8 +3,9 @@ import { NavController, Refresher, ModalController, AlertController } from 'ioni
 import { LaunchNavigator } from 'ionic-native';
 import { Place } from '../../../models/place.model';
 import { PlaceEditPage } from './place-edit';
-import { ReportPlacePage } from './report-place/report-place';
+import { ReportModalPage } from '../../../common/report-modal/report-modal';
 import { PlacesService } from '../../../providers/places.service';
+import { AuthService } from '../../../providers/auth.service';
 
 @Component({
     templateUrl: 'places.html'
@@ -15,6 +16,7 @@ export class PlacesPage {
     constructor(private navCtrl: NavController,
                 private modalCtrl: ModalController,
                 private alertCtrl: AlertController,
+                public auth: AuthService,
                 public places: PlacesService) {
     }
 
@@ -75,7 +77,10 @@ export class PlacesPage {
         );
     }
 
-    report(place) {
-        this.modalCtrl.create(ReportPlacePage).present();
+    report(place: Place) {
+        this.modalCtrl.create(ReportModalPage, {
+            id: place._id,
+            type: 'place'
+        }).present();
     }
 }

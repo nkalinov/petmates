@@ -27,14 +27,19 @@ export class BreedService {
             } else {
                 let headers = new Headers();
                 headers.append('Authorization', this.auth.token);
-                this.http.get(`${this.config.get('API')}/breeds`, { headers: headers })
+                this.http.get(`${this.config.get('API')}/breeds`, { headers })
                     .map(res => res.json())
                     .subscribe(
-                        (res: any) => {
-                            this.cache = res.data;
-                            resolve(this.cache);
+                        res => {
+                            if (res.success) {
+                                this.cache = res.data;
+                                resolve(this.cache);
+                            } else {
+                                this.events.publish('alert:error', res.msg);
+                                reject();
+                            }
                         },
-                        (err) => {
+                        err => {
                             this.events.publish('alert:error', err.text());
                             reject(err.text());
                         }

@@ -42,14 +42,14 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
 
 // update
 router.put('/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
-    const id = req.params.id;
+    const _id = req.params.id;
     const { name, type, location, address, picture, phone, hours, link } = req.body;
 
-    if (!id)
+    if (!_id)
         return res.json({ success: false, msg: 'Supply place id' });
 
     Place.findOneAndUpdate({
-            _id: id,
+            _id,
             creator: req.user._id
         },
         {
@@ -78,7 +78,20 @@ router.put('/:id', passport.authenticate('jwt', { session: false }), (req, res) 
 
 // delete
 router.delete('/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const _id = req.params.id;
 
+    if (!_id)
+        return res.json({ success: false, msg: 'Supply place id' });
+
+    Place.findOneAndRemove({
+        _id,
+        creator: req.user._id
+    }, (err) => {
+        if (err)
+            return res.json({ success: false, msg: err });
+
+        return res.json({ success: true });
+    });
 });
 
 module.exports = router;

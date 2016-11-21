@@ -103,16 +103,36 @@ router.get('/events', passport.authenticate('jwt', { session: false }), (req, re
             req.query.coords.split(',').map(c => parseFloat(c)) :
             req.user.location.coordinates
     };
-    Event.geoNear(
-        point,
+    Event.aggregate(
         {
-            spherical: true,
-            $maxDistance: 500 * 1000
+            $geoNear: {
+                distanceField: 'distance',
+                near: point,
+                maxDistance: 500 * 1000,
+                spherical: true,
+                query: {
+                    date: {
+                        $gte: new Date()
+                    }
+                }
+            }
         },
-        (err, data) => res.json(err ?
-            { success: false, msg: err } :
-            { success: true, data }
-        )
+        {
+            $project: {
+                _id: 1,
+                creator: 1,
+                name: 1,
+                description: 1,
+                date: 1,
+                address: 1,
+                location: 1,
+                participants: 1,
+                distance: 1
+            }
+        }
+    ).exec().then(
+        data => res.json({ success: true, data }),
+        err => res.json({ success: false, msg: err })
     );
 });
 

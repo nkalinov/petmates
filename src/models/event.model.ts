@@ -20,6 +20,10 @@ export class Event {
     constructor(data?: any) {
         if (data) {
             Object.assign(this, data);
+
+            if (data.distance) {
+                this.setDistance(data.distance);
+            }
             this.latLng = L.latLng(this.location.coordinates[1], this.location.coordinates[0]);
         }
     }

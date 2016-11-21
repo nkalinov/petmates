@@ -113,13 +113,13 @@ UserSchema.pre('save', function (next) {
 });
 
 // delete pictures
-UserSchema.post('remove', user => {
-    if (user.picture) {
-        fs.unlink(`${upload.dest}${user.picture}`);
+UserSchema.post('remove', model => {
+    if (model.picture) {
+        fs.unlink(`${upload.dest}${model.picture}`);
     }
 
-    if (user.pets.length > 0) {
-        user.pets.forEach(pet => {
+    if (model.pets.length > 0) {
+        model.pets.forEach(pet => {
             if (pet.picture) {
                 fs.unlink(`${upload.dest}${pet.picture}`);
             }

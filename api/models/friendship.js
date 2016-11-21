@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var Friendship = new Schema({
+const Friendship = new Schema({
     status: {
         type: String,
         enum: ['accepted', 'requested', 'pending']
@@ -13,7 +13,7 @@ var Friendship = new Schema({
     friend: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        autopopulate: {select: '_id name picture location.coordinates city country'}
+        autopopulate: { select: '_id name picture location.coordinates city country' }
     }
 });
 

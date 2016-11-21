@@ -25,28 +25,21 @@ export class EventsService {
     getNearbyEvents(force = false) {
         return new Promise((resolve, reject) => {
             if (force || this.nearby$.getValue().length <= 0) {
-
                 this.location.getGeolocation().then(coords => {
-
                     let headers = new Headers();
                     headers.append('Authorization', this.auth.token);
 
-                    this.http
-                        .get(
-                            `${this.config.get('API')}/nearby/events?coords=${coords}`,
-                            { headers: headers }
-                        )
+                    this.http.get(`${this.config.get('API')}/nearby/events?coords=${coords}`, { headers })
                         .map(res => res.json())
                         .subscribe(
                             res => {
-                                this.nearby$.next(
-                                    res.data.map(p => {
-                                        const obj = new Event(p.obj);
-                                        obj.setDistance(p.dis);
-                                        return obj;
-                                    })
-                                );
-                                resolve();
+                                if (res.success) {
+                                    this.nearby$.next(res.data.map(p => new Event(p)));
+                                    resolve();
+                                } else {
+                                    this.events.publish('alert:error', res.msg);
+                                    reject();
+                                }
                             },
                             err => {
                                 this.events.publish('alert:error', err.text());
@@ -62,21 +55,21 @@ export class EventsService {
 
     getEvents(force = false) {
         return new Promise((resolve, reject) => {
-
             if (force || this[`${this.mode}$`].getValue().length <= 0) {
-
                 let headers = new Headers();
                 headers.append('Authorization', this.auth.token);
 
-                this.http.get(
-                    `${this.config.get('API')}/events?filter=${this.mode}`,
-                    { headers: headers }
-                )
+                this.http.get(`${this.config.get('API')}/events?filter=${this.mode}`, { headers })
                     .map(res => res.json())
                     .subscribe(
                         res => {
-                            this[`${this.mode}$`].next(res.data.map(obj => new Event(obj)));
-                            resolve();
+                            if (res.success) {
+                                this[`${this.mode}$`].next(res.data.map(obj => new Event(obj)));
+                                resolve();
+                            } else {
+                                this.events.publish('alert:error', res.msg);
+                                reject();
+                            }
                         },
                         err => {
                             this.events.publish('alert:error', err.text());
@@ -97,11 +90,7 @@ export class EventsService {
 
             if (event._id) {
                 // update
-                this.http.put(
-                    `${this.config.get('API')}/events/${event._id}`,
-                    JSON.stringify(event),
-                    { headers: headers }
-                )
+                this.http.put(`${this.config.get('API')}/events/${event._id}`, JSON.stringify(event), { headers })
                     .map(res => res.json())
                     .subscribe(
                         res => {
@@ -114,8 +103,11 @@ export class EventsService {
                                 this.nearby$.next([]);
                                 this.mine$.next([]);
                                 this.going$.next([]);
+                                resolve();
+                            } else {
+                                this.events.publish('alert:error', res.msg);
+                                reject();
                             }
-                            resolve();
                         },
                         err => {
                             this.events.publish('alert:error', err.text());
@@ -124,11 +116,7 @@ export class EventsService {
                     );
             } else {
                 // create
-                this.http.post(
-                    `${this.config.get('API')}/events`,
-                    JSON.stringify(event),
-                    { headers: headers }
-                )
+                this.http.post(`${this.config.get('API')}/events`, JSON.stringify(event), { headers })
                     .map(res => res.json())
                     .subscribe(
                         res => {
@@ -139,6 +127,9 @@ export class EventsService {
                                 } else {
                                     this.getEvents(true).then(() => resolve());
                                 }
+                            } else {
+                                this.events.publish('alert:error', res.msg);
+                                reject();
                             }
                         },
                         err => {
@@ -155,10 +146,7 @@ export class EventsService {
             let headers = new Headers();
             headers.append('Authorization', this.auth.token);
 
-            this.http.delete(
-                `${this.config.get('API')}/events/${id}`,
-                { headers: headers }
-            )
+            this.http.delete(`${this.config.get('API')}/events/${id}`, { headers })
                 .map(res => res.json())
                 .subscribe(
                     res => {
@@ -196,10 +184,7 @@ export class EventsService {
             let headers = new Headers();
             headers.append('Authorization', this.auth.token);
 
-            this.http.get(
-                `${this.config.get('API')}/events/${id}`,
-                { headers: headers }
-            )
+            this.http.get(`${this.config.get('API')}/events/${id}`, { headers })
                 .map(res => res.json())
                 .subscribe(
                     res => {
@@ -232,20 +217,17 @@ export class EventsService {
             headers.append('Authorization', this.auth.token);
             headers.append('Content-Type', 'application/json');
 
-            this.http
-                .post(
-                    `${this.config.get('API')}/events/${event._id}/participants/${this.auth.user._id}`,
-                    {},
-                    { headers: headers }
-                )
+            this.http.post(`${this.config.get('API')}/events/${event._id}/participants/${this.auth.user._id}`, {}, { headers })
                 .map(res => res.json())
                 .subscribe(
                     res => {
                         if (res.success) {
                             event.participants.push(this.auth.user);
                             resolve();
+                        } else {
+                            this.events.publish('alert:error', res.msg);
+                            reject();
                         }
-                        resolve();
                     },
                     err => {
                         this.events.publish('alert:error', err.text());
@@ -261,11 +243,7 @@ export class EventsService {
             headers.append('Authorization', this.auth.token);
             headers.append('Content-Type', 'application/json');
 
-            this.http
-                .delete(
-                    `${this.config.get('API')}/events/${event._id}/participants/${this.auth.user._id}`,
-                    { headers: headers }
-                )
+            this.http.delete(`${this.config.get('API')}/events/${event._id}/participants/${this.auth.user._id}`, { headers })
                 .map(res => res.json())
                 .subscribe(
                     res => {
@@ -273,8 +251,10 @@ export class EventsService {
                             const index = event.participants.findIndex(obj => obj._id === this.auth.user._id);
                             event.participants.splice(index, 1);
                             resolve();
+                        } else {
+                            this.events.publish('alert:error', res.msg);
+                            reject();
                         }
-                        resolve();
                     },
                     err => {
                         this.events.publish('alert:error', err.text());

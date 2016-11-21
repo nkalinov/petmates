@@ -6,17 +6,20 @@ const Event = require('../models/event');
 // get [going/mine] events
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
     const { filter } = req.query;
-    const cond = {};
+    let cond = {};
 
     if (!filter || filter === 'mine') {
-        cond.creator = req.user._id;
+        cond = { creator: req.user._id };
     }
 
     if (filter === 'going') {
-        cond.participants = {
-            $elemMatch: {
-                $eq: req.user._id
-            }
+        cond = {
+            participants: {
+                $elemMatch: {
+                    $eq: req.user._id
+                }
+            },
+            date: { $gte: new Date() }
         };
     }
 

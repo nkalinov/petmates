@@ -6,7 +6,7 @@ const fs = require('fs');
 const upload = require('../config/upload');
 const Breed = require('./breed');
 
-var Pet = new Schema({
+const Pet = new Schema({
     name: String,
     sex: String,
     birthday: Date,
@@ -57,9 +57,9 @@ Pet.pre('save', true, function (next, done) {
     }
 });
 
-Pet.post('remove', pet => {
-    if (pet.picture) {
-        fs.unlink(`${upload.dest}${pet.picture}`);
+Pet.post('remove', model => {
+    if (model.picture) {
+        fs.unlink(`${upload.dest}${model.picture}`);
     }
 });
 

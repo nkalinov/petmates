@@ -13,17 +13,19 @@ TODO
 
 ## API
 - DEV/PROD configurations (config/**/*)
+- uploads/places; uploads/pets; uploads/users; ....
 - refactor api/bin/walks.js
 - cron task deleting public/tmp/* every 24h
 
 ## UI + API
 - nearby
-    - places
-        - create new (dog schools, hotels, parks, restos...)
-        - report place (from popover maybe)
     - events
         - push notification on a new event nearby
         - bin/www "cron" delete events where date < now()
+- reports
+    - user
+    - place
+    - cron delete reports where object id could not be resolved (place, user deleted)
 - Wall
 
 Ideas (To analyse)

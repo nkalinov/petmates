@@ -19,12 +19,19 @@ export class EventsPage {
         this.onSegmentChange();
     }
 
-    onSegmentChange() {
+    onSegmentChange(force = false) {
         if (this.events.mode === 'nearby') {
-            this.events.getNearbyEvents();
+            return this.events.getNearbyEvents(force);
         } else {
-            this.events.getEvents();
+            return this.events.getEvents(force);
         }
+    }
+
+    doRefresh(refresher: Refresher) {
+        this.onSegmentChange(true).then(
+            () => refresher.complete(),
+            err => refresher.complete()
+        );
     }
 
     viewEvent(event: Event) {
@@ -33,19 +40,5 @@ export class EventsPage {
 
     addEvent() {
         this.navCtrl.push(EventEditPage);
-    }
-
-    doRefresh(refresher: Refresher) {
-        if (this.events.mode === 'nearby') {
-            this.events.getNearbyEvents(true).then(
-                () => refresher.complete(),
-                err => refresher.complete()
-            );
-        } else {
-            this.events.getEvents(true).then(
-                () => refresher.complete(),
-                err => refresher.complete()
-            );
-        }
     }
 }

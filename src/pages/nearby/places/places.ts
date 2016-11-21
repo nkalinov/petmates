@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, Refresher, ModalController, PopoverController } from 'ionic-angular';
+import { NavController, Refresher, ModalController, AlertController } from 'ionic-angular';
 import { LaunchNavigator } from 'ionic-native';
 import { Place } from '../../../models/place.model';
 import { PlaceEditPage } from './place-edit';
@@ -14,6 +14,7 @@ export class PlacesPage {
 
     constructor(private navCtrl: NavController,
                 private modalCtrl: ModalController,
+                private alertCtrl: AlertController,
                 public places: PlacesService) {
     }
 
@@ -45,7 +46,23 @@ export class PlacesPage {
     }
 
     deletePlace(place: Place) {
-
+        const alert = this.alertCtrl.create({
+            title: 'Confirm place deletion',
+            message: 'Are you sure?',
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel'
+                },
+                {
+                    text: 'Delete',
+                    handler: () => {
+                        this.places.deletePlace(place).then(() => alert.dismiss());
+                    }
+                }
+            ]
+        });
+        alert.present();
     }
 
     navigate(place: Place) {

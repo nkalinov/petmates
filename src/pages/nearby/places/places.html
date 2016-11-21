@@ -3,7 +3,7 @@
         <button ion-button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
-        <ion-title>Nearby places</ion-title>
+        <ion-title>Places</ion-title>
         <ion-buttons end>
             <button ion-button icon-only color="secondary"
                     (click)="addPlace()">
@@ -44,17 +44,17 @@
                     <h3>{{item.address}}</h3>
                 </ion-item>
 
-                <ion-item text-wrap>
+                <ion-item text-wrap *ngIf="item.hours">
                     <ion-icon name="time-outline" item-left></ion-icon>
                     <h3>{{item.hours}}</h3>
                 </ion-item>
 
-                <ion-item text-wrap>
+                <ion-item text-wrap *ngIf="item.phone">
                     <ion-icon name="call" item-left></ion-icon>
                     <h3>{{item.phone}}</h3>
                 </ion-item>
 
-                <ion-item>
+                <ion-item *ngIf="item.link">
                     <a [attr.href]="item.link" target="_blank">
                         {{item.link}}
                     </a>
@@ -93,17 +93,17 @@
                     <h3>{{item.address}}</h3>
                 </ion-item>
 
-                <ion-item text-wrap>
+                <ion-item text-wrap *ngIf="item.hours">
                     <ion-icon name="time-outline" item-left></ion-icon>
                     <h3>{{item.hours}}</h3>
                 </ion-item>
 
-                <ion-item text-wrap>
+                <ion-item text-wrap *ngIf="item.phone">
                     <ion-icon name="call" item-left></ion-icon>
                     <h3>{{item.phone}}</h3>
                 </ion-item>
 
-                <ion-item>
+                <ion-item *ngIf="item.link">
                     <a [attr.href]="item.link" target="_blank">
                         {{item.link}}
                     </a>

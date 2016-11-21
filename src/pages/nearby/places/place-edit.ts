@@ -57,7 +57,7 @@ export class PlaceEditPage {
     }
 
     save() {
-        this.places.editOrCreatePlace(this.place)
+        this.places.updateOrCreatePlace(this.place)
             .then(() => this.navCtrl.pop());
     }
 

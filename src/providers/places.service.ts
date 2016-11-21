@@ -80,7 +80,7 @@ export class PlacesService {
         });
     }
 
-    editOrCreatePlace(place: Place) {
+    updateOrCreatePlace(place: Place) {
         return new Promise((resolve, reject) => {
             let headers = new Headers();
             headers.append('Authorization', this.auth.token);
@@ -118,7 +118,7 @@ export class PlacesService {
                     );
             } else {
                 // create
-                this.http.post(`${this.config.get('API')}/places`, JSON.stringify(place), { headers: headers })
+                this.http.post(`${this.config.get('API')}/places`, JSON.stringify(place), { headers })
                     .map(res => res.json())
                     .subscribe(
                         res => {
@@ -139,6 +139,40 @@ export class PlacesService {
                         }
                     );
             }
+        });
+    }
+
+    deletePlace(place: Place) {
+        return new Promise((resolve, reject) => {
+            let headers = new Headers();
+            headers.append('Authorization', this.auth.token);
+
+            this.http.delete(`${this.config.get('API')}/places/${place._id}`, { headers })
+                .map(res => res.json())
+                .subscribe(
+                    res => {
+                        if (res.success) {
+                            // remove from mine
+                            const mineValues = this._mine.getValue();
+                            const mineIndex = mineValues.indexOf(place);
+                            mineValues.splice(mineIndex, 1);
+
+                            // remove from nearby
+                            const nearbyValues = this._nearby.getValue();
+                            const nearbyIndex = nearbyValues.findIndex(obj => obj._id === place._id);
+                            if (nearbyIndex > -1) {
+                                nearbyValues.splice(nearbyIndex, 1);
+                            }
+                        } else {
+                            this.events.publish('alert:error', res.msg);
+                            reject();
+                        }
+                    },
+                    err => {
+                        this.events.publish('alert:error', err.text());
+                        reject();
+                    }
+                );
         });
     }
 

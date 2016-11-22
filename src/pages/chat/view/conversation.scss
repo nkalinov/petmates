@@ -4,7 +4,6 @@ last-activity {
 
 conversation-page {
   .messages {
-
     .message {
       width: 75%;
       background: color($colors, light);
@@ -55,36 +54,27 @@ conversation-page {
     }
   }
 
-  .new-messages {
+  .new-messages-badge {
     position: fixed;
     bottom: 47px;
     width: 100%;
   }
 
-  ion-footer {
-    ion-toolbar {
-      padding: 0 5px;
-      //height: 40px;
-      //border-top: 1px solid #222;
-      //background: #f4f4f4;
-
-      input {
-        display: block;
-        float: left;
-        width: 85%;
-        outline: none;
-        border: 1px solid #ccc;
-        border-radius: 3px;
-        padding: 4px 5px;
-        margin-top: 6px;
+  .message-footer {
+    .message-textarea {
+      textarea {
+        margin: 0;
+        padding: 3px;
       }
+    }
 
-      button {
-        display: block;
-        float: right;
-        width: 12%;
-        margin-top: 5px;
-      }
+    button {
+      margin: 0;
+    }
+
+    ion-col {
+      margin: 0;
+      padding: 0;
     }
   }
 }

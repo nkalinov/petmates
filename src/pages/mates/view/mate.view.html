@@ -48,11 +48,12 @@
                 (click)="removeMate()">
             Remove from my mates
         </button>
-
-        <button ion-button small block color="danger" outline
-                (click)="report(item)">
-            Report
-        </button>
+        <div text-center>
+            <button ion-button small clear color="danger" icon-left
+                    (click)="report(item)">
+                Report
+            </button>
+        </div>
     </div>
 
     <ion-list>

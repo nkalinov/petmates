@@ -9,3 +9,13 @@ exports.uploadPath = src => {
     }
     return null;
 };
+
+exports.picFromBuffer = buf => {
+    if (buf) {
+        if (buf.split('://').length > 1) {
+            return buf;
+        }
+        return `${upload.url}${buf}`;
+    }
+    return null;
+};

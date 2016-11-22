@@ -1,9 +1,10 @@
-const express = require('express');
-const router = express.Router();
-const Message = require('../models/message');
-const Conversation = require('../models/conversation');
-const passport = require('passport');
-const users = require('../bin/users').users;
+const express = require('express'),
+    router = express.Router(),
+    Conversation = require('../models/conversation'),
+    passport = require('passport'),
+    users = require('../bin/users').users,
+    fs = require('fs'),
+    upload = require('../config/upload');
 
 // get conversations in which I'm in the members
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -110,22 +111,39 @@ router.delete('/:cid', passport.authenticate('jwt', { session: false }), (req, r
 
 // add new message to conversation
 router.post('/:cid', passport.authenticate('jwt', { session: false }), (req, res) => {
-    const message = {
-        author: req.user._id,
-        msg: req.body.msg
-    };
+    const { msg, picture, mimetype } = req.body,
+        me = req.user._id,
+        message = {
+            author: me,
+            msg
+        };
+
+    if (picture) {
+        message.picture = {
+            data: fs.readFileSync(`${upload.destTmp}${picture}`),
+            contentType: mimetype
+        }
+    }
 
     Conversation.findOneAndUpdate({
         _id: req.params.cid,
-        members: req.user._id
+        members: me
     }, {
         $push: { messages: message },
-        lastMessage: message
+        lastMessage: picture ? {
+            author: message.author,
+            added: Date.now(),
+            msg: 'Photo message'
+        } : message
     }, (err) => {
         if (err)
-            return res.json({ success: false, data: err, msg: 'Message could not be send! Try again.' });
+            return res.json({ success: false });
 
-        return res.json({ success: true });
+        res.json({ success: true });
+
+        if (picture) {
+            fs.unlink(`${upload.destTmp}${picture}`)
+        }
     });
 });
 

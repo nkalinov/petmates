@@ -1,5 +1,6 @@
 import 'leaflet';
 import 'leaflet.markercluster';
+import '../vendor/leaflet.markercluster.layersupport-src.js';
 import '../vendor/rxjs.operators';
 import { NgModule } from '@angular/core';
 import { IonicApp, IonicModule } from 'ionic-angular';

@@ -8,7 +8,7 @@ const Jimp = require('jimp');
 router.post('/', (req, res) => {
     upload.single(req, res, err => {
         if (err)
-            return res.json({success: false, msg: err});
+            return res.json({ success: false, msg: err });
         // {
         //     "fieldname": "picture",
         //     "originalname": "Nikola_Kalinov.jpg",
@@ -22,21 +22,18 @@ router.post('/', (req, res) => {
         const data = req.file;
 
         if (data && data.size !== 0) {
-            Jimp.read(data.path).then(image => {
+            return Jimp.read(data.path).then(image => {
                 image
                     .cover(500, 500, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE)
                     .quality(80)
                     .write(data.path, () => {
                         data.url = `${upload.urlTmp}${data.filename}`;
-                        return res.json({success: true, data});
+                        res.json({ success: true, data });
                     });
-            }, err => res.json({success: false, msg: err}));
-        } else {
-            if (data) {
-                fs.unlink(data.path);
-            }
-            res.json({success: false, msg: 'Unsupported file'});
+            }, err => res.json({ success: false, msg: err }));
         }
+
+        res.json({ success: false, msg: 'Unsupported file' });
     });
 });
 

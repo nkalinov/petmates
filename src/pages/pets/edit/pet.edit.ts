@@ -4,7 +4,6 @@ import {
 } from 'ionic-angular';
 import { ImagePicker } from 'ionic-native';
 import { Component } from '@angular/core';
-import { BreedService } from '../../../providers/breed.service';
 import { PetService } from '../../../providers/pet.service';
 import { Pet } from '../../../models/pet.model';
 import { BreedPage } from './breed/breed';
@@ -20,7 +19,6 @@ export class PetEditPage {
 
     constructor(navParams: NavParams,
                 public viewCtrl: ViewController,
-                public breeds: BreedService,
                 private pets: PetService,
                 private auth: AuthService,
                 private config: Config,

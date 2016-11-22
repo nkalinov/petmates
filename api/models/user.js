@@ -1,12 +1,12 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-const bcrypt = require('bcryptjs');
-const helpers = require('../helpers');
-const autopopulate = require('mongoose-autopopulate');
-const Friendship = require('./friendship');
-const Pet = require('./pet');
-const fs = require('fs');
-const upload = require('../config/upload');
+const mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    bcrypt = require('bcryptjs'),
+    helpers = require('../helpers'),
+    autopopulate = require('mongoose-autopopulate'),
+    Friendship = require('./friendship'),
+    Pet = require('./pet'),
+    fs = require('fs'),
+    upload = require('../config/upload');
 
 // set up a mongoose model
 const UserSchema = new Schema({
@@ -83,6 +83,7 @@ UserSchema.pre('save', true, function (next, done) {
         }
 
         // copy photo from tmp
+        // todo save as Buffer in the database
         fs.rename(
             `${upload.destTmp}${this.picture}`,
             `${upload.dest}${this.picture}`,

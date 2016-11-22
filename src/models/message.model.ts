@@ -4,12 +4,18 @@ export class Message {
     author: User;
     msg: string = '';
     added: Date;
+    pic: string;
 
-    constructor(obj?: any) {
-        if (obj) {
-            this.author = obj.author || null;
-            this.msg = obj.msg || '';
-            this.added = obj.added ? new Date(<any>obj.added) : null;
+    picture: string;
+    mimetype: string;
+
+    constructor(data?: any) {
+        if (data) {
+            Object.assign(this, data);
+
+            if (data.added) {
+                this.added = new Date(data.added);
+            }
         }
     }
 }

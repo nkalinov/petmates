@@ -25,12 +25,9 @@ app.use(cors());
 app.use(helmet());
 app.use(compression());
 app.use(serveStatic(__dirname + '/public'));
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
-
-// Use the passport package in our application
 app.use(passport.initialize());
 
 app.use('/breeds', breeds);
@@ -45,10 +42,7 @@ app.use('/places', places);
 app.use('/upload', upload);
 app.use('/reports', reports);
 
-// connect db
 require('./config/database');
-
-// pass passport for configuration
 require('./config/passport')(passport);
 
 module.exports = app;

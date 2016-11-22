@@ -58,9 +58,7 @@ export class ProfileEdit {
                     'Authorization': this.auth.token
                 };
                 const ft = new FileTransfer();
-                ft.upload(
-                    images[0],
-                    encodeURI(`${this.config.get('API')}/upload`),
+                ft.upload(images[0], `${this.config.get('API')}/upload`,
                     (res: any) => {
                         res.response = JSON.parse(res.response);
 
@@ -85,7 +83,6 @@ export class ProfileEdit {
         });
     }
 
-    // dev
     fileChangeEvent(fileInput: any) {
         makeFileRequest(`${this.config.get('API')}/upload`, fileInput.target.files[0], this.auth.token).then(
             (res: any) => {

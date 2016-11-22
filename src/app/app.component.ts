@@ -8,7 +8,7 @@ import { SocketService } from '../providers/socket.service';
 import { MatesService } from '../providers/mates.service';
 import { ChatService } from '../providers/chat.service';
 import { User } from '../models/user.model';
-import { NearbyPage } from '../pages/nearby/nearby';
+import { ConversationsListPage } from '../pages/chat/conversations.list';
 
 @Component({
     templateUrl: 'app.html',
@@ -20,7 +20,7 @@ export class PetMatesApp {
     pages: Array<any>;
     newRequests: number;
 
-    private defaultRootPage: any = NearbyPage;
+    private defaultRootPage: any = ConversationsListPage;
 
     constructor(public auth: AuthService,
                 public walk: WalkService,

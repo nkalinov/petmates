@@ -1,5 +1,5 @@
-import { NavParams, NavController, Content } from 'ionic-angular';
-import { ViewChild, Component } from '@angular/core';
+import { NavParams, NavController, Content, ActionSheetController, Platform } from 'ionic-angular';
+import { ViewChild, Component, ElementRef } from '@angular/core';
 import { ChatService } from '../../../providers/chat.service';
 import { AuthService } from '../../../providers/auth.service';
 import { Message } from '../../../models/message.model';
@@ -12,13 +12,16 @@ import { ConversationEditPage } from '../edit/conversation.edit';
 })
 export class ConversationPage {
     @ViewChild(Content) content: Content;
+    @ViewChild('fileInput') fileInput: ElementRef;
     conversation: Conversation;
     message: Message;
 
     constructor(public auth: AuthService,
                 public chats: ChatService,
                 private nav: NavController,
-                private navParams: NavParams) {
+                private navParams: NavParams,
+                private actionSheetCtrl: ActionSheetController,
+                private platform: Platform) {
         this.newMessage();
         this.conversation = this.navParams.get('conversation');
 
@@ -51,10 +54,47 @@ export class ConversationPage {
     }
 
     sendMessage() {
-        this.chats.send(this.message, this.conversation).then(() => {
-            this.newMessage();
-            this.scrollToBottom();
+        if (this.message.msg.length || this.message.picture) {
+            this.chats.send(this.message, this.conversation).then(() => {
+                this.newMessage();
+                this.scrollToBottom();
+            });
+        }
+    }
+
+    sendPhoto() {
+        const actionSheet = this.actionSheetCtrl.create({
+            title: 'Send Photo',
+            buttons: [
+                {
+                    text: 'Choose Existing Photo',
+                    handler: () => {
+                        if (this.platform.is('cordova')) {
+                            // todo ImagePicker
+                        } else {
+                            // web
+                            this.fileInput.nativeElement.click();
+                        }
+                    }
+                },
+                {
+                    text: 'Take Photo',
+                    handler: () => {
+
+                    }
+                },
+                {
+                    text: 'Cancel',
+                    role: 'cancel'
+                }
+            ]
         });
+        actionSheet.present();
+    }
+
+    fileChangeEvent(fileInput: any) {
+        this.chats.upload(fileInput.target.files[0], this.message)
+            .then(() => this.sendMessage());
     }
 
     scrollToBottom(duration = 300) {

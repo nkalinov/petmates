@@ -1,4 +1,4 @@
-import { Events, Config } from 'ionic-angular';
+import { Events, Config, Platform } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { SocketService } from './socket.service';
@@ -8,6 +8,7 @@ import { User } from '../models/user.model';
 import { Conversation } from '../models/conversation.model';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { LocalNotifications } from 'ionic-native';
+import { makeFileRequest } from './common.service';
 
 @Injectable()
 export class ChatService {
@@ -19,7 +20,8 @@ export class ChatService {
                 private sockets: SocketService,
                 private events: Events,
                 private config: Config,
-                private auth: AuthService) {
+                private auth: AuthService,
+                private platform: Platform) {
     }
 
     createOrUpdateConversation(c: Conversation) {
@@ -155,6 +157,7 @@ export class ChatService {
     }
 
     getMessages(conversation: Conversation) {
+        // todo cache
         return new Promise((resolve, reject) => {
             let headers = new Headers();
             headers.append('Authorization', this.auth.token);
@@ -190,9 +193,7 @@ export class ChatService {
             conversation.messages.push(message);
             conversation.lastMessage = message;
 
-            this.http.post(`${this.config.get('API')}/conversations/${conversation._id}`, JSON.stringify({
-                msg: message.msg
-            }), { headers: headers })
+            this.http.post(`${this.config.get('API')}/conversations/${conversation._id}`, JSON.stringify(message), { headers })
                 .map(res => res.json())
                 .subscribe(
                     res => {
@@ -204,8 +205,8 @@ export class ChatService {
                                 conversation.messages.indexOf(message),
                                 1
                             );
-                            this.events.publish('alert:error', res.msg);
-                            reject(res.msg);
+                            this.events.publish('alert:error', 'Message could not be send! Try again.');
+                            reject();
                         }
                     },
                     err => {
@@ -214,10 +215,32 @@ export class ChatService {
                             1
                         );
                         this.events.publish('alert:error', err.text());
-                        reject(err.text());
+                        reject();
                     }
                 );
         });
+    }
+
+    upload(file: File, message: Message) {
+        if (this.platform.is('cordova')) {
+            // todo mobile
+        } else {
+            // web
+            return makeFileRequest(`${this.config.get('API')}/upload`, file, this.auth.token)
+                .then((res: any) => {
+                    if (res.response.success) {
+                        message.pic = res.response.data.url;
+                        message.picture = res.response.data.filename;
+                        message.mimetype = res.response.data.mimetype;
+                    } else {
+                        this.events.publish('alert:error', res.response.msg);
+                        throw res.response.msg;
+                    }
+                }, err => {
+                    this.events.publish('alert:error', err);
+                    throw err;
+                });
+        }
     }
 
     registerSocketEvents(socket) {

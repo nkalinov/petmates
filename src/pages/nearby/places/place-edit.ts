@@ -63,15 +63,16 @@ export class PlaceEditPage {
 
     changePicture() {
         const actionSheet = this.actionSheetCtrl.create({
+            title: 'Add Photo',
             buttons: [
                 {
-                    text: 'Upload from Photos',
+                    text: 'Choose Existing Photo',
                     handler: () => {
                         this.places.uploadPicture(this.place);
                     }
                 },
                 {
-                    text: 'Set an URL',
+                    text: 'Set Photo from URL',
                     handler: () => {
                         this.alertCtrl.create({
                             title: 'Place photo',

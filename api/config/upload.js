@@ -1,6 +1,9 @@
-const multer = require('multer');
-const ip = require('ip');
-const Jimp = require('jimp');
+const multer = require('multer'),
+    ip = require('ip'),
+    Jimp = require('jimp'),
+    ipAddress = ip.address(),
+    url = `http://${ipAddress}:${(process.env.PORT || '3001')}/uploads/`,
+    urlTmp = `http://${ipAddress}:${(process.env.PORT || '3001')}/tmp/`;
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -13,7 +16,7 @@ const storage = multer.diskStorage({
 });
 
 const single = multer({
-    storage: storage,
+    storage,
     fileFilter: function (req, file, cb) {
         // The function should call `cb` with a boolean
         // to indicate if the file should be accepted
@@ -32,9 +35,9 @@ const single = multer({
 }).single('picture');
 
 module.exports = {
-    single: single,
+    single,
     dest: 'public/uploads/',
     destTmp: 'public/tmp/',
-    url: `http://${ip.address()}:${(process.env.PORT || '3001')}/uploads/`,
-    urlTmp: `http://${ip.address()}:${(process.env.PORT || '3001')}/tmp/`
+    url,
+    urlTmp
 };

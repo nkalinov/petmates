@@ -16,7 +16,7 @@
 <ion-content>
     <ion-list class="messages">
         <ion-item class="message"
-                  *ngFor="let m of (conversation && conversation.messages)"
+                  *ngFor="let m of conversation.messages"
                   [ngClass]="{'me': m.author._id === auth.user._id}">
             <ion-avatar class="avatar">
                 <mate-image [image]="m.author.pic"></mate-image>
@@ -25,11 +25,12 @@
             <span text-small *ngIf="conversation.members.length > 2 && m.author._id !== auth.user._id">
                 {{m.author.name}}
             </span>
-            <p>{{ m.msg }}</p>
+            <p *ngIf="m.msg">{{ m.msg }}</p>
+            <img *ngIf="m.pic" [attr.src]="'data:image/png;base64,' + m.pic"/>
             <time-ago text-small class="date" [time]="m.added"></time-ago>
         </ion-item>
     </ion-list>
-    <div class="new-messages" text-center *ngIf="conversation && conversation.newMessages > 0">
+    <div class="new-messages-badge" text-center *ngIf="conversation && conversation.newMessages > 0">
         <button ion-button small round color="primary"
                 (click)="scrollToBottom()">
             New messages
@@ -37,14 +38,29 @@
     </div>
 </ion-content>
 
-<ion-footer>
+<ion-footer class="message-footer">
+    <input type="file" #fileInput (change)="fileChangeEvent($event)"/>
     <ion-toolbar>
-        <input type="text" placeholder="Message..." [(ngModel)]="message.msg" (keydown.enter)="sendMessage()">
-        <button ion-button small icon-only
-                [disabled]="message.msg === ''"
-                (click)="sendMessage()">
-            <ion-icon name="send"></ion-icon>
-        </button>
+        <ion-row>
+            <ion-col width-10>
+                <button ion-button small clear color="dark" icon-only (click)="sendPhoto()">
+                    <ion-icon name="image"></ion-icon>
+                </button>
+            </ion-col>
+            <ion-col width-80>
+                <ion-textarea no-margin placeholder="Message..."
+                              class="message-textarea"
+                              [(ngModel)]="message.msg"
+                              (keydown.enter)="sendMessage()"></ion-textarea>
+            </ion-col>
+            <ion-col width-10>
+                <button ion-button small icon-only
+                        [disabled]="message.msg === ''"
+                        (click)="sendMessage()">
+                    <ion-icon name="send"></ion-icon>
+                </button>
+            </ion-col>
+        </ion-row>
     </ion-toolbar>
 </ion-footer>
 

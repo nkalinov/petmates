@@ -1,6 +1,6 @@
 {
-  "name": "Pet Mates",
-  "short_name": "Pet Mates",
+  "name": "PetMates",
+  "short_name": "PetMates",
   "start_url": "index.html",
   "display": "standalone",
   "icons": [{

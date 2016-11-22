@@ -4,13 +4,15 @@ const Breed = require('../models/breed');
 const Place = require('../models/place');
 
 // todo use auth.secret
-mongoose.connect('mongodb://127.0.0.1/pm2', err => {
+mongoose.connect('mongodb://127.0.0.1/pm2', {
+    promiseLibrary: require('q')
+}, err => {
     if (err) throw err;
     seed();
 });
 
-// Use native promises
-mongoose.Promise = global.Promise;
+// mongoose.Promise = global.Promise;
+mongoose.Promise = require('q').Promise;
 
 // check for new breeds
 // TODO insert only new OR updated entries

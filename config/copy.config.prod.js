@@ -25,10 +25,6 @@ module.exports = {
             dest: '{{WWW}}/assets/fonts/'
         },
         {
-            src: '{{SRC}}/vendor/leaflet.markercluster.layersupport-src.js',
-            dest: '{{BUILD}}/leaflet.markercluster.layersupport-src.js'
-        },
-        {
             src: 'config/config.prod.ts',
             dest: 'src/app/config.ts'
         }

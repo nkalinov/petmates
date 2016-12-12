@@ -1,4 +1,4 @@
-import { User } from './user.model';
+import { PartialUser, User } from './user.model';
 
 export class Message {
     author: User;
@@ -18,4 +18,11 @@ export class Message {
             }
         }
     }
+}
+
+// todo use Pick (typescript 2.1)
+export interface SocketMessage {
+    author: PartialUser;
+    msg: string;
+    added: Date;
 }

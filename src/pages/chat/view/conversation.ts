@@ -5,6 +5,7 @@ import { AuthService } from '../../../providers/auth.service';
 import { Message } from '../../../models/message.model';
 import { Conversation } from '../../../models/conversation.model';
 import { ConversationEditPage } from '../edit/conversation.edit';
+import { ImagePicker } from 'ionic-native';
 
 @Component({
     selector: 'conversation-page',
@@ -70,7 +71,13 @@ export class ConversationPage {
                     text: 'Choose Existing Photo',
                     handler: () => {
                         if (this.platform.is('cordova')) {
-                            // todo ImagePicker
+                            ImagePicker.getPictures({
+                                maximumImagesCount: 1,
+                                width: 500,
+                                height: 500
+                            })
+                                .then(images => this.chats.upload(images[0], this.message))
+                                .then(() => this.sendMessage());
                         } else {
                             // web
                             this.fileInput.nativeElement.click();
@@ -93,7 +100,8 @@ export class ConversationPage {
     }
 
     fileChangeEvent(fileInput: any) {
-        this.chats.upload(fileInput.target.files[0], this.message)
+        this.chats
+            .upload(fileInput.target.files[0], this.message)
             .then(() => this.sendMessage());
     }
 
@@ -105,11 +113,6 @@ export class ConversationPage {
     }
 
     private newMessage() {
-        const author = {
-            _id: this.auth.user._id,
-            name: this.auth.user.name,
-            pic: this.auth.user.pic
-        };
-        this.message = new Message({ author });
+        this.message = new Message({ author: this.auth.user });
     }
 }

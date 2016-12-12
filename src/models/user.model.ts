@@ -1,5 +1,6 @@
 import { Pet } from './pet.model';
 import { Friendship } from './friendship.interface';
+import { pick } from 'lodash';
 
 const deg2rad = (deg) => deg * (Math.PI / 180);
 
@@ -59,8 +60,18 @@ export class User {
     setDistance(dis: number) {
         if (dis) {
             this.distance = dis < 1000 ?
-            dis.toFixed().toString() + ' m' :
-            (dis / 1000).toFixed(1).toString() + ' km';
+                dis.toFixed().toString() + ' m' :
+                (dis / 1000).toFixed(1).toString() + ' km';
         }
     }
+
+    toPartial() {
+        return <PartialUser>pick(this, ['_id ', 'name', 'pic']);
+    }
+}
+
+export interface PartialUser {
+    readonly _id: string;
+    name: string;
+    pic: string;
 }

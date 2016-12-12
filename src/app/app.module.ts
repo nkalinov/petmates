@@ -53,6 +53,7 @@ import { config } from './config';
 import { TimeAgo } from 'ng2-timeago';
 import { PlacesService } from '../providers/places.service';
 import { ReportsService } from '../providers/reports.service';
+import { IonicImageViewerModule } from 'ionic-img-viewer';
 
 const pages: Array<any> = [
     PetMatesApp,
@@ -110,7 +111,8 @@ const pages: Array<any> = [
             Object.assign(config, {
                 tabsPlacement: 'bottom'
             })
-        )
+        ),
+        IonicImageViewerModule
     ],
     bootstrap: [IonicApp],
     entryComponents: pages,

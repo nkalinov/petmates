@@ -3,6 +3,10 @@ button[disabled] {
   opacity: 0.5;
 }
 
+input.fileInput {
+  display: none;
+}
+
 ion-menu#main-menu {
 
   .menu-inner {

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { SocketService } from './socket.service';
 import { AuthService } from './auth.service';
-import { Message } from '../models/message.model';
+import { Message, SocketMessage } from '../models/message.model';
 import { User } from '../models/user.model';
 import { Conversation } from '../models/conversation.model';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -198,7 +198,12 @@ export class ChatService {
                 .subscribe(
                     res => {
                         if (res.success) {
-                            this.sockets.socket.emit('chat:msg:send', message, conversation._id);
+                            this.sockets.socket.emit('chat:msg:send', <SocketMessage>{
+                                author: message.author.toPartial(),
+                                added: message.added,
+                                msg: message.msg,
+                                pic: message.pic
+                            }, conversation._id);
                             resolve();
                         } else {
                             conversation.messages.splice(
@@ -221,26 +226,41 @@ export class ChatService {
         });
     }
 
-    upload(file: File, message: Message) {
-        if (this.platform.is('cordova')) {
-            // todo mobile
-        } else {
-            // web
-            return makeFileRequest(`${this.config.get('API')}/upload`, file, this.auth.token)
-                .then((res: any) => {
-                    if (res.response.success) {
-                        message.pic = res.response.data.url;
-                        message.picture = res.response.data.filename;
-                        message.mimetype = res.response.data.mimetype;
-                    } else {
-                        this.events.publish('alert:error', res.response.msg);
-                        throw res.response.msg;
-                    }
-                }, err => {
-                    this.events.publish('alert:error', err);
-                    throw err;
-                });
-        }
+    upload(file: any, message: Message) {
+        return new Promise((resolve, reject) => {
+            const onSuccess = res => {
+                if (res.response.success) {
+                    message.pic = res.response.data.url;
+                    message.picture = res.response.data.filename;
+                    message.mimetype = res.response.data.mimetype;
+                    resolve();
+                } else {
+                    this.events.publish('alert:error', res.response.msg);
+                    throw res.response.msg;
+                }
+            };
+            const onError = err => {
+                this.events.publish('alert:error', err);
+                reject();
+            };
+
+            if (this.platform.is('cordova')) {
+                // mobile
+                const options = new FileUploadOptions();
+                options.fileKey = 'picture';
+                options.headers = { 'Authorization': this.auth.token };
+                const ft = new FileTransfer();
+                ft.upload(file, `${this.config.get('API')}/upload`,
+                    res => onSuccess(JSON.parse(res.response)),
+                    onError,
+                    options
+                );
+            } else {
+                // web
+                makeFileRequest(`${this.config.get('API')}/upload`, file, this.auth.token)
+                    .then(onSuccess, onError);
+            }
+        });
     }
 
     registerSocketEvents(socket) {
@@ -251,19 +271,19 @@ export class ChatService {
         });
 
         // new message in conversation
-        socket.on('chat:msg:new', (message: Message, cid: string) => {
+        socket.on('chat:msg:new', (message: SocketMessage, cid: string) => {
             console.info('chat:msg:new', message, cid);
 
             LocalNotifications.schedule({
                 id: 1,
-                text: `${message.author.name}: ${message.msg}`
+                text: `${message.author.name}: ${message.msg || 'Photo message'}`
             });
 
             const c = this.mappedConversations[cid];
             if (c) {
                 // add to conversation
-                c.messages.push(message);
                 message.added = new Date(message.added);
+                c.messages.push(message);
                 c.lastMessage = message;
                 c.newMessages += 1;
             }

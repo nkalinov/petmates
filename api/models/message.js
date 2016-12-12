@@ -38,7 +38,7 @@ const Message = new Schema({
 Message.plugin(autopopulate);
 
 Message.virtual('pic').get(function () {
-    return this.picture.data ? this.picture.data.toString('base64') : null;
+    return this.picture && this.picture.data ? this.picture.data.toString('base64') : null;
 });
 
 module.exports = Message;

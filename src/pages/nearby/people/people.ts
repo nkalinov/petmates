@@ -7,7 +7,7 @@ import { MateViewPage } from '../../mates/view/mate.view';
     templateUrl: 'people.html'
 })
 
-export class PeoplePage {
+export class NearbyPeoplePage {
     constructor(private navCtrl: NavController,
                 private nearby: NearbyService) {
     }

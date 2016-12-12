@@ -10,7 +10,7 @@ import { AuthService } from '../../../providers/auth.service';
 @Component({
     templateUrl: 'places.html'
 })
-export class PlacesPage {
+export class NearybyPlacesPage {
     mode: 'nearby' | 'mine' = 'nearby';
 
     constructor(private navCtrl: NavController,

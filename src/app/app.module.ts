@@ -31,15 +31,17 @@ import { MatesSearchPage } from '../pages/mates/search/mates.search';
 import { MatesAcceptedPage } from '../pages/mates/tabs/accepted/mates.accepted';
 import { MatesPendingPage } from '../pages/mates/tabs/pending/mates.pending';
 import { MatesRequestedPage } from '../pages/mates/tabs/requested/mates.requested';
-import { EventsPage } from '../pages/nearby/events/events';
+import { NearbyEventsPage } from '../pages/nearby/events/events';
 import { EventEditPage } from '../pages/nearby/events/event-edit';
 import { EventViewPage } from '../pages/nearby/events/event-view';
-import { PeoplePage } from '../pages/nearby/people/people';
-import { PlacesPage } from '../pages/nearby/places/places';
+import { NearbyPeoplePage } from '../pages/nearby/people/people';
+import { NearbyPetsPage } from '../pages/nearby/pets/pets';
+import { NearybyPlacesPage } from '../pages/nearby/places/places';
 import { PlaceEditPage } from '../pages/nearby/places/place-edit';
 import { ReportModalPage } from '../common/report-modal/report-modal';
 import { PetsPage } from '../pages/pets/pets';
 import { PetEditPage } from '../pages/pets/edit/pet.edit';
+import { PetViewPage } from '../pages/pets/view/pet.view';
 import { BreedPage } from '../pages/pets/edit/breed/breed';
 import { ProfilePage } from '../pages/profile/profile';
 import { ProfileEdit } from '../pages/profile/edit/profile.edit';
@@ -54,6 +56,7 @@ import { TimeAgo } from 'ng2-timeago';
 import { PlacesService } from '../providers/places.service';
 import { ReportsService } from '../providers/reports.service';
 import { IonicImageViewerModule } from 'ionic-img-viewer';
+import { PetService } from '../providers/pet.service';
 
 const pages: Array<any> = [
     PetMatesApp,
@@ -79,15 +82,17 @@ const pages: Array<any> = [
     MatesRequestedPage,
 
     NearbyPage,
-    EventsPage,
+    NearbyPeoplePage,
+    NearbyPetsPage,
+    NearbyEventsPage,
     EventEditPage,
     EventViewPage,
-    PeoplePage,
-    PlacesPage,
+    NearybyPlacesPage,
     PlaceEditPage,
     ReportModalPage,
 
     PetsPage,
+    PetViewPage,
     PetEditPage,
     BreedPage,
 
@@ -128,7 +133,8 @@ const pages: Array<any> = [
         LocationService,
         EventsService,
         PlacesService,
-        ReportsService
+        ReportsService,
+        PetService
     ]
 })
 export class AppModule {

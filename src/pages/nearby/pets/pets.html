@@ -1,0 +1,27 @@
+<ion-header>
+    <ion-toolbar>
+        <button ion-button menuToggle>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>Nearby dogs</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+    <ion-list>
+        <button ion-item *ngFor="let item of pets.pets$ | async" (click)="viewPet(item)">
+            <ion-avatar item-left>
+                <mate-image [image]="item.pic"></mate-image>
+            </ion-avatar>
+            <h2>{{item.name}}, {{item.breed.name}}</h2>
+            <p><span [gender]="item.sex"></span>, <span [age]="item.birthday"></span></p>
+            <p *ngIf="item.distance">
+                {{ item.distance }} - {{ item.city }}
+            </p>
+        </button>
+    </ion-list>
+    <p text-center *ngIf="pets.pets$.getValue().length === 0">No people nearby...</p>
+</ion-content>

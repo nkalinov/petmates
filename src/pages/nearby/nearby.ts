@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { PeoplePage } from './people/people';
-import { PlacesPage } from './places/places';
-import { EventsPage } from './events/events';
+import { NearbyPeoplePage } from './people/people';
+import { NearybyPlacesPage } from './places/places';
+import { NearbyEventsPage } from './events/events';
+import { NearbyPetsPage } from './pets/pets';
 
 @Component({
     selector: 'nearby-page',
@@ -9,7 +10,8 @@ import { EventsPage } from './events/events';
 })
 
 export class NearbyPage {
-    tab1Root = PeoplePage;
-    tab2Root = PlacesPage;
-    tab3Root = EventsPage;
+    PetsTab = NearbyPetsPage;
+    PeopleTab = NearbyPeoplePage;
+    PlacesTab = NearybyPlacesPage;
+    EventsTab = NearbyEventsPage;
 }

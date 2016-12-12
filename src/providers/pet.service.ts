@@ -4,12 +4,18 @@ import { Events, Config } from 'ionic-angular';
 import { AuthService } from './auth.service';
 import { Pet } from '../models/pet.model';
 import { APIResponse } from '../models/APIResponse.interface';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { LocationService } from './location.service';
 
 @Injectable()
 export class PetService {
+    pets$ = new BehaviorSubject([]);
+    pets: Pet[] = [];
+
     constructor(public auth: AuthService,
                 private http: Http,
                 private config: Config,
+                private location: LocationService,
                 private events: Events) {
     }
 
@@ -76,6 +82,41 @@ export class PetService {
                     reject(err.text());
                 }
             );
+        });
+    }
+
+    getLocationThenNearbyPets(force = false) {
+        if (force || !this.pets.length) {
+            return this.location.getGeolocation().then(coords => this.getNearbyPets(coords, force));
+        } else {
+            return Promise.resolve();
+        }
+    }
+
+    getNearbyPets(coords, force = false) {
+        return new Promise((resolve, reject) => {
+            if (force || !this.pets.length) {
+
+                let headers = new Headers();
+                headers.append('Authorization', this.auth.token);
+
+                this.http
+                    .get(`${this.config.get('API')}/nearby/pets?coords=${coords}`, { headers: headers })
+                    .map(res => res.json())
+                    .subscribe(
+                        res => {
+                            this.pets = res.data.map(u => new Pet(u));
+                            this.pets$.next(this.pets);
+                            resolve();
+                        },
+                        err => {
+                            this.events.publish('alert:error', err.text());
+                            reject();
+                        }
+                    );
+            } else {
+                resolve();
+            }
         });
     }
 }

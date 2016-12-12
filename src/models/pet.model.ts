@@ -13,9 +13,23 @@ export class Pet {
     picture: string;
     birthday: Date = new Date();
 
+    distance?: string;
+
     constructor(data?) {
         if (data) {
             Object.assign(this, data);
+        }
+
+        if (data.distance) {
+            this.setDistance(data.distance);
+        }
+    }
+
+    setDistance(dis: number) {
+        if (dis) {
+            this.distance = dis < 1000 ?
+                dis.toFixed().toString() + ' m' :
+                (dis / 1000).toFixed(1).toString() + ' km';
         }
     }
 }

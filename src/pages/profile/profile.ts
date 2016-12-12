@@ -6,6 +6,7 @@ import { ProfileEdit } from './edit/profile.edit';
 @Component({
     templateUrl: 'profile.html'
 })
+
 export class ProfilePage {
 
     constructor(public auth: AuthService,

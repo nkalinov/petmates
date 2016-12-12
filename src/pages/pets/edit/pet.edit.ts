@@ -11,7 +11,6 @@ import { makeFileRequest } from '../../../providers/common.service';
 import { AuthService } from '../../../providers/auth.service';
 
 @Component({
-    providers: [PetService],
     templateUrl: 'pet.edit.html'
 })
 export class PetEditPage {

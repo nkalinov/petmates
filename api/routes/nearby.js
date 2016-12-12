@@ -1,10 +1,11 @@
-const express = require('express');
-const router = express.Router();
-const passport = require('passport');
-const User = require('../models/user');
-const Place = require('../models/place');
-const Event = require('../models/event');
-const helpers = require('../helpers');
+const express = require('express'),
+    router = express.Router(),
+    passport = require('passport'),
+    User = require('../models/user'),
+    Place = require('../models/place'),
+    Event = require('../models/event'),
+    helpers = require('../helpers'),
+    _ = require('lodash');
 
 router.get('/people', passport.authenticate('jwt', { session: false }), (req, res) => {
     const point = {
@@ -46,6 +47,47 @@ router.get('/people', passport.authenticate('jwt', { session: false }), (req, re
                 return d;
             })
         }),
+        err => res.json({ success: false, msg: err })
+    );
+});
+
+router.get('/pets', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const point = {
+        type: 'Point',
+        coordinates: req.query.coords ?
+            req.query.coords.split(',').map(c => parseFloat(c)) :
+            req.user.location.coordinates
+    };
+    User.aggregate([
+        {
+            $geoNear: {
+                distanceField: 'distance',
+                near: point,
+                maxDistance: 500 * 1000,
+                spherical: true,
+                query: {
+                    _id: {
+                        $ne: req.user._id
+                    }
+                }
+            }
+        },
+        { $project: { city: 1, pets: 1, distance: 1 } },
+        { $unwind: { path: '$pets' } },
+        { $lookup: { from: 'breeds', localField: 'pets.breed', foreignField: '_id', as: 'pets.breed' } }
+    ]).exec().then(
+        data => {
+            data = data.map(d => {
+                const parsed = _.assign(d, d.pets);
+                parsed.breed = parsed.breed[0];
+                parsed.pic = helpers.uploadPath(d.picture);
+                delete parsed.picture;
+                delete parsed.pets;
+                return parsed;
+            });
+
+            return res.json({ success: true, data });
+        },
         err => res.json({ success: false, msg: err })
     );
 });

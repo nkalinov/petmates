@@ -9,7 +9,7 @@ import { EventsService } from '../../../providers/events.service';
     templateUrl: 'events.html'
 })
 
-export class EventsPage {
+export class NearbyEventsPage {
 
     constructor(private navCtrl: NavController,
                 public events: EventsService) {

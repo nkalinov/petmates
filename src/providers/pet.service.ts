@@ -3,7 +3,7 @@ import { Http, Headers, Response } from '@angular/http';
 import { Events, Config } from 'ionic-angular';
 import { AuthService } from './auth.service';
 import { Pet } from '../models/pet.model';
-import { APIResponse } from '../models/APIResponse.interface';
+import { IResponse } from '../models/IResponse';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { LocationService } from './location.service';
 
@@ -68,7 +68,7 @@ export class PetService {
             this.http.delete(`${this.config.get('API')}/pets/${pet._id}`,
                 { headers: headers }
             ).map(res => res.json()).subscribe(
-                (res: APIResponse) => {
+                (res: IResponse) => {
                     if (res.success) {
                         this.auth.user.pets = res.data.map(p => new Pet(p));
                         resolve(res);

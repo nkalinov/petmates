@@ -1,5 +1,5 @@
 import { Pet } from './pet.model';
-import { Friendship } from './friendship.interface';
+import { IFriendship } from './IFriendship';
 import { pick } from 'lodash';
 
 const deg2rad = (deg) => deg * (Math.PI / 180);
@@ -12,7 +12,7 @@ export class User {
     picture: string; // filename
     pic: string; // picture url
     pets: Array<Pet> = [];
-    mates: Array<Friendship> = [];
+    mates: Array<IFriendship> = [];
     city: string = '';
     region: string = '';
     country: string = '';

@@ -72,18 +72,20 @@ router.get('/pets', passport.authenticate('jwt', { session: false }), (req, res)
                 }
             }
         },
-        { $project: { city: 1, pets: 1, distance: 1 } },
+        { $project: { _id: 1, city: 1, distance: 1, name: 1, pets: 1, picture: 1 } },
         { $unwind: { path: '$pets' } },
         { $lookup: { from: 'breeds', localField: 'pets.breed', foreignField: '_id', as: 'pets.breed' } }
     ]).exec().then(
         data => {
             data = data.map(d => {
-                const parsed = _.assign(d, d.pets);
-                parsed.breed = parsed.breed[0];
-                parsed.pic = helpers.uploadPath(d.picture);
-                delete parsed.picture;
-                delete parsed.pets;
-                return parsed;
+                d.pet = d.pets;
+                d.pet.breed = d.pet.breed[0];
+                d.pic = helpers.uploadPath(d.picture);
+                d.pet.pic = helpers.uploadPath(d.pet.picture);
+                delete d.picture;
+                delete d.pet.picture;
+                delete d.pets;
+                return d;
             });
 
             return res.json({ success: true, data });

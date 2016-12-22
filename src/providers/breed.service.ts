@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { Events, Config } from 'ionic-angular';
-import { Breed } from '../models/breed.interface';
+import { Breed } from '../models/IBreed';
 import { AuthService } from './auth.service';
 
 @Injectable()

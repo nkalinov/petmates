@@ -4,7 +4,7 @@ export const STATUS_PENDING = 'pending';
 export const STATUS_REQUESTED = 'requested';
 export const STATUS_ACCEPTED = 'accepted';
 
-export interface Friendship {
+export interface IFriendship {
     _id: string;
     status: string;
     added: Date;

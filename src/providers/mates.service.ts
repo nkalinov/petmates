@@ -5,7 +5,7 @@ import { Http, Headers } from '@angular/http';
 import { Subject } from 'rxjs/Subject';
 import { User } from '../models/user.model';
 import { AuthService } from './auth.service';
-import { Friendship, STATUS_REQUESTED, STATUS_ACCEPTED, STATUS_PENDING } from '../models/friendship.interface';
+import { IFriendship, STATUS_REQUESTED, STATUS_ACCEPTED, STATUS_PENDING } from '../models/IFriendship';
 import { SocketService } from './socket.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
@@ -136,7 +136,7 @@ export class MatesService {
                 headers: headers
             }).map(res => res.json()).subscribe((res: any) => {
                     if (res.success) {
-                        let index = this.auth.user.mates.findIndex((f: Friendship) => {
+                        let index = this.auth.user.mates.findIndex((f: IFriendship) => {
                             return f._id === friendshipId;
                         });
                         if (index > -1) {
@@ -180,7 +180,7 @@ export class MatesService {
             socket.emit('online:get', this.auth.user.mates.map(m => m.friend._id));
         }, 90 * 1000);
 
-        socket.on('mate:', (action: string, data: {fRequest: Friendship, myRequest: Friendship}) => {
+        socket.on('mate:', (action: string, data: {fRequest: IFriendship, myRequest: IFriendship}) => {
             console.info('mate:', action, data);
             let index = -1;
 
@@ -237,7 +237,7 @@ export class MatesService {
             }
             if (sortOnly === 'pending' || sortOnly === 'all') {
                 this.mates.pending = this.auth.user.mates.filter(
-                    (f: Friendship) => f.status === STATUS_PENDING
+                    (f: IFriendship) => f.status === STATUS_PENDING
                 );
                 this.pending$.next(this.mates.pending.length);
             }

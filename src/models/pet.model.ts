@@ -1,11 +1,10 @@
+import { Breed } from './IBreed';
+
 export class Pet {
     _id: string;
     name: string;
     sex: string = 'm';
-    breed: {
-        _id: string,
-        name: string
-    } = {
+    breed: Breed = {
         _id: '',
         name: ''
     };
@@ -32,4 +31,14 @@ export class Pet {
                 (dis / 1000).toFixed(1).toString() + ' km';
         }
     }
+}
+
+export interface NearbyPet {
+    readonly _id: string;
+    name: string;
+    pic: string;
+    distance: string;
+    city: string;
+
+    pet: Pet;
 }

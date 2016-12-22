@@ -18,7 +18,7 @@ import { NearbyPage } from '../pages/nearby/nearby';
 export class PetMatesApp {
     @ViewChild(Nav) nav: Nav;
     rootPage: any;
-    pages: Array<any>;
+    pages: any[];
     newRequests: number;
 
     private defaultRootPage: any = NearbyPage;
@@ -58,17 +58,17 @@ export class PetMatesApp {
             this.loggedOut(err);
         });
 
-        this.events.subscribe('user:login', data => {
-            this.loggedIn(data[0]);
+        this.events.subscribe('user:login', user => {
+            this.loggedIn(user);
         });
         this.events.subscribe('user:logout', () => {
             this.loggedOut();
         });
-        this.events.subscribe('alert:error', data => {
-            this.showAlert(data[0]);
+        this.events.subscribe('alert:error', err => {
+            this.showAlert(err);
         });
         this.events.subscribe('alert:info', data => {
-            this.showAlert(data[0], 'Info');
+            this.showAlert(data, 'Info');
         });
     }
 

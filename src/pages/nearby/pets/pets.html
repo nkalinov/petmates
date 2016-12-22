@@ -14,14 +14,14 @@
     <ion-list>
         <button ion-item *ngFor="let item of pets.pets$ | async" (click)="viewPet(item)">
             <ion-avatar item-left>
-                <mate-image [image]="item.pic"></mate-image>
+                <mate-image [image]="item.pet.pic"></mate-image>
             </ion-avatar>
-            <h2>{{item.name}}, {{item.breed.name}}</h2>
-            <p><span [gender]="item.sex"></span>, <span [age]="item.birthday"></span></p>
+            <h2>{{item.pet.name}}, {{item.pet.breed.name}}</h2>
+            <p><span [gender]="item.pet.sex"></span>, <span [age]="item.pet.birthday"></span></p>
             <p *ngIf="item.distance">
                 {{ item.distance }} - {{ item.city }}
             </p>
         </button>
     </ion-list>
-    <p text-center *ngIf="pets.pets$.getValue().length === 0">No people nearby...</p>
+    <p text-center *ngIf="pets.pets$.getValue().length === 0">No dogs nearby...</p>
 </ion-content>

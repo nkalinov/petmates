@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavParams, ViewController } from 'ionic-angular';
 import { BreedService } from '../../../../providers/breed.service';
 import { Pet } from '../../../../models/pet.model';
-import { Breed } from '../../../../models/breed.interface';
+import { Breed } from '../../../../models/IBreed';
 
 @Component({
     templateUrl: 'breed.html',

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { MatesService } from '../../../providers/mates.service';
 import { User } from '../../../models/user.model';
 import { AuthService } from '../../../providers/auth.service';
-import { STATUS_ACCEPTED, STATUS_PENDING, STATUS_REQUESTED } from '../../../models/friendship.interface';
+import { STATUS_ACCEPTED, STATUS_PENDING, STATUS_REQUESTED } from '../../../models/IFriendship';
 import { ReportModalPage } from '../../../common/report-modal/report-modal';
 
 @Component({

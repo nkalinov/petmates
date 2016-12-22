@@ -1,4 +1,4 @@
-export interface APIResponse {
+export interface IResponse {
     success: boolean;
     data: any;
     msg: string;

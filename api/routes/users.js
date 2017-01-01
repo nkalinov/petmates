@@ -1,9 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const passport = require('passport');
-const fs = require('fs');
-const User = require('../models/user');
-const Conversation = require('../models/conversation');
+const express = require('express'),
+    router = express.Router(),
+    passport = require('passport'),
+    fs = require('fs'),
+    User = require('../models/user'),
+    Conversation = require('../models/conversation');
 
 // check token validity and that user exists
 router.post('/check', passport.authenticate('jwt', { session: false }), (req, res) => res.json({

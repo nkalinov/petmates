@@ -9,10 +9,8 @@ export class SocketService {
 
     constructor(private config: Config,
                 private auth: AuthService) {
-        this.auth.regionUpdated.subscribe(region => {
-            // reconnect socket to proper room on region change
-            this.init(region);
-        });
+        // reconnect socket to proper room on region change
+        this.auth.regionUpdated.subscribe(region => this.init);
     }
 
     disconnect() {

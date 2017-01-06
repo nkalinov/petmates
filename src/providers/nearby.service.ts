@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { AuthService } from './auth.service';
 import { Config, Events } from 'ionic-angular';
-import { User } from '../models/user.model';
+import { User } from '../models/User';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { LocationService } from './location.service';
 

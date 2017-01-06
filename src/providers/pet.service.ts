@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import { Http, Headers, Response } from '@angular/http';
 import { Events, Config } from 'ionic-angular';
 import { AuthService } from './auth.service';
-import { Pet } from '../models/pet.model';
-import { IResponse } from '../models/IResponse';
+import { Pet } from '../models/Pet';
+import { NearbyPet } from '../models/NearbyPet';
+import { IResponse } from '../models/interfaces/IResponse';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { LocationService } from './location.service';
 
 @Injectable()
 export class PetService {
-    pets$ = new BehaviorSubject([]);
-    pets: Pet[] = [];
+    nearby$: BehaviorSubject<NearbyPet[]> = new BehaviorSubject([]);
 
     constructor(public auth: AuthService,
                 private http: Http,
@@ -86,7 +86,7 @@ export class PetService {
     }
 
     getLocationThenNearbyPets(force = false) {
-        if (force || !this.pets.length) {
+        if (force || !this.nearby$.getValue().length) {
             return this.location.getGeolocation().then(coords => this.getNearbyPets(coords, force));
         } else {
             return Promise.resolve();
@@ -95,7 +95,7 @@ export class PetService {
 
     getNearbyPets(coords, force = false) {
         return new Promise((resolve, reject) => {
-            if (force || !this.pets.length) {
+            if (force || !this.nearby$.getValue().length) {
 
                 let headers = new Headers();
                 headers.append('Authorization', this.auth.token);
@@ -105,8 +105,9 @@ export class PetService {
                     .map(res => res.json())
                     .subscribe(
                         res => {
-                            this.pets = res.data.map(u => new Pet(u));
-                            this.pets$.next(this.pets);
+                            this.nearby$.next(
+                                res.data.map(u => new NearbyPet(u))
+                            );
                             resolve();
                         },
                         err => {

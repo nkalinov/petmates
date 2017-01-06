@@ -5,13 +5,13 @@ import {
 import { ImagePicker } from 'ionic-native';
 import { Component } from '@angular/core';
 import { PetService } from '../../../providers/pet.service';
-import { Pet } from '../../../models/pet.model';
+import { Pet } from '../../../models/Pet';
 import { BreedPage } from './breed/breed';
-import { makeFileRequest } from '../../../providers/common.service';
+import { makeFileRequest } from '../../../utils/common';
 import { AuthService } from '../../../providers/auth.service';
 
 @Component({
-    templateUrl: 'pet.edit.html'
+    templateUrl: 'PetEditPage.html'
 })
 export class PetEditPage {
     pet: Pet;

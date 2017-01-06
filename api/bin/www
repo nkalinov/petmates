@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 const app = require('../app');
 const http = require('http');
-const cron = require('./cron');
 
 /**
  * Get port from environment and store in Express.
@@ -15,7 +14,7 @@ const server = http.createServer(app);
 // Init socket.io
 require('./socket')(server);
 
-cron();
+require('./cron')();
 
 /**
  * Listen on provided port, on all network interfaces.

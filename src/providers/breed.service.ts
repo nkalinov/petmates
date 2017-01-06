@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { Events, Config } from 'ionic-angular';
-import { Breed } from '../models/IBreed';
+import { IBreed } from '../models/interfaces/IBreed';
 import { AuthService } from './auth.service';
 
 @Injectable()
 export class BreedService {
-    private cache: Breed[];
+    private cache: IBreed[];
 
     constructor(private http: Http,
                 private events: Events,
@@ -14,13 +14,13 @@ export class BreedService {
                 private config: Config) {
     }
 
-    findBreedById(id: string): Breed {
+    findBreedById(id: string): IBreed {
         if (this.cache) {
             return this.cache.find(breed => breed._id === id);
         }
     }
 
-    getAll(): Promise<Breed[]> {
+    getAll(): Promise<IBreed[]> {
         return new Promise((resolve, reject) => {
             if (this.cache) {
                 resolve(this.cache);

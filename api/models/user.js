@@ -83,7 +83,7 @@ UserSchema.pre('save', true, function (next, done) {
         }
 
         // copy photo from tmp
-        // todo save as Buffer in the database
+        // todo save as Buffer in the database and delete
         fs.rename(
             `${upload.destTmp}${this.picture}`,
             `${upload.dest}${this.picture}`,

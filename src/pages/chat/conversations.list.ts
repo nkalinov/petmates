@@ -4,7 +4,7 @@ import { ChatService } from '../../providers/chat.service';
 import { ConversationPage } from './view/conversation';
 import { ConversationEditPage } from './edit/conversation.edit';
 import { AuthService } from '../../providers/auth.service';
-import { Conversation } from '../../models/conversation.model';
+import { Conversation } from '../../models/Conversation';
 
 @Component({
     templateUrl: 'conversations.list.html'

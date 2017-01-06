@@ -2,9 +2,9 @@ import { Events, Config } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Injectable, EventEmitter } from '@angular/core';
 import { Http, Headers, Response } from '@angular/http';
-import { Pet } from '../models/pet.model';
+import { Pet } from '../models/Pet';
 import { Observable } from 'rxjs/Observable';
-import { User } from '../models/user.model';
+import { User } from '../models/User';
 import { Facebook, FacebookLoginResponse } from 'ionic-native';
 
 @Injectable()

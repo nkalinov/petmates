@@ -1,7 +1,7 @@
 import { NavController, AlertController, ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { MateViewPage } from '../../view/mate.view';
-import { IFriendship } from '../../../../models/IFriendship';
+import { MateViewPage } from '../../view/MateViewPage';
+import { IFriendship } from '../../../../models/interfaces/IFriendship';
 import { MatesService } from '../../../../providers/mates.service';
 import { AuthService } from '../../../../providers/auth.service';
 import { MatesSearchPage } from '../../search/mates.search';

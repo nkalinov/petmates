@@ -1,5 +1,5 @@
 import {Directive, ElementRef, Input, OnInit} from '@angular/core';
-import { getAge } from '../providers/common.service';
+import { getAge } from '../utils/common';
 
 @Directive({
     selector: '[age]'

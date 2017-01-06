@@ -3,11 +3,11 @@ import { ViewChild, Component } from '@angular/core';
 import { AuthModal } from '../pages/auth/auth';
 import { AuthService } from '../providers/auth.service';
 import { WalkService } from '../providers/walk.service';
-import { getMenu } from '../providers/common.service';
+import { getMenu } from '../utils/common';
 import { SocketService } from '../providers/socket.service';
 import { MatesService } from '../providers/mates.service';
 import { ChatService } from '../providers/chat.service';
-import { User } from '../models/user.model';
+import { User } from '../models/User';
 import { ConversationsListPage } from '../pages/chat/conversations.list';
 import { NearbyPage } from '../pages/nearby/nearby';
 

@@ -1,9 +1,9 @@
 import { ViewController, NavParams, ModalController, AlertController, NavController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { Conversation } from '../../../models/conversation.model';
+import { Conversation } from '../../../models/Conversation';
 import { ChatService } from '../../../providers/chat.service';
 import { ConversationEditMembersPage } from './conversation.edit.members';
-import { MateViewPage } from '../../mates/view/mate.view';
+import { MateViewPage } from '../../mates/view/MateViewPage';
 
 @Component({
     templateUrl: 'conversation.edit.html'

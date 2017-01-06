@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NearbyPeoplePage } from './people/people';
 import { NearybyPlacesPage } from './places/places';
 import { NearbyEventsPage } from './events/events';
-import { NearbyPetsPage } from './pets/pets';
+import { NearbyPetsPage } from './pets/NearbyPetsPage';
 
 @Component({
     selector: 'nearby-page',

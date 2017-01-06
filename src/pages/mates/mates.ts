@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs/Subscription';
 export class MatesPage implements AfterViewInit {
     @ViewChildren(Tab)
     tabs: QueryList<Tab>;
+
     tabAccepted = MatesAcceptedPage;
     tabRequested = MatesRequestedPage;
     tabNew = MatesPendingPage;

@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { Config, Events } from 'ionic-angular';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { LocationService } from './location.service';
-import { Event } from '../models/event.model';
+import { Event } from '../models/Event';
 
 @Injectable()
 export class EventsService {

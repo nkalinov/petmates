@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { Config } from 'ionic-angular';
 import { Walk } from '../models/walk.model';
 import { AuthService } from './auth.service';
-import { Pet } from '../models/pet.model';
+import { Pet } from '../models/Pet';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { SocketService } from './socket.service';
 import { LocalNotifications } from 'ionic-native';
 import { MatesService } from './mates.service';
-import { IFriendship } from '../models/IFriendship';
+import { IFriendship } from '../models/interfaces/IFriendship';
 import { UserIcon, vetIcon } from '../common/icons';
 
 @Injectable()

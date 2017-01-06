@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-const autopopulate = require('mongoose-autopopulate');
-const helpers = require('../helpers');
-const fs = require('fs');
-const upload = require('../config/upload');
-const Breed = require('./breed');
+const mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    autopopulate = require('mongoose-autopopulate'),
+    helpers = require('../helpers'),
+    fs = require('fs'),
+    upload = require('../config/upload'),
+    Breed = require('./breed');
 
 const Pet = new Schema({
     name: String,

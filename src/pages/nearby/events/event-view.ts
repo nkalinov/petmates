@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { NavParams, LoadingController, NavController } from 'ionic-angular';
 import { LaunchNavigator } from 'ionic-native';
-import { Event } from '../../../models/event.model';
+import { Event } from '../../../models/Event';
 import { AuthService } from '../../../providers/auth.service';
 import { EventEditPage } from './event-edit';
-import { MateViewPage } from '../../mates/view/mate.view';
+import { MateViewPage } from '../../mates/view/MateViewPage';
 import { EventsService } from '../../../providers/events.service';
 import { LocationService } from '../../../providers/location.service';
 
@@ -34,10 +34,8 @@ export class EventViewPage {
             .getEventDetails(this.event._id)
             .then(data => {
                 this.event = data;
-                this.event.setDistance(
-                    this.event.latLng.distanceTo(
-                        L.latLng(this.location.getLastCoords()[1], this.location.getLastCoords()[0])
-                    )
+                this.event.distance = this.event.latLng.distanceTo(
+                    L.latLng(this.location.getLastCoords()[1], this.location.getLastCoords()[0])
                 );
                 loader.dismiss();
             }, () => this.navCtrl.pop());

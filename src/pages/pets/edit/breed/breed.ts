@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { NavParams, ViewController } from 'ionic-angular';
 import { BreedService } from '../../../../providers/breed.service';
-import { Pet } from '../../../../models/pet.model';
-import { Breed } from '../../../../models/IBreed';
+import { Pet } from '../../../../models/Pet';
+import { IBreed } from '../../../../models/interfaces/IBreed';
 
 @Component({
     templateUrl: 'breed.html',
@@ -11,8 +11,8 @@ import { Breed } from '../../../../models/IBreed';
 export class BreedPage {
     searchQuery: string = '';
     pet: Pet;
-    filteredItems: Breed[] = [];
-    allItems: Breed[] = [];
+    filteredItems: IBreed[] = [];
+    allItems: IBreed[] = [];
 
     constructor(public viewCtrl: ViewController,
                 private breeds: BreedService,

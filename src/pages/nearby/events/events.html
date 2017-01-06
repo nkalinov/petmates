@@ -45,7 +45,7 @@
                         {{item.date | date: "short"}} <span *ngIf="item.participants.length > 1">({{item.participants.length}} going)</span>
                     </p>
                     <p>
-                        {{ item.distance }} - {{ item.address }}
+                        {{item.distance | distance}} - {{item.address}}
                     </p>
                 </button>
             </ion-list>

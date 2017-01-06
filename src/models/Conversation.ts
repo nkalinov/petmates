@@ -1,4 +1,4 @@
-import { Message } from './message.model';
+import { Message } from './Message';
 
 export class Conversation {
     _id: string;

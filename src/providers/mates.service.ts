@@ -3,9 +3,9 @@ import { Events, Config } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { Subject } from 'rxjs/Subject';
-import { User } from '../models/user.model';
+import { User } from '../models/User';
 import { AuthService } from './auth.service';
-import { IFriendship, STATUS_REQUESTED, STATUS_ACCEPTED, STATUS_PENDING } from '../models/IFriendship';
+import { IFriendship, STATUS_REQUESTED, STATUS_ACCEPTED, STATUS_PENDING } from '../models/interfaces/IFriendship';
 import { SocketService } from './socket.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
@@ -18,7 +18,8 @@ export class MatesService {
         requested: [],
         pending: []
     };
-    users = {}; // cache
+
+    private cache = {}; // app lifetime cache
 
     constructor(private http: Http,
                 private events: Events,
@@ -29,8 +30,8 @@ export class MatesService {
 
     getById(id: string): Promise<User> {
         return new Promise((resolve, reject) => {
-            if (this.users[id]) {
-                return resolve(this.users[id]);
+            if (this.cache[id]) {
+                return resolve(this.cache[id]);
             }
 
             let headers = new Headers();
@@ -42,7 +43,7 @@ export class MatesService {
                 (res: any) => {
                     if (res.success) {
                         const user = new User(res.data, this.auth.user.location.coordinates);
-                        this.users[id] = user;
+                        this.cache[id] = user;
                         resolve(user);
                     } else {
                         this.events.publish('alert:error', res.msg);
@@ -180,7 +181,7 @@ export class MatesService {
             socket.emit('online:get', this.auth.user.mates.map(m => m.friend._id));
         }, 90 * 1000);
 
-        socket.on('mate:', (action: string, data: {fRequest: IFriendship, myRequest: IFriendship}) => {
+        socket.on('mate:', (action: string, data: { fRequest: IFriendship, myRequest: IFriendship }) => {
             console.info('mate:', action, data);
             let index = -1;
 

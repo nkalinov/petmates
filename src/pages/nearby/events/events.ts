@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, Refresher } from 'ionic-angular';
 import { EventViewPage } from './event-view';
-import { Event } from '../../../models/event.model';
+import { Event } from '../../../models/Event';
 import { EventEditPage } from './event-edit';
 import { EventsService } from '../../../providers/events.service';
 

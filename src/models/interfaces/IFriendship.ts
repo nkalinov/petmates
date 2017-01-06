@@ -1,4 +1,4 @@
-import { User } from './user.model';
+import { User } from '../User';
 
 export const STATUS_PENDING = 'pending';
 export const STATUS_REQUESTED = 'requested';

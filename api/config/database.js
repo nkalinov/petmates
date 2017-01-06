@@ -1,18 +1,19 @@
-const fs = require('fs');
-const mongoose = require('mongoose');
-const Breed = require('../models/breed');
-const Place = require('../models/place');
+const fs = require('fs'),
+    mongoose = require('mongoose'),
+    Breed = require('../models/breed'),
+    Place = require('../models/place'),
+    q = require('q');
 
 // todo use auth.secret
 mongoose.connect('mongodb://127.0.0.1/pm2', {
-    promiseLibrary: require('q')
+    promiseLibrary: q
 }, err => {
     if (err) throw err;
     seed();
 });
 
 // mongoose.Promise = global.Promise;
-mongoose.Promise = require('q').Promise;
+mongoose.Promise = q.Promise;
 
 // check for new breeds
 // TODO insert only new OR updated entries

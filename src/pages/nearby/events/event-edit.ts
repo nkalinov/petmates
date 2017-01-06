@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { NavParams, NavController, AlertController } from 'ionic-angular';
-import { Event } from '../../../models/event.model';
+import { Event } from '../../../models/Event';
 import { LocationService } from '../../../providers/location.service';
-import { MateViewPage } from '../../mates/view/mate.view';
-import { localISO } from '../../../providers/common.service';
+import { MateViewPage } from '../../mates/view/MateViewPage';
+import { localISO } from '../../../utils/common';
 import { EventsService } from '../../../providers/events.service';
 
 @Component({

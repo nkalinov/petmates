@@ -6,7 +6,7 @@ import { AuthService } from '../../providers/auth.service';
 import { WalkService } from '../../providers/walk.service';
 import { WalkModal } from './walk-modal/walk-modal';
 import { Walk } from '../../models/walk.model';
-import { getAge } from '../../providers/common.service';
+import { getAge } from '../../utils/common';
 import { UserIcon, vetIcon } from '../../common/icons';
 import { LocationService } from '../../providers/location.service';
 import { PlacesService } from '../../providers/places.service';

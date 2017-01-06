@@ -1,24 +1,28 @@
 import { Component } from '@angular/core';
 import { NavController, Refresher } from 'ionic-angular';
 import { PetService } from '../../../providers/pet.service';
-import { PetViewPage } from '../../pets/view/pet.view';
-import { Pet } from '../../../models/pet.model';
+import { NearbyPet } from '../../../models/NearbyPet';
+import { MateViewPage } from '../../mates/view/MateViewPage';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Component({
-    templateUrl: 'pets.html'
+    templateUrl: 'NearbyPetsPage.html'
 })
 
 export class NearbyPetsPage {
+    nearby$: BehaviorSubject<NearbyPet[]>;
+
     constructor(private navCtrl: NavController,
                 private pets: PetService) {
+        this.nearby$ = pets.nearby$;
     }
 
     ionViewDidEnter() {
         this.pets.getLocationThenNearbyPets();
     }
 
-    viewPet(pet: Pet) {
-        this.navCtrl.push(PetViewPage, { pet });
+    viewOwner(id: string) {
+        this.navCtrl.push(MateViewPage, { id });
     }
 
     doRefresh(refresher: Refresher) {

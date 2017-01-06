@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { SocketService } from './socket.service';
 import { AuthService } from './auth.service';
-import { Message, SocketMessage } from '../models/message.model';
-import { User } from '../models/user.model';
-import { Conversation } from '../models/conversation.model';
+import { Message } from '../models/Message';
+import { IMessageSocket } from '../models/interfaces/IMessageSocket';
+import { User } from '../models/User';
+import { Conversation } from '../models/Conversation';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { LocalNotifications } from 'ionic-native';
-import { makeFileRequest } from './common.service';
+import { makeFileRequest } from '../utils/common';
 
 @Injectable()
 export class ChatService {
@@ -198,7 +199,7 @@ export class ChatService {
                 .subscribe(
                     res => {
                         if (res.success) {
-                            this.sockets.socket.emit('chat:msg:send', <SocketMessage>{
+                            this.sockets.socket.emit('chat:msg:send', <IMessageSocket>{
                                 author: message.author.toPartial(),
                                 added: message.added,
                                 msg: message.msg,
@@ -271,7 +272,7 @@ export class ChatService {
         });
 
         // new message in conversation
-        socket.on('chat:msg:new', (message: SocketMessage, cid: string) => {
+        socket.on('chat:msg:new', (message: IMessageSocket, cid: string) => {
             console.info('chat:msg:new', message, cid);
 
             LocalNotifications.schedule({

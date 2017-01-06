@@ -2,8 +2,8 @@ import { NavParams, NavController, Content, ActionSheetController, Platform } fr
 import { ViewChild, Component, ElementRef } from '@angular/core';
 import { ChatService } from '../../../providers/chat.service';
 import { AuthService } from '../../../providers/auth.service';
-import { Message } from '../../../models/message.model';
-import { Conversation } from '../../../models/conversation.model';
+import { Message } from '../../../models/Message';
+import { Conversation } from '../../../models/Conversation';
 import { ConversationEditPage } from '../edit/conversation.edit';
 import { ImagePicker } from 'ionic-native';
 

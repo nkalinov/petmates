@@ -61,7 +61,7 @@
                 </ion-item>
 
                 <ion-item>
-                    <strong item-left>~{{item.distance}}</strong>
+                    <strong item-left>~{{item.distance | distance}}</strong>
                     <button ion-button color="danger" clear item-left
                             (click)="report(item)"
                             *ngIf="item.creator !== auth.user._id">

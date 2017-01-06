@@ -1,15 +1,10 @@
-const express = require('express'),
-    path = require('path'),
-    logger = require('morgan'),
+const
+    app = require('express')(),
     bodyParser = require('body-parser'),
     passport = require('passport'),
-    cors = require('cors'),
-    helmet = require('helmet'),
-    compression = require('compression'),
-    serveStatic = require('serve-static'),
-    app = express();
 
-const users = require('./routes/users'),
+    // routes
+    users = require('./routes/users'),
     auth = require('./routes/auth'),
     mates = require('./routes/mates'),
     conversations = require('./routes/conversations'),
@@ -21,13 +16,13 @@ const users = require('./routes/users'),
     upload = require('./routes/upload'),
     reports = require('./routes/reports');
 
-app.use(cors());
-app.use(helmet());
-app.use(compression());
-app.use(serveStatic(__dirname + '/public'));
-app.use(logger('dev'));
+app.use(require('cors')());
+app.use(require('helmet')());
+app.use(require('compression')());
+app.use(require('serve-static')(__dirname + '/public'));
+// app.use(require('morgan')('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 
 app.use('/breeds', breeds);

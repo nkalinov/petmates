@@ -4,8 +4,8 @@ import { Component } from '@angular/core';
 import { AuthService } from '../../providers/auth.service';
 import { ForgotForm } from './forgot/forgot.form';
 import { LocationService } from '../../providers/location.service';
-import { User } from '../../models/user.model';
-import { makeFileRequest } from '../../providers/common.service';
+import { User } from '../../models/User';
+import { makeFileRequest } from '../../utils/common';
 
 @Component({
     selector: 'auth-page',

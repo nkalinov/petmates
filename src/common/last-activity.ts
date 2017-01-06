@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy } from '@angular/core';
-import { Conversation } from '../models/conversation.model';
+import { Conversation } from '../models/Conversation';
 import { AuthService } from '../providers/auth.service';
-import { getTimeAgo } from '../providers/common.service';
+import { getTimeAgo } from '../utils/common';
 
 @Component({
     selector: 'last-activity',

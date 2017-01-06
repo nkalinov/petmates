@@ -1,13 +1,13 @@
 import { NavParams, NavController, AlertController, LoadingController, ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { MatesService } from '../../../providers/mates.service';
-import { User } from '../../../models/user.model';
+import { User } from '../../../models/User';
 import { AuthService } from '../../../providers/auth.service';
-import { STATUS_ACCEPTED, STATUS_PENDING, STATUS_REQUESTED } from '../../../models/IFriendship';
+import { STATUS_ACCEPTED, STATUS_PENDING, STATUS_REQUESTED } from '../../../models/interfaces/IFriendship';
 import { ReportModalPage } from '../../../common/report-modal/report-modal';
 
 @Component({
-    templateUrl: 'mate.view.html'
+    templateUrl: 'MateViewPage.html'
 })
 
 export class MateViewPage {
@@ -43,7 +43,7 @@ export class MateViewPage {
                 );
                 this.mapFriendship();
                 loader.dismiss();
-            });
+            }, () => loader.dismiss());
     }
 
     viewMate(id: string) {

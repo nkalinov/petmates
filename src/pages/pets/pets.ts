@@ -1,7 +1,7 @@
 import { ModalController, NavController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { AuthService } from '../../providers/auth.service';
-import { PetEditPage } from './edit/pet.edit';
+import { PetEditPage } from './edit/PetEditPage';
 
 @Component({
     selector: 'pets-list',

@@ -1,5 +1,5 @@
 import { MatesPage } from '../pages/mates/mates';
-import { MapPage } from '../pages/map/map';
+import { MapPage } from '../pages/map/MapPage';
 import { AuthModal } from '../pages/auth/auth';
 import { ProfilePage } from '../pages/profile/profile';
 import { HelpPage } from '../pages/help/help';

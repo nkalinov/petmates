@@ -5,10 +5,10 @@ import { WalkService } from '../../../providers/walk.service';
 import { PetEditPage } from '../../pets/edit/PetEditPage';
 
 @Component({
-    templateUrl: 'walk-modal.html'
+    templateUrl: 'StartWalkPage.html'
 })
 
-export class WalkModal {
+export class StartWalkPage {
     selectedPet: string;
 
     constructor(private modalCtrl: ModalController,

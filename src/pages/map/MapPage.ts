@@ -4,10 +4,10 @@ import { Component } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import { AuthService } from '../../providers/auth.service';
 import { WalkService } from '../../providers/walk.service';
-import { WalkModal } from './walk-modal/walk-modal';
+import { StartWalkPage } from './start-walk/StartWalkPage';
 import { Walk } from '../../models/walk.model';
 import { getAge } from '../../utils/common';
-import { UserIcon, vetIcon } from '../../common/icons';
+import { UserIcon, customMarkerIcon } from '../../common/icons';
 import { LocationService } from '../../providers/location.service';
 import { PlacesService } from '../../providers/places.service';
 import { Place, PlaceType } from '../../models/place.model';
@@ -16,7 +16,7 @@ import { Place, PlaceType } from '../../models/place.model';
 
 @Component({
     selector: 'map-page',
-    templateUrl: 'map.html'
+    templateUrl: 'MapPage.html'
 })
 
 export class MapPage {
@@ -83,7 +83,7 @@ export class MapPage {
     }
 
     openWalkModal() {
-        this.modalCtrl.create(WalkModal).present();
+        this.modalCtrl.create(StartWalkPage).present();
     }
 
     private initGeolocation() {
@@ -95,7 +95,7 @@ export class MapPage {
             // add my marker
             this.marker = L.marker(position, {
                 icon: new UserIcon({
-                    iconUrl: `${this.auth.user.pic || this.config.get('defaultMateImage')}`,
+                    iconUrl: `${this.auth.user.pic || 'assets/img/default_user.gif'}`,
                     className: 'my-marker'
                 })
             }).addTo(this.map);
@@ -140,7 +140,7 @@ export class MapPage {
                         // new
                         let marker = L.marker(walk.coords, {
                             icon: new UserIcon({
-                                iconUrl: `${walk.pet.pic || this.config.get('defaultPetImage')}`
+                                iconUrl: `${walk.pet.pic || '../assets/img/default_pet.jpg'}`
                             })
                         }).bindPopup(
                             `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${getAge(walk.pet.birthday)}<br>Out with ${walk.user.name}`
@@ -192,7 +192,7 @@ export class MapPage {
                     switch (type) {
                         case PlaceType[PlaceType.vet]:
                             marker
-                                .setIcon(vetIcon())
+                                .setIcon(customMarkerIcon())
                                 .addTo(<any>this.layers.vets);
                             break;
                         case PlaceType[PlaceType.shop]:
@@ -228,7 +228,7 @@ export class MapPage {
             this.layers.walks.addLayer(
                 L.marker(this.getRandomLatLng(this.map), {
                     icon: new UserIcon({
-                        iconUrl: `${this.config.get('defaultPetImage')}`
+                        iconUrl: `assets/img/default_pet.jpg`
                     })
                 })
             );

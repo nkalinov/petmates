@@ -8,7 +8,7 @@ import { SocketService } from './socket.service';
 import { LocalNotifications } from 'ionic-native';
 import { MatesService } from './mates.service';
 import { IFriendship } from '../models/interfaces/IFriendship';
-import { UserIcon, vetIcon } from '../common/icons';
+import { UserIcon, customMarkerIcon } from '../common/icons';
 
 @Injectable()
 export class WalkService {

@@ -1,7 +1,7 @@
 import 'leaflet';
 import 'leaflet.markercluster';
-import '../vendor/leaflet.markercluster.layersupport-src.js';
-import '../vendor/rxjs.operators';
+import 'leaflet.markercluster.layersupport';
+import '../rxjs.operators';
 import { NgModule } from '@angular/core';
 import { IonicApp, IonicModule } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
@@ -22,8 +22,8 @@ import { ConversationPage } from '../pages/chat/view/conversation';
 import { ConversationEditPage } from '../pages/chat/edit/conversation.edit';
 import { ConversationEditMembersPage } from '../pages/chat/edit/conversation.edit.members';
 import { HelpPage } from '../pages/help/help';
-import { MapPage } from '../pages/map/map';
-import { WalkModal } from '../pages/map/walk-modal/walk-modal';
+import { MapPage } from '../pages/map/MapPage';
+import { StartWalkPage } from '../pages/map/start-walk/StartWalkPage';
 import { NearbyPage } from '../pages/nearby/nearby';
 import { MatesPage } from '../pages/mates/mates';
 import { MateViewPage } from '../pages/mates/view/MateViewPage';
@@ -72,7 +72,7 @@ const pages: Array<any> = [
     HelpPage,
 
     MapPage,
-    WalkModal,
+    StartWalkPage,
 
     MatesPage,
     MateViewPage,

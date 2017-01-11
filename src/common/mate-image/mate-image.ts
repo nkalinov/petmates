@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import icons from '../icons';
 
 @Component({
     selector: 'mate-image',
@@ -14,7 +15,7 @@ export class MateImage {
 
     ngOnChanges() {
         if (!this.image) {
-            this.src = 'assets/img/default_user.gif';
+            this.src = icons.user;
             return;
         } else if (this.image === 'group') {
             return;

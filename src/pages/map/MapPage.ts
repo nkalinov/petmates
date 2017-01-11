@@ -1,13 +1,13 @@
-import { ModalController, Config } from 'ionic-angular';
+import { ModalController } from 'ionic-angular';
 import { Geolocation, Geoposition } from 'ionic-native';
 import { Component } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import { AuthService } from '../../providers/auth.service';
 import { WalkService } from '../../providers/walk.service';
 import { StartWalkPage } from './start-walk/StartWalkPage';
-import { Walk } from '../../models/walk.model';
+import { Walk } from '../../models/Walk';
 import { getAge } from '../../utils/common';
-import { UserIcon, customMarkerIcon } from '../../common/icons';
+import icons, { customMarkerIcon, userIcon, petIcon } from '../../common/icons';
 import { LocationService } from '../../providers/location.service';
 import { PlacesService } from '../../providers/places.service';
 import { Place, PlaceType } from '../../models/place.model';
@@ -22,7 +22,6 @@ import { Place, PlaceType } from '../../models/place.model';
 export class MapPage {
     walks = {}; // saved walk markers by _id
     map: L.Map;
-    marker: L.Marker;
     mcgLayerSupportGroup = (<any>L).markerClusterGroup.layerSupport({
         showCoverageOnHover: false
     });
@@ -44,26 +43,33 @@ export class MapPage {
                 public walk: WalkService,
                 private places: PlacesService,
                 private modalCtrl: ModalController,
-                private location: LocationService,
-                private config: Config) {
+                private location: LocationService) {
     }
 
     ionViewDidEnter() {
-        const tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        });
-
         this.map = L.map('map-container', {
             zoomControl: false,
-            layers: [tiles]
+            layers: [
+                L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                })
+            ]
         });
 
         this.mcgLayerSupportGroup.addTo(this.map);
 
-        this.initGeolocation().then(coords => {
-            this.populate();
-            this.addPlacesMarkers(coords);
+        this.init().then(() => {
+            this.watch();
+            this.addPlaces();
+            this.initWalks();
+            this.populate(); // dev
             this.control.addTo(this.map);
+        }).catch(err => {
+            if (err) {
+                console.error(err);
+            }
+            this.walk.stop();
+            this.GEOaccess = false;
         });
     }
 
@@ -78,7 +84,6 @@ export class MapPage {
         if (this.walksSubscriber) {
             this.walksSubscriber.unsubscribe();
         }
-
         clearInterval(this.clearInactiveInterval);
     }
 
@@ -86,67 +91,53 @@ export class MapPage {
         this.modalCtrl.create(StartWalkPage).present();
     }
 
-    private initGeolocation() {
-        return this.location.getGeolocation({ timeout: 10000 }).then(data => {
+    private init() {
+        return this.location.getGeolocation({ timeout: 10000 }).then(lngLat => {
             this.GEOaccess = true;
-            const position = L.latLng(data[1], data[0]);
-            this.map.setView(position, 16);
+            const position = L.latLng(lngLat[1], lngLat[0]);
+            this.map.setView(position, 16); // center the map
 
-            // add my marker
-            this.marker = L.marker(position, {
-                icon: new UserIcon({
-                    iconUrl: `${this.auth.user.pic || 'assets/img/default_user.gif'}`,
-                    className: 'my-marker'
-                })
-            }).addTo(this.map);
-
-            // init currentWalk object
-            this.walk.init(position, this.marker);
-
-            // watch position
-            this.positionSubscriber = Geolocation.watchPosition().subscribe(
-                (data: Geoposition) => {
-                    const newCoords = L.latLng(data.coords.latitude, data.coords.longitude);
-                    // TODO emit only if newCoords are "major change"
-                    // let emit = this.walk.getCurrentWalkCoords() != newCoords;
-                    let emit = true;
-
-                    // update coords and marker
-                    this.walk.updateCurrentWalkCoords(newCoords, emit);
-                    this.marker.setLatLng(this.walk.getCurrentWalkCoords());
-                },
-                (err) => {
-                    console.error('Geolocation.watchPosition', err);
-                }
+            // create my marker and init my walk
+            this.walk.init(
+                position,
+                L.marker(position, {
+                    icon: userIcon(`${this.auth.user.pic}`, 'my-marker')
+                }).addTo(this.map)
             );
-
-            this.watchWalks();
-            return data;
-
-        }, (err) => {
-            this.geolocalizationErrorCb(err);
         });
     }
 
-    private watchWalks() {
-        // watch public walks and update walks
+    private watch() {
+        this.positionSubscriber = Geolocation.watchPosition().subscribe(
+            (data: Geoposition) => {
+                this.walk.move(
+                    L.latLng(data.coords.latitude, data.coords.longitude)
+                );
+            },
+            (err) => {
+                console.error('Geolocation.watchPosition', err);
+            }
+        );
+    }
+
+    private initWalks() {
         this.walksSubscriber = this.walk.walks$.subscribe((walks: Array<Walk>) => {
             walks.forEach(walk => {
-                if (walk.id !== this.walk.currentWalk.id) {
+                if (walk.id !== this.walk.walk.id) {
                     if (this.walks[walk.id]) {
-                        // move
+                        // move marker
                         this.walks[walk.id].setLatLng(walk.coords);
                     } else {
-                        // new
-                        let marker = L.marker(walk.coords, {
-                            icon: new UserIcon({
-                                iconUrl: `${walk.pet.pic || '../assets/img/default_pet.jpg'}`
+                        // new walk
+                        let marker = L
+                            .marker(walk.coords, {
+                                icon: petIcon(`${walk.pet.pic}`)
                             })
-                        }).bindPopup(
-                            `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${getAge(walk.pet.birthday)}<br>Out with ${walk.user.name}`
-                        );
+                            .bindPopup(
+                                `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${getAge(walk.pet.birthday)}<br>Out with ${walk.user.name}`
+                            );
 
-                        this.walks[walk.id] = marker;
+                        this.walks[walk.id] = marker; // save
                         this.layers.walks.addLayer(marker);
                         this.mcgLayerSupportGroup.refreshClusters(this.layers.walks);
                     }
@@ -177,9 +168,9 @@ export class MapPage {
         }, 30 * 1000);
     }
 
-    private addPlacesMarkers(coords) {
-        this.places$ = this.places.nearby$.subscribe(places => {
-            places.forEach((place: Place) => {
+    private addPlaces() {
+        this.places$ = this.places.nearby$.subscribe((places: Place[]) => {
+            places.forEach(place => {
                 const marker = L.marker([
                     place.location.coordinates[1],
                     place.location.coordinates[0]
@@ -192,7 +183,7 @@ export class MapPage {
                     switch (type) {
                         case PlaceType[PlaceType.vet]:
                             marker
-                                .setIcon(customMarkerIcon())
+                                .setIcon(customMarkerIcon(icons.vet))
                                 .addTo(<any>this.layers.vets);
                             break;
                         case PlaceType[PlaceType.shop]:
@@ -205,38 +196,24 @@ export class MapPage {
                 });
             });
 
-            // todo
-            this.mcgLayerSupportGroup.checkIn([this.layers.shops, this.layers.vets]);
-            this.mcgLayerSupportGroup.addLayers([this.layers.shops, this.layers.vets]);
+            const layers = [this.layers.shops, this.layers.vets];
+            this.mcgLayerSupportGroup.checkIn([...layers]);
+            this.mcgLayerSupportGroup.addLayers([...layers]);
             this.control.addOverlay(this.layers.shops, 'Animal shops');
             this.control.addOverlay(this.layers.vets, 'Vets');
         });
 
-        this.places.getNearbyPlaces(coords);
+        this.places.getNearbyPlaces(this.location.getLastCoords());
     }
 
-    private geolocalizationErrorCb(err?) {
-        if (err) {
-            console.error(err);
-        }
-        this.walk.stop();
-        this.GEOaccess = false;
-    }
 
     private populate() {
         for (let i = 0; i < 50; i++) {
             this.layers.walks.addLayer(
                 L.marker(this.getRandomLatLng(this.map), {
-                    icon: new UserIcon({
-                        iconUrl: `assets/img/default_pet.jpg`
-                    })
+                    icon: petIcon(null)
                 })
             );
-            // L.marker(this.getRandomLatLng(this.map), {
-            //     icon: new UserIcon({
-            //         iconUrl: `${this.config.get('defaultPetImage')}`
-            //     })
-            // }).addTo(this.layers.walks);
         }
     }
 

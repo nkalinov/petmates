@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Config } from 'ionic-angular';
-import { Walk } from '../models/walk.model';
+import { Walk } from '../models/Walk';
 import { AuthService } from './auth.service';
 import { Pet } from '../models/Pet';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -8,15 +8,16 @@ import { SocketService } from './socket.service';
 import { LocalNotifications } from 'ionic-native';
 import { MatesService } from './mates.service';
 import { IFriendship } from '../models/interfaces/IFriendship';
-import { UserIcon, customMarkerIcon } from '../common/icons';
+import { WalkMarkerIcon } from '../common/icons';
 
 @Injectable()
 export class WalkService {
     walks: Array<Walk> = [];
     walks$: any = new BehaviorSubject([]);
-    currentWalk: Walk = new Walk();
 
-    private currentWalkMarker: L.Marker;
+    walk = new Walk();
+    marker: L.Marker;
+
     private mustEmitCoords: boolean = true;
     private emitCoordsInterval: any;
 
@@ -26,37 +27,23 @@ export class WalkService {
                 private sockets: SocketService) {
     }
 
-    init(coords: any, marker: L.Marker): void {
-        this.currentWalk.user = {
-            _id: this.auth.user._id,
-            name: this.auth.user.name
-        };
-        this.updateCurrentWalkCoords(coords);
-        this.currentWalkMarker = marker;
+    init(coords: any, marker: L.Marker) {
+        this.walk.user = this.auth.user.toPartial();
+        // this.updateCurrentWalkCoords(coords);
+        this.marker = marker;
     }
 
-    /**
-     * Start new walk
-     * @param petId
-     */
     start(petId: string) {
-        // map pet
-        let pet: Pet = this.auth.user.pets.find((p: Pet) => p._id === petId);
-        this.currentWalk.start({
-            name: pet.name,
-            birthday: pet.birthday,
-            breed: {
-                name: pet.breed.name
-            },
-            pic: pet.pic
-        });
+        this.walk.start(
+            this.auth.user.pets.find((p: Pet) => p._id === petId)
+        );
 
         // emit start event
-        this.sockets.socket.emit('walk:start', this.currentWalk);
+        this.sockets.socket.emit('walk:start', this.walk);
 
         // change my marker's icon
-        this.currentWalkMarker.setIcon(new UserIcon({
-            iconUrl: `${this.currentWalk.pet.pic || this.config.get('defaultPetImage')}`,
+        this.marker.setIcon(new WalkMarkerIcon({
+            iconUrl: `${this.walk.pet.pic || this.config.get('defaultPetImage')}`,
             className: 'my-marker'
         }));
 
@@ -67,26 +54,31 @@ export class WalkService {
     }
 
     stop() {
-        if (this.currentWalk.started) {
-            this.currentWalk.pet = null;
+        if (this.walk.started) {
+            this.walk.pet = null;
             this.sockets.socket.emit('walk:stop');
-            this.currentWalkMarker.setIcon(new UserIcon({
+            this.marker.setIcon(new WalkMarkerIcon({
                 iconUrl: `${this.auth.user.pic || this.config.get('defaultMateImage')}`,
                 className: 'my-marker'
             }));
             clearInterval(this.emitCoordsInterval);
-            this.currentWalk.stop();
+            this.walk.stop();
         }
     }
 
-    getCurrentWalkCoords() {
-        return this.currentWalk.coords;
+    move(coords: L.LatLngExpression) {
+        this.walk.coords = coords;
+        this.marker.setLatLng(coords);
     }
 
-    updateCurrentWalkCoords(coords: any, emit: boolean = false): void {
-        this.currentWalk.coords = coords;
-        this.mustEmitCoords = emit;
+    getCurrentWalkCoords() {
+        return this.walk.coords;
     }
+
+    // updateCurrentWalkCoords(coords: any, emit: boolean = false): void {
+    //     this.walk.coords = coords;
+    //     this.mustEmitCoords = emit;
+    // }
 
     registerSocketEvents(socket) {
         // see if one of my mates.accepted is going out for a walk
@@ -103,7 +95,7 @@ export class WalkService {
 
         socket.on('walks', (data: Array<Walk> = []) => {
             console.info('walks', data);
-            if (this.currentWalk.started || this.walks.length === 0) {
+            if (this.walk.started || this.walks.length === 0) {
                 this.walks = data.map((w) => new Walk(w));
                 this.walks$.next(this.walks);
             }
@@ -112,8 +104,8 @@ export class WalkService {
 
     private emitCoords() {
         if (this.mustEmitCoords) {
-            this.sockets.socket.emit('walk:move', this.currentWalk.coords);
-            console.info('emit walks:move', this.currentWalk.coords);
+            this.sockets.socket.emit('walk:move', this.walk.coords);
+            console.info('emit walks:move', this.walk.coords);
             this.mustEmitCoords = false;
         }
     }

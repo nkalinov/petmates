@@ -14,7 +14,7 @@ export class LocationService {
     }
 
     getLastCoords() {
-        return this.lastCoords ? this.lastCoords : this.auth.user.location.coordinates;
+        return this.lastCoords || this.auth.user.location.coordinates;
     }
 
     getGeolocation(opts?: any): Promise<L.LatLngTuple> {

@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { PlaceType } from '../../models/place.model';
+import icons from '../icons';
 
 @Component({
     selector: 'place-icon',
@@ -20,7 +21,7 @@ export class PlaceIcon {
         // todo mixed place icon or no icon
         switch (this.type[0]) {
             case PlaceType[PlaceType.vet]:
-                this.src = 'assets/img/hospital_marker.png';
+                this.src = icons.vet;
                 break;
             case PlaceType[PlaceType.shop]:
                 this.icon = 'cart';

@@ -138,12 +138,12 @@ export class AuthService {
                 .subscribe(
                     res => {
                         if (res.success) {
-                            if (res.data) {
-                                this.parseUser(res.data);
-                                if (data.region && data.region !== this.user.region) {
-                                    this.regionUpdated.emit(data.region);
-                                }
+                            // if (res.data) {
+                            if (data.region && data.region !== this.user.region) {
+                                this.regionUpdated.emit(data.region);
                             }
+                            this.parseUser(res.data);
+                            // }
                             resolve(this.user);
                         } else {
                             this.events.publish('alert:error', res.msg);

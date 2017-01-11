@@ -1,8 +1,8 @@
-const config = require('../config/auth');
-const walks = require('./walks');
-const users = require('./users');
-const chat = require('./chat');
-const SocketIoJwt = require('socketio-jwt');
+const config = require('../config/auth'),
+    walks = require('./walks'),
+    users = require('./users'),
+    chat = require('./chat'),
+    SocketIoJwt = require('socketio-jwt');
 
 module.exports = (server) => {
     const io = require('socket.io')(server, { serveClient: false });

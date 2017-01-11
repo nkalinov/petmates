@@ -15,7 +15,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
             if (data && data.length) {
                 // join rooms
                 data.forEach(c => {
-                    users[req.user.id].socket.join(c.id);
+                    users.get(req.user.id).socket.join(c.id);
                 });
             }
 
@@ -46,13 +46,12 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
         res.json({ success: true, data });
 
         // join the conversation room
-        users[req.user.id].socket.join(data._id);
+        users.get(req.user.id).socket.join(data._id);
 
         // notify members to re-request and join conversations
         members.forEach(id => {
-            if (users[id]) {
-                users[id].socket.emit('chat:conversations:update');
-            }
+            if (users.has(id))
+                users.get(id).socket.emit('chat:conversations:update');
         });
     });
 });
@@ -79,8 +78,8 @@ router.put('/:cid', passport.authenticate('jwt', { session: false }), (req, res)
         members
             .filter(id => id !== req.user.id)
             .forEach(id => {
-                if (users[id]) {
-                    users[id].socket.emit('chat:conversations:update');
+                if (users.has(id)) {
+                    users.get(id).socket.emit('chat:conversations:update');
                 }
             });
     });
@@ -105,7 +104,7 @@ router.delete('/:cid', passport.authenticate('jwt', { session: false }), (req, r
         res.json({ success: true });
 
         // leave room
-        users[me].socket.leave(cid);
+        users.get(me).socket.leave(cid);
     });
 });
 
@@ -131,10 +130,10 @@ router.post('/:cid', passport.authenticate('jwt', { session: false }), (req, res
     }, {
         $push: { messages: message },
         lastMessage: picture ? {
-            author: message.author,
-            added: Date.now(),
-            msg: 'Photo message'
-        } : message
+                author: message.author,
+                added: Date.now(),
+                msg: 'Photo message'
+            } : message
     }, (err) => {
         if (err)
             return res.json({ success: false });

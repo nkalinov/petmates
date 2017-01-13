@@ -4,7 +4,7 @@ import { MatesService } from '../../../providers/mates.service';
 import { User } from '../../../models/User';
 import { AuthService } from '../../../providers/auth.service';
 import { STATUS_ACCEPTED, STATUS_PENDING, STATUS_REQUESTED } from '../../../models/interfaces/IFriendship';
-import { ReportModalPage } from '../../../common/report-modal/report-modal';
+import { ReportModalPage } from '../../../components/report-modal/report-modal';
 
 @Component({
     templateUrl: 'MateViewPage.html'

@@ -9,7 +9,7 @@
         </ion-title>
         <ion-buttons end>
             <button ion-button icon-only
-                    (click)="map.setView(walk.marker.getLatLng(), 16);"
+                    (click)="map.setView(walk.walk.marker.getLatLng(), 16);"
                     *ngIf="GEOaccess">
                 <ion-icon name="locate"></ion-icon>
             </button>

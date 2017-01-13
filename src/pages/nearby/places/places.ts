@@ -3,7 +3,7 @@ import { NavController, Refresher, ModalController, AlertController } from 'ioni
 import { LaunchNavigator } from 'ionic-native';
 import { Place } from '../../../models/place.model';
 import { PlaceEditPage } from './place-edit';
-import { ReportModalPage } from '../../../common/report-modal/report-modal';
+import { ReportModalPage } from '../../../components/report-modal/report-modal';
 import { PlacesService } from '../../../providers/places.service';
 import { AuthService } from '../../../providers/auth.service';
 

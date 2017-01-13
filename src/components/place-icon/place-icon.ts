@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { PlaceType } from '../../models/place.model';
-import icons from '../icons';
+import icons from '../../utils/icons';
 
 @Component({
     selector: 'place-icon',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <img *ngIf="src" [attr.src]="src" />
         <ion-icon *ngIf="icon" [name]="icon" [color]="color"></ion-icon>

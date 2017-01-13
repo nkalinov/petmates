@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core';
-import icons from '../icons';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import icons from '../../utils/icons';
 
 @Component({
     selector: 'mate-image',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <img *ngIf="src" [attr.src]="src">
         <ion-icon *ngIf="!src" name="people"></ion-icon>
@@ -10,7 +11,7 @@ import icons from '../icons';
 })
 
 export class MateImage {
-    @Input('image') image;
+    @Input() image: string;
     src: string;
 
     ngOnChanges() {

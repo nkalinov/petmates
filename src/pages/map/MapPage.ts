@@ -2,15 +2,15 @@ import { ModalController } from 'ionic-angular';
 import { Geolocation, Geoposition } from 'ionic-native';
 import { Component } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
-import { AuthService } from '../../providers/auth.service';
 import { WalkService } from '../../providers/walk.service';
 import { StartWalkPage } from './start-walk/StartWalkPage';
 import { Walk } from '../../models/Walk';
 import { getAge } from '../../utils/common';
-import icons, { customMarkerIcon, userIcon, petIcon } from '../../common/icons';
+import icons, { customMarkerIcon, petIcon } from '../../utils/icons';
 import { LocationService } from '../../providers/location.service';
 import { PlacesService } from '../../providers/places.service';
 import { Place, PlaceType } from '../../models/place.model';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 (<any>L.Icon.Default).imagePath = '../assets/img/leaflet/';
 
@@ -39,8 +39,7 @@ export class MapPage {
     private places$: Subscription;
     private clearInactiveInterval: any;
 
-    constructor(private auth: AuthService,
-                public walk: WalkService,
+    constructor(public walk: WalkService,
                 private places: PlacesService,
                 private modalCtrl: ModalController,
                 private location: LocationService) {
@@ -98,19 +97,14 @@ export class MapPage {
             this.map.setView(position, 16); // center the map
 
             // create my marker and init my walk
-            this.walk.init(
-                position,
-                L.marker(position, {
-                    icon: userIcon(`${this.auth.user.pic}`, 'my-marker')
-                }).addTo(this.map)
-            );
+            this.walk.init(position).addTo(this.map);
         });
     }
 
     private watch() {
         this.positionSubscriber = Geolocation.watchPosition().subscribe(
             (data: Geoposition) => {
-                this.walk.move(
+                this.walk.walk.move(
                     L.latLng(data.coords.latitude, data.coords.longitude)
                 );
             },
@@ -121,20 +115,21 @@ export class MapPage {
     }
 
     private initWalks() {
-        this.walksSubscriber = this.walk.walks$.subscribe((walks: Array<Walk>) => {
+        this.walksSubscriber = this.walk.walks$.subscribe((walks: Walk[]) => {
             walks.forEach(walk => {
                 if (walk.id !== this.walk.walk.id) {
                     if (this.walks[walk.id]) {
                         // move marker
                         this.walks[walk.id].setLatLng(walk.coords);
                     } else {
+
                         // new walk
                         let marker = L
                             .marker(walk.coords, {
                                 icon: petIcon(`${walk.pet.pic}`)
                             })
                             .bindPopup(
-                                `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Age: ${getAge(walk.pet.birthday)}<br>Out with ${walk.user.name}`
+                                `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Out with ${walk.user.name}`
                             );
 
                         this.walks[walk.id] = marker; // save
@@ -152,11 +147,11 @@ export class MapPage {
 
         // Remove inactive walks interval
         this.clearInactiveInterval = setInterval(() => {
+            // todo make it faster
             for (let uid in this.walks) {
                 if (this.walks.hasOwnProperty(uid)) {
-                    let key = uid;
-                    let find = this.walk.walks.find((walk: Walk) => {
-                        return walk.id === key;
+                    let find = this.walk.walks$.getValue().find((walk: Walk) => {
+                        return walk.id === uid;
                     });
                     if (!find) {
                         this.layers.walks.removeLayer(this.walks[uid]);

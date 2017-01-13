@@ -1,12 +1,13 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
     selector: 'pet-image',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     template: `<img [attr.src]="src" />`
 })
 
 export class PetImage {
-    @Input() image;
+    @Input() image: string;
     src: string;
 
     ngOnChanges() {

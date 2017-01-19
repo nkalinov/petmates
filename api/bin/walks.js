@@ -1,78 +1,60 @@
-const walks = new Map(),
-    users = require('./users').users;
+const walks = new Map(), // full walks model by region
+    moved = new Map(), // walks by region which positions are not yet broadcasted
+    Walk = require('../models/Walk')
 
-/**
- *  id: string;
- *  user: {
- *      _id: string,
- *      name: string,
- *      pic: string
- *  };
- *  coords: LatLngExpression;
- *  pet: {
- *      name: string,
- *      breed: {
- *          name: string
- *      },
- *      pic: string
- *  };
- */
-class Walk {
-    constructor(data, socket) {
-        Object.assign(this, data);
-        this.socket = socket;
-    }
-
-    move(coords) {
-        this.coords = coords;
-    }
-}
-
-// function stop(walk) {
-//     if (walk) {
-//         var index = walks.indexOf(walk);
-//         if (index > -1) {
-//             walks.splice(index, 1);
-//             return true;
-//         }
-//     }
-//     return false;
-// }
-
-function onSocketAuthenticated(socket) {
+function onSocketAuthenticated(socket, region) {
     let walk;
-    const region = socket.handshake.query.region;
 
-    socket.join(region);
+    // todo leave when region changed
+    socket.join(region)
 
-    // setTimeout(() => {
-    //     socket.emit('walks', walks)
-    // }, 1000);
+    socket.on('walks:get', onWalksGet)
+    socket.on('walks:start', onWalkStart)
+    socket.on('walks:move', onWalkMove)
+    socket.on('walks:stop', onWalkStop)
+    socket.on('disconnect', onWalkStop)
 
-    socket.on('walk:start', onWalkStart);
-    socket.on('walk:move', onWalkMove);
-    socket.on('walk:stop', onWalkStop);
-    socket.on('disconnect', onWalkStop);
+    function onWalksGet() {
+        const regionWalks = walks.get(region);
 
+        // if not alone
+        if (regionWalks && regionWalks.size > 1)
+            socket.emit('walks:get', [...regionWalks].map(item => item[1]))
+    }
 
     function onWalkStart(data) {
-        walk = new Walk(data);
-        walksMap.set(walk.id, walk);
-        socket.broadcast.to(region).emit('walk:start', walk);
+        walk = new Walk(data)
+
+        if (!walks.has(region))
+            walks.set(region, new Map())
+
+        walks.get(region).set(walk.id, walk)
+        socket.broadcast.to(region).emit('walks:start', walk)
     }
 
+    // emitting the moved walks is handled in cron\walks.js
     function onWalkMove(coords) {
         walk.move(coords);
+
+        if (!moved.has(region))
+            moved.set(region, new Map())
+
+        moved.get(region).set(walk.id, coords)
     }
 
     function onWalkStop() {
         if (walk) {
-            stop(walk);
-            walk = null;
+            socket.broadcast.to(region).emit('walks:stop', walk.id)
+            walks.get(region).delete(walk.id)
+
+            const movedRegion = moved.get(region)
+            if (movedRegion)
+                movedRegion.delete(walk.id)
         }
     }
 }
 
 module.exports = {
-    onSocketAuthenticated
-};
+    onSocketAuthenticated,
+    moved
+}

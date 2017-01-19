@@ -1,8 +1,6 @@
 const users = require('./users').users;
 
-function onSocketAuthenticated(socket) {
-    const uid = socket.decoded_token._id;
-
+function onSocketAuthenticated(socket, uid) {
     socket.on('chat:msg:send', onChatSend);
 
     function onChatSend(message, cid) {

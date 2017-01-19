@@ -1,6 +1,6 @@
 const express = require('express'),
     router = express.Router(),
-    Conversation = require('../models/conversation'),
+    Conversation = require('../models/schema/conversation'),
     passport = require('passport'),
     users = require('../bin/users').users,
     fs = require('fs'),

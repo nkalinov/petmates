@@ -1,8 +1,6 @@
 const users = new Map();
 
-function onSocketAuthenticated(socket) {
-    const uid = socket.decoded_token._id;
-
+function onSocketAuthenticated(socket, uid) {
     users.set(uid, {
         socket,
         lastActive: Date.now()
@@ -16,7 +14,7 @@ function onSocketAuthenticated(socket) {
      * @param ids[]
      */
     function onOnlineGet(ids) {
-        const lastActivities = {};
+        const lastActivities = Object.create(null);
 
         if (ids && ids.length) {
             ids.forEach(id => {
@@ -26,7 +24,8 @@ function onSocketAuthenticated(socket) {
             });
         }
 
-        socket.emit('online', lastActivities);
+        if (Object.keys(lastActivities).length)
+            socket.emit('online', lastActivities);
     }
 
     /**
@@ -36,9 +35,9 @@ function onSocketAuthenticated(socket) {
      */
     function onMateEvent(action, data) {
         const fid = data.myRequest.friend._id;
-        if (users.has(fid)) {
+
+        if (users.has(fid))
             users.get(fid).socket.emit('mate:', action, data);
-        }
     }
 }
 

@@ -1,4 +1,5 @@
 import { IBreed } from './interfaces/IBreed';
+import { IWalkPet } from './interfaces/IWalkPet';
 
 export class Pet {
     _id: string;
@@ -15,5 +16,15 @@ export class Pet {
 
     constructor(data?) {
         Object.assign(this, data);
+    }
+
+    toPartial(): IWalkPet {
+        return {
+            name: this.name,
+            breed: {
+                name: this.breed.name
+            },
+            pic: this.pic
+        };
     }
 }

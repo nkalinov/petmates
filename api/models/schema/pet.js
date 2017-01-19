@@ -1,9 +1,9 @@
 const mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     autopopulate = require('mongoose-autopopulate'),
-    helpers = require('../helpers'),
+    helpers = require('../../helpers'),
     fs = require('fs'),
-    upload = require('../config/upload'),
+    upload = require('../../config/upload'),
     Breed = require('./breed');
 
 const Pet = new Schema({

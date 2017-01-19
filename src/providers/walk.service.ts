@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Config } from 'ionic-angular';
 import { Walk } from '../models/Walk';
 import { AuthService } from './auth.service';
 import { Pet } from '../models/Pet';
@@ -8,20 +7,21 @@ import { SocketService } from './socket.service';
 import { LocalNotifications } from 'ionic-native';
 import { MatesService } from './mates.service';
 import { IFriendship } from '../models/interfaces/IFriendship';
-import { WalkMarkerIcon, userIcon, petIcon } from '../utils/icons';
+import { userIcon, petIcon } from '../utils/icons';
 
 @Injectable()
 export class WalkService {
-    walks$: BehaviorSubject<Walk[]> = new BehaviorSubject([]);
-    walk = new Walk();
-    marker: L.Marker;
+    walk = new Walk(); // my walk
+    walksById = {}; // saved walks by id
+    walks$;
+    private walks: BehaviorSubject<Walk[]> = new BehaviorSubject([]);
+    private stopEmitCoords: Function;
 
-    private emitCoordsInterval: any;
-
-    constructor(private config: Config,
-                private auth: AuthService,
+    constructor(private auth: AuthService,
                 private mates: MatesService,
                 private sockets: SocketService) {
+        this.walks$ = this.walks.asObservable();
+        // this.coords$ = this.coords.asObservable();
     }
 
     init(coords: L.LatLngExpression): L.Marker {
@@ -37,42 +37,57 @@ export class WalkService {
     }
 
     start(petId: string) {
-        // set pet
-        const pet = this.auth.user.pets.find((p: Pet) => p._id === petId);
-        this.walk.pet = {
-            name: pet.name,
-            breed: {
-                name: pet.breed.name
-            },
-            pic: pet.pic
-        };
-
+        this.walk.pet = this.auth.user.pets.find((p: Pet) => p._id === petId).toPartial();
         this.walk.start();
-        this.sockets.socket.emit('walk:start', this.walk);
-
-        // change my marker's icon
+        this.sockets.socket.emit('walks:start', this.walk.toPartial());
         this.walk.marker.setIcon(petIcon(this.walk.pet.pic, 'my-marker'));
-
-        // start emitting my coordinates
-        this.emitCoordsInterval = setInterval(() => {
-            this.emitCoords();
-        }, 15 * 1000);
+        this.stopEmitCoords = this.startEmitCoords();
     }
 
     stop() {
         if (this.walk.started) {
-            this.walk.pet = null;
-            this.sockets.socket.emit('walk:stop');
-            this.walk.marker.setIcon(userIcon(this.auth.user.pic, 'my-marker'));
-            clearInterval(this.emitCoordsInterval);
+            this.sockets.socket.emit('walks:stop');
+            this.stopEmitCoords();
             this.walk.stop();
+            this.walk.pet = null;
+            this.walk.marker.setIcon(userIcon(this.auth.user.pic, 'my-marker'));
+        }
+    }
+
+    move(coords: L.LatLngExpression) {
+        this.walk.move(coords);
+    }
+
+    requestWalks() {
+        // only for the initial population
+        if (!this.walks.getValue().length) {
+            this.sockets.socket.emit('walks:get');
         }
     }
 
     registerSocketEvents(socket) {
-        // see if one of my mates.accepted is going out for a walk
-        socket.on('walk:start', (data: Walk) => {
-            console.info('walk:start <', data);
+        socket.on('walks:get', walks => {
+            this.walks.next(
+                walks.map(walk => {
+                    if (walk.id !== this.walk.id) {
+                        this.walksById[walk.id] = new Walk(walk);
+                        return this.walksById[walk.id]; // ref
+                    }
+                })
+            );
+        });
+
+        socket.on('walks:start', (data: Walk) => {
+            console.info('walks:start <', data);
+            // append new walks
+            this.walksById[data.id] = new Walk(data);
+            this.walks.next([
+                    ...this.walks.getValue(),
+                    this.walksById[data.id]
+                ]
+            );
+
+            // see if one of my mates.accepted is going out for a walk
             let find = this.mates.mates.accepted.find((f: IFriendship) => f.friend._id === data.user._id);
             if (find) {
                 LocalNotifications.schedule({
@@ -82,20 +97,41 @@ export class WalkService {
             }
         });
 
-        socket.on('walks', (data: Array<Walk> = []) => {
-            console.info('walks <', data);
+        socket.on('walks:stop', (id: string) => {
+            console.info('walks:stop <', id);
+            const index = this.walks.getValue().indexOf(this.walksById[id]);
+            delete this.walksById[id];
 
-            // refresh walks only if I'm on walk too OR if this is the first message
-            if (this.walk.started || this.walks$.getValue().length === 0) {
-                this.walks$.next(
-                    data.map(w => new Walk(w))
+            if (index > -1) {
+                this.walks.next([
+                        ...this.walks.getValue().slice(0, index),
+                        ...this.walks.getValue().slice(index + 1)
+                    ]
                 );
             }
         });
+
+        socket.on('walks:coords', data => {
+            console.info('walks:coords <', data);
+            data.forEach(obj => {
+                const walkId = Object.keys(obj)[0];
+                if (walkId !== this.walk.id) {
+                    this.walksById[walkId].move(obj[walkId]);
+                }
+            });
+        });
     }
 
-    private emitCoords() {
-        this.sockets.socket.emit('walk:move', this.walk.coords);
-        console.info('walks:move >', this.walk.coords);
+    private startEmitCoords(): Function {
+        let lastCoords,
+            id = setInterval(() => {
+                if (lastCoords !== this.walk.coords) {
+                    this.sockets.socket.emit('walks:move', this.walk.coords);
+                    lastCoords = this.walk.coords;
+                    console.info('walks:move >', this.walk.coords);
+                }
+            }, 15 * 1000);
+
+        return () => clearInterval(id);
     }
 }

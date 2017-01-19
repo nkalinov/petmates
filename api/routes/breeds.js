@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Breed = require('../models/breed');
+const Breed = require('../models/schema/breed');
 const fs = require('fs');
 const passport = require('passport');
 

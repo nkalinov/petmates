@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const helpers = require('../helpers');
+const helpers = require('../../helpers');
 const fs = require('fs');
-const upload = require('../config/upload');
+const upload = require('../../config/upload');
 
 const PlaceSchema = new Schema({
     creator: {

@@ -1,35 +1,66 @@
 import { Injectable } from '@angular/core';
-import { Geolocation } from 'ionic-native';
+import { Geolocation, Geoposition } from 'ionic-native';
 import { Http } from '@angular/http';
 import { Events } from 'ionic-angular';
 import { AuthService } from './auth.service';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class LocationService {
-    lastCoords: L.LatLngTuple;
+    coords$;
+    private coords = new BehaviorSubject([]);
 
     constructor(private http: Http,
                 private auth: AuthService,
                 private events: Events) {
+        this.coords$ = this.coords.asObservable();
     }
 
     getLastCoords() {
-        return this.lastCoords || this.auth.user.location.coordinates;
+        return this.coords.getValue().length
+            ? this.coords.getValue()
+            : this.auth.user.location.coordinates;
     }
 
     getGeolocation(opts?: any): Promise<L.LatLngTuple> {
-        return Geolocation.getCurrentPosition(Object.assign({}, opts, {
-            enableHighAccuracy: true
-        })).then(
-            data => {
-                this.lastCoords = [data.coords.longitude, data.coords.latitude];
-                return this.lastCoords;
-            },
-            err => {
-                this.events.publish('alert:error', err.text());
-                return this.auth.user.location.coordinates; // fallback to cached
-            });
+        return new Promise((resolve) => {
+            if (this.coords.getValue().length) {
+                resolve(this.coords.getValue()); // return last coords
+            } else {
+                Geolocation.getCurrentPosition(Object.assign({
+                    enableHighAccuracy: true,
+                    timeout: 5000
+                }, opts)).then(
+                    data => {
+                        const coords = [data.coords.longitude, data.coords.latitude];
+                        this.coords.next(coords);
+                        resolve(coords);
+                    },
+                    err => {
+                        this.events.publish('alert:error', err.text());
+                        resolve(this.getLastCoords());
+                    });
+            }
+        });
     }
+
+    // watch() {
+    //     return Observable.create(observer => {
+    //         const watch = Geolocation.watchPosition()
+    //             .debounce(() => Observable.interval(1000))
+    //             .subscribe(
+    //                 (data: Geoposition) => {
+    //                     this.coords.next([data.coords.latitude, data.coords.longitude]);
+    //                 },
+    //                 (err) => {
+    //                     console.error('Geolocation.watchPosition', err);
+    //                 }
+    //             );
+    //         return () => {
+    //             watch.unsubscribe();
+    //         };
+    //     });
+    // }
 
     getLocation(): Promise<{
         city?: string;

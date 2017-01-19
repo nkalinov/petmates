@@ -1,7 +1,7 @@
 const mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     autopopulate = require('mongoose-autopopulate'),
-    helpers = require('../helpers');
+    helpers = require('../../helpers');
 
 const Message = new Schema({
     _id: false,

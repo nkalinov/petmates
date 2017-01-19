@@ -1,7 +1,7 @@
 const fs = require('fs'),
     mongoose = require('mongoose'),
-    Breed = require('../models/breed'),
-    Place = require('../models/place'),
+    Breed = require('../models/schema/breed'),
+    Place = require('../models/schema/place'),
     q = require('q');
 
 // todo use auth.secret

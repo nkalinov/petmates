@@ -5,12 +5,10 @@ import { Subscription } from 'rxjs/Subscription';
 import { WalkService } from '../../providers/walk.service';
 import { StartWalkPage } from './start-walk/StartWalkPage';
 import { Walk } from '../../models/Walk';
-import { getAge } from '../../utils/common';
 import icons, { customMarkerIcon, petIcon } from '../../utils/icons';
 import { LocationService } from '../../providers/location.service';
 import { PlacesService } from '../../providers/places.service';
 import { Place, PlaceType } from '../../models/place.model';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 (<any>L.Icon.Default).imagePath = '../assets/img/leaflet/';
 
@@ -20,7 +18,6 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 })
 
 export class MapPage {
-    walks = {}; // saved walk markers by _id
     map: L.Map;
     mcgLayerSupportGroup = (<any>L).markerClusterGroup.layerSupport({
         showCoverageOnHover: false
@@ -36,8 +33,7 @@ export class MapPage {
 
     private positionSubscriber: Subscription;
     private walksSubscriber: Subscription;
-    private places$: Subscription;
-    private clearInactiveInterval: any;
+    private placesSubscriber: Subscription;
 
     constructor(public walk: WalkService,
                 private places: PlacesService,
@@ -61,7 +57,7 @@ export class MapPage {
             this.watch();
             this.addPlaces();
             this.initWalks();
-            this.populate(); // dev
+            // this.populate(); // dev
             this.control.addTo(this.map);
         }).catch(err => {
             if (err) {
@@ -73,8 +69,8 @@ export class MapPage {
     }
 
     ionViewDidLeave() {
-        if (this.places$) {
-            this.places$.unsubscribe();
+        if (this.placesSubscriber) {
+            this.placesSubscriber.unsubscribe();
         }
         if (this.positionSubscriber) {
             // todo track position even when not on this page
@@ -83,7 +79,6 @@ export class MapPage {
         if (this.walksSubscriber) {
             this.walksSubscriber.unsubscribe();
         }
-        clearInterval(this.clearInactiveInterval);
     }
 
     openWalkModal() {
@@ -91,7 +86,7 @@ export class MapPage {
     }
 
     private init() {
-        return this.location.getGeolocation({ timeout: 10000 }).then(lngLat => {
+        return this.location.getGeolocation().then(lngLat => {
             this.GEOaccess = true;
             const position = L.latLng(lngLat[1], lngLat[0]);
             this.map.setView(position, 16); // center the map
@@ -102,9 +97,11 @@ export class MapPage {
     }
 
     private watch() {
-        this.positionSubscriber = Geolocation.watchPosition().subscribe(
+        this.positionSubscriber = Geolocation.watchPosition({
+            enableHighAccuracy: true
+        }).subscribe(
             (data: Geoposition) => {
-                this.walk.walk.move(
+                this.walk.move(
                     L.latLng(data.coords.latitude, data.coords.longitude)
                 );
             },
@@ -118,53 +115,28 @@ export class MapPage {
         this.walksSubscriber = this.walk.walks$.subscribe((walks: Walk[]) => {
             walks.forEach(walk => {
                 if (walk.id !== this.walk.walk.id) {
-                    if (this.walks[walk.id]) {
-                        // move marker
-                        this.walks[walk.id].setLatLng(walk.coords);
-                    } else {
+                    // add and save markers
+                    walk.marker = L.marker(walk.coords, {
+                        icon: petIcon(`${walk.pet.pic}`)
+                    }).bindPopup(
+                        `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Out with ${walk.user.name}`
+                    );
 
-                        // new walk
-                        let marker = L
-                            .marker(walk.coords, {
-                                icon: petIcon(`${walk.pet.pic}`)
-                            })
-                            .bindPopup(
-                                `<b>${walk.pet.name}</b><br>${walk.pet.breed.name}<br>Out with ${walk.user.name}`
-                            );
-
-                        this.walks[walk.id] = marker; // save
-                        this.layers.walks.addLayer(marker);
-                        this.mcgLayerSupportGroup.refreshClusters(this.layers.walks);
-                    }
+                    this.layers.walks.addLayer(walk.marker); // add to map
+                    this.mcgLayerSupportGroup.refreshClusters(this.layers.walks);
                 }
             });
         });
+        this.walk.requestWalks();
 
         // cluster walks
         this.mcgLayerSupportGroup.checkIn(this.layers.walks);
         this.control.addOverlay(this.layers.walks, 'Walks');
         this.layers.walks.addTo(this.mcgLayerSupportGroup);
-
-        // Remove inactive walks interval
-        this.clearInactiveInterval = setInterval(() => {
-            // todo make it faster
-            for (let uid in this.walks) {
-                if (this.walks.hasOwnProperty(uid)) {
-                    let find = this.walk.walks$.getValue().find((walk: Walk) => {
-                        return walk.id === uid;
-                    });
-                    if (!find) {
-                        this.layers.walks.removeLayer(this.walks[uid]);
-                        this.mcgLayerSupportGroup.refreshClusters(this.layers.walks);
-                        delete this.walks[uid];
-                    }
-                }
-            }
-        }, 30 * 1000);
     }
 
     private addPlaces() {
-        this.places$ = this.places.nearby$.subscribe((places: Place[]) => {
+        this.placesSubscriber = this.places.nearby$.subscribe((places: Place[]) => {
             places.forEach(place => {
                 const marker = L.marker([
                     place.location.coordinates[1],
@@ -200,7 +172,6 @@ export class MapPage {
 
         this.places.getNearbyPlaces(this.location.getLastCoords());
     }
-
 
     private populate() {
         for (let i = 0; i < 50; i++) {

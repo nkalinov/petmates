@@ -1,3 +1,4 @@
-module.exports = () => {
-    require('./conversations')();
+module.exports = io => {
+    require('./conversations')()
+    require('./walks')(io)
 };

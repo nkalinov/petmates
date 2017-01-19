@@ -1,12 +1,12 @@
 const mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     bcrypt = require('bcryptjs'),
-    helpers = require('../helpers'),
+    helpers = require('../../helpers'),
     autopopulate = require('mongoose-autopopulate'),
     Friendship = require('./friendship'),
     Pet = require('./pet'),
     fs = require('fs'),
-    upload = require('../config/upload');
+    upload = require('../../config/upload');
 
 // set up a mongoose model
 const UserSchema = new Schema({

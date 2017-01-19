@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const Event = require('../models/event');
+const Event = require('../models/schema/event');
 
 // get [going/mine] events
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {

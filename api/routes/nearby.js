@@ -1,9 +1,9 @@
 const express = require('express'),
     router = express.Router(),
     passport = require('passport'),
-    User = require('../models/user'),
-    Place = require('../models/place'),
-    Event = require('../models/event'),
+    User = require('../models/schema/user'),
+    Place = require('../models/schema/place'),
+    Event = require('../models/schema/event'),
     helpers = require('../helpers'),
     _ = require('lodash');
 

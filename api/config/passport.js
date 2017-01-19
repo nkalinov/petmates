@@ -1,6 +1,6 @@
 const PassportJwt = require('passport-jwt');
 const FacebookTokenStrategy = require('passport-facebook-token');
-const User = require('../models/user');
+const User = require('../models/schema/user');
 const auth = require('./auth');
 const nodemailer = require('nodemailer');
 const mg = require('nodemailer-mailgun-transport');

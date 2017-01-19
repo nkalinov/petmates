@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Report = require('../models/report');
+const Report = require('../models/schema/report');
 const fs = require('fs');
 const passport = require('passport');
 

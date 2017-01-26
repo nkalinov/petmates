@@ -1,11 +1,11 @@
 import { IWalkPet } from './interfaces/IWalkPet';
-import { IUserPartial } from './interfaces/IUserPartial';
 import { IWalkPartial } from './interfaces/IWalkPartial';
+import { User } from './User';
 const uuid = require('uuid/v4');
 
 export class Walk {
     id: string;
-    user: IUserPartial;
+    user: User;
     coords: L.LatLngExpression;
     pet: IWalkPet;
     marker: L.Marker;
@@ -33,7 +33,7 @@ export class Walk {
     toPartial(): IWalkPartial {
         return {
             id: this.id,
-            user: this.user,
+            user: this.user.toPartial(),
             coords: this.coords,
             pet: this.pet
         };

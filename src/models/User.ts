@@ -1,6 +1,5 @@
 import { Pet } from './Pet';
 import { IFriendship } from './interfaces/IFriendship';
-import { pick } from 'lodash';
 import { IUserPartial } from './interfaces/IUserPartial';
 
 const deg2rad = (deg) => deg * (Math.PI / 180);
@@ -49,6 +48,10 @@ export class User {
     }
 
     toPartial(): IUserPartial {
-        return <IUserPartial>pick(this, ['_id ', 'name', 'pic']);
+        return {
+            _id: this._id,
+            name: this.name,
+            pic: this.pic
+        };
     }
 }

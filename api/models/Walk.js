@@ -15,9 +15,8 @@
  *  };
  */
 class Walk {
-    constructor(data, socket) {
+    constructor(data) {
         Object.assign(this, data)
-        this.socket = socket
     }
 
     move(coords) {

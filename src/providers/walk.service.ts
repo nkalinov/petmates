@@ -21,13 +21,12 @@ export class WalkService {
                 private mates: MatesService,
                 private sockets: SocketService) {
         this.walks$ = this.walks.asObservable();
-        // this.coords$ = this.coords.asObservable();
     }
 
     init(coords: L.LatLngExpression): L.Marker {
         this.walk = new Walk({
             coords,
-            user: this.auth.user.toPartial(),
+            user: this.auth.user,
             marker: L.marker(coords, {
                 icon: userIcon(`${this.auth.user.pic}`, 'my-marker')
             })
@@ -41,7 +40,7 @@ export class WalkService {
         this.walk.start();
         this.sockets.socket.emit('walks:start', this.walk.toPartial());
         this.walk.marker.setIcon(petIcon(this.walk.pet.pic, 'my-marker'));
-        this.stopEmitCoords = this.startEmitCoords();
+        this.stopEmitCoords = this.startEmitCoords(this.walk.coords);
     }
 
     stop() {
@@ -122,8 +121,8 @@ export class WalkService {
         });
     }
 
-    private startEmitCoords(): Function {
-        let lastCoords,
+    private startEmitCoords(coords: L.LatLngExpression): Function {
+        let lastCoords = coords,
             id = setInterval(() => {
                 if (lastCoords !== this.walk.coords) {
                     this.sockets.socket.emit('walks:move', this.walk.coords);

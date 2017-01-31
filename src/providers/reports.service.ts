@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { Config, Events } from 'ionic-angular';
-import { AuthService } from './auth.service';
+import { AuthService } from './auth';
 
 @Injectable()
 export class ReportsService {

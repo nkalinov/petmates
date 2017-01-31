@@ -6,6 +6,10 @@ import { Pet } from '../models/Pet';
 import { Observable } from 'rxjs/Observable';
 import { User } from '../models/User';
 import { Facebook, FacebookLoginResponse } from 'ionic-native';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app/state';
+import { AuthActions } from '../actions/auth';
+import { IResponse } from '../models/interfaces/IResponse';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +20,14 @@ export class AuthService {
     constructor(private http: Http,
                 private events: Events,
                 private config: Config,
-                private storage: Storage) {
+                private storage: Storage,
+                private store: Store<AppState>,
+                private authActions: AuthActions) {
+
+        this.store.select(state => state.auth).subscribe(auth => {
+            this.user = auth.user;
+            this.token = auth.token;
+        });
     }
 
     init(): Promise<User> {
@@ -27,10 +38,7 @@ export class AuthService {
                     let headers = new Headers();
                     headers.append('Authorization', token);
                     this.http
-                        .post(
-                            `${this.config.get('API')}/user/check`, null,
-                            { headers: headers }
-                        )
+                        .post(`${this.config.get('API')}/user/check`, null, { headers })
                         .map(res => res.json())
                         .subscribe((res: any) => {
                             if (res.success) {
@@ -56,14 +64,12 @@ export class AuthService {
         this.http.post(`${this.config.get('API')}/auth`, JSON.stringify({
             email,
             password
-        }), { headers: headers }).map(res => res.json()).subscribe(
-            (res: any) => {
-                this.parseLoginResponse(res);
-            },
-            (err: Response) => {
-                this.events.publish('alert:error', err.text());
-            }
-        );
+        }), { headers })
+            .map(res => res.json())
+            .subscribe(
+                (res: IResponse) => this.store.dispatch(this.authActions.login(res)),
+                (err: Response) => this.events.publish('alert:error', err.text())
+            );
     }
 
     // todo
@@ -79,11 +85,9 @@ export class AuthService {
                 this.http.get(`${this.config.get('API')}/auth/facebook?access_token=${accessToken}`)
                     .map(res => res.json())
                     .subscribe(
-                        res => this.parseLoginResponse(res),
-                        (err: Response) => {
-                            this.events.publish('alert:error', err.text());
-                            return err;
-                        });
+                        (res: IResponse) => this.store.dispatch(this.authActions.login(res)),
+                        (err: Response) => this.events.publish('alert:error', err.text())
+                    );
 
             } else if (res.status === 'not_authorized') {
                 // the user is logged in to Facebook,
@@ -266,11 +270,13 @@ export class AuthService {
 
     private parseLoginResponse(res) {
         if (res.success) {
-            const token = res.data.token;
-            this.storage.set('id_token', token);
-            this.parseUser(res.data.profile);
-            this.token = token;
-            this.events.publish('user:login', this.user);
+            this.store.dispatch(this.authActions.login(res));
+
+            // const token = res.data.token;
+            // this.storage.set('id_token', token);
+            // this.parseUser(res.data.profile);
+            // this.token = token;
+            // this.events.publish('user:login', this.user);
         } else {
             this.events.publish('alert:error', res.msg);
             return new Error(res.msg);

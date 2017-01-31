@@ -2,12 +2,12 @@ import 'leaflet';
 import 'leaflet.markercluster';
 import 'leaflet.markercluster.layersupport';
 import '../rxjs.operators';
-import { NgModule } from '@angular/core';
-import { IonicApp, IonicModule } from 'ionic-angular';
+import { ErrorHandler, NgModule } from '@angular/core';
+import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { PetMatesApp } from './app.component';
 import { EventsService } from '../providers/events.service';
-import { AuthService } from '../providers/auth.service';
+import { AuthService } from '../providers/auth';
 import { SocketService } from '../providers/socket.service';
 import { BreedService } from '../providers/breed.service';
 import { WalkService } from '../providers/walk.service';
@@ -57,6 +57,13 @@ import { ReportsService } from '../providers/reports.service';
 import { IonicImageViewerModule } from 'ionic-img-viewer';
 import { PetService } from '../providers/pet.service';
 import { DistancePipe } from '../pipes/distance';
+import { StoreModule } from '@ngrx/store';
+import { authReducer } from '../reducers/auth';
+import { AuthActions } from '../actions/auth';
+
+const reducers = {
+    auth: authReducer
+};
 
 const pages: Array<any> = [
     PetMatesApp,
@@ -118,6 +125,7 @@ const pages: Array<any> = [
                 tabsPlacement: 'bottom'
             })
         ),
+        StoreModule.provideStore(reducers),
         IonicImageViewerModule
     ],
     bootstrap: [IonicApp],
@@ -135,7 +143,14 @@ const pages: Array<any> = [
         EventsService,
         PlacesService,
         ReportsService,
-        PetService
+        PetService,
+        {
+            provide: ErrorHandler,
+            useClass: IonicErrorHandler
+        },
+
+        // actions
+        AuthActions
     ]
 })
 export class AppModule {

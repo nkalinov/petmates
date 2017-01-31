@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { Conversation } from '../models/Conversation';
-import { AuthService } from '../providers/auth.service';
+import { AuthService } from '../providers/auth';
 import { getTimeAgo } from '../utils/common';
 
 @Component({

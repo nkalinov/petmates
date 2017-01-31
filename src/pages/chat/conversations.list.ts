@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { ChatService } from '../../providers/chat.service';
 import { ConversationPage } from './view/conversation';
 import { ConversationEditPage } from './edit/conversation.edit';
-import { AuthService } from '../../providers/auth.service';
+import { AuthService } from '../../providers/auth';
 import { Conversation } from '../../models/Conversation';
 
 @Component({

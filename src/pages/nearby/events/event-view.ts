@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavParams, LoadingController, NavController } from 'ionic-angular';
 import { LaunchNavigator } from 'ionic-native';
 import { Event } from '../../../models/Event';
-import { AuthService } from '../../../providers/auth.service';
+import { AuthService } from '../../../providers/auth';
 import { EventEditPage } from './event-edit';
 import { MateViewPage } from '../../mates/view/MateViewPage';
 import { EventsService } from '../../../providers/events.service';

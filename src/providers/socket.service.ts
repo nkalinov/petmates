@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Config } from 'ionic-angular';
-import { AuthService } from './auth.service';
+import { AuthService } from './auth';
 const io = require('socket.io-client');
 
 @Injectable()

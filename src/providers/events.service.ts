@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
-import { AuthService } from './auth.service';
+import { AuthService } from './auth';
 import { Config, Events } from 'ionic-angular';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { LocationService } from './location.service';

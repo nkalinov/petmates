@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Walk } from '../models/Walk';
-import { AuthService } from './auth.service';
+import { AuthService } from './auth';
 import { Pet } from '../models/Pet';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { SocketService } from './socket.service';

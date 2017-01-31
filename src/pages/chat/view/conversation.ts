@@ -1,7 +1,7 @@
 import { NavParams, NavController, Content, ActionSheetController, Platform } from 'ionic-angular';
 import { ViewChild, Component, ElementRef } from '@angular/core';
 import { ChatService } from '../../../providers/chat.service';
-import { AuthService } from '../../../providers/auth.service';
+import { AuthService } from '../../../providers/auth';
 import { Message } from '../../../models/Message';
 import { Conversation } from '../../../models/Conversation';
 import { ConversationEditPage } from '../edit/conversation.edit';

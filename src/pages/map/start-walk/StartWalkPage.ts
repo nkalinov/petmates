@@ -1,6 +1,6 @@
 import { ViewController, ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { AuthService } from '../../../providers/auth.service';
+import { AuthService } from '../../../providers/auth';
 import { WalkService } from '../../../providers/walk.service';
 import { PetEditPage } from '../../pets/edit/PetEditPage';
 

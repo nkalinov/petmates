@@ -1,7 +1,7 @@
 import { ModalController, LoadingController, Config, Events } from 'ionic-angular';
 import { ImagePicker } from 'ionic-native';
 import { Component } from '@angular/core';
-import { AuthService } from '../../providers/auth.service';
+import { AuthService } from '../../providers/auth';
 import { ForgotForm } from './forgot/forgot.form';
 import { LocationService } from '../../providers/location.service';
 import { User } from '../../models/User';

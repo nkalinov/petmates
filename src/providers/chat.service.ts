@@ -2,7 +2,7 @@ import { Events, Config, Platform } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { SocketService } from './socket.service';
-import { AuthService } from './auth.service';
+import { AuthService } from './auth';
 import { Message } from '../models/Message';
 import { IMessageSocket } from '../models/interfaces/IMessageSocket';
 import { User } from '../models/User';

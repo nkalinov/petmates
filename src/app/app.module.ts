@@ -7,7 +7,7 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { PetMatesApp } from './app.component';
 import { EventsService } from '../providers/events.service';
-import { AuthService } from '../providers/auth';
+import { AuthService } from '../pages/auth/auth.service';
 import { SocketService } from '../providers/socket.service';
 import { BreedService } from '../providers/breed.service';
 import { WalkService } from '../providers/walk.service';
@@ -16,7 +16,7 @@ import { ChatService } from '../providers/chat.service';
 import { NearbyService } from '../providers/nearby.service';
 import { LocationService } from '../providers/location.service';
 import { ForgotForm } from '../pages/auth/forgot/forgot.form';
-import { AuthModal } from '../pages/auth/auth';
+import { AuthPage } from '../pages/auth/auth.page';
 import { ConversationsListPage } from '../pages/chat/conversations.list';
 import { ConversationPage } from '../pages/chat/view/conversation';
 import { ConversationEditPage } from '../pages/chat/edit/conversation.edit';
@@ -58,18 +58,20 @@ import { IonicImageViewerModule } from 'ionic-img-viewer';
 import { PetService } from '../providers/pet.service';
 import { DistancePipe } from '../pipes/distance';
 import { StoreModule } from '@ngrx/store';
-import { authReducer } from '../reducers/auth';
-import { AuthActions } from '../actions/auth';
-
-const reducers = {
-    auth: authReducer
-};
+import { AuthActions } from '../pages/auth/auth.actions';
+import { EffectsModule } from '@ngrx/effects';
+import { AppActions } from './app.actions';
+import { AuthEffects } from '../pages/auth/auth.effects';
+import { AppEffects } from './app.effects';
+import rootReducer from './rootReducer';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { ApiService } from '../providers/api.service';
 
 const pages: Array<any> = [
     PetMatesApp,
 
     ForgotForm,
-    AuthModal,
+    AuthPage,
 
     ConversationsListPage,
     ConversationPage,
@@ -125,13 +127,19 @@ const pages: Array<any> = [
                 tabsPlacement: 'bottom'
             })
         ),
-        StoreModule.provideStore(reducers),
+        StoreModule.provideStore(rootReducer),
+        StoreDevtoolsModule.instrumentOnlyWithExtension({
+            maxAge: 5
+        }),
+        EffectsModule.run(AppEffects),
+        EffectsModule.run(AuthEffects),
         IonicImageViewerModule
     ],
     bootstrap: [IonicApp],
     entryComponents: pages,
     providers: [
         Storage,
+        ApiService,
         AuthService,
         SocketService,
         BreedService,
@@ -148,9 +156,9 @@ const pages: Array<any> = [
             provide: ErrorHandler,
             useClass: IonicErrorHandler
         },
-
         // actions
-        AuthActions
+        AuthActions,
+        AppActions
     ]
 })
 export class AppModule {

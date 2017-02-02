@@ -1,6 +1,6 @@
 import { AlertController, ActionSheetController, ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { AuthService } from '../../providers/auth';
+import { AuthService } from '../auth/auth.service';
 import { ProfileEdit } from './edit/profile.edit';
 
 @Component({

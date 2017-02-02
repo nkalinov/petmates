@@ -1,18 +1,21 @@
 import { ModalController, LoadingController, Config, Events } from 'ionic-angular';
 import { ImagePicker } from 'ionic-native';
 import { Component } from '@angular/core';
-import { AuthService } from '../../providers/auth';
+import { AuthService } from './auth.service';
 import { ForgotForm } from './forgot/forgot.form';
 import { LocationService } from '../../providers/location.service';
 import { User } from '../../models/User';
 import { makeFileRequest } from '../../utils/common';
+import { AuthActions } from './auth.actions';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../app/state';
 
 @Component({
     selector: 'auth-page',
-    templateUrl: 'auth.html'
+    templateUrl: 'auth.page.html'
 })
 
-export class AuthModal {
+export class AuthPage {
     mode: string = 'login';
     user: User = new User();
 
@@ -21,18 +24,26 @@ export class AuthModal {
                 private locationService: LocationService,
                 private loadingCtrl: LoadingController,
                 private config: Config,
-                private events: Events) {
+                private events: Events,
+                private store: Store<AppState>,
+                private authActions: AuthActions) {
+    }
+
+    login() {
+        this.store.dispatch(
+            this.authActions.login(this.user.email, this.user.password)
+        );
     }
 
     loginFacebook() {
-        const loading = this.loadingCtrl.create({
-            content: 'Logging via Facebook...'
-        });
-        loading.present();
-        this.auth.loginFacebook().then(
-            () => loading.dismiss(),
-            () => loading.dismiss()
-        );
+        // const loading = this.loadingCtrl.create({
+        //     content: 'Logging via Facebook...'
+        // });
+        // loading.present();
+        // this.auth.loginFacebook().then(
+        //     () => loading.dismiss(),
+        //     () => loading.dismiss()
+        // );
     }
 
     geoLocalizeMe() {

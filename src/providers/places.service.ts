@@ -3,7 +3,7 @@ import { Http, Headers } from '@angular/http';
 import { ImagePicker } from 'ionic-native';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Config, Events } from 'ionic-angular';
-import { AuthService } from './auth';
+import { AuthService } from '../pages/auth/auth.service';
 import { Place } from '../models/place.model';
 import { LocationService } from './location.service';
 

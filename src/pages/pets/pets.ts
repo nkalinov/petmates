@@ -1,6 +1,6 @@
 import { ModalController, NavController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { AuthService } from '../../providers/auth';
+import { AuthService } from '../auth/auth.service';
 import { PetEditPage } from './edit/PetEditPage';
 
 @Component({

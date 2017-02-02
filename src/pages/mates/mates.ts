@@ -1,6 +1,6 @@
 import { Tab } from 'ionic-angular';
 import { QueryList, ViewChildren, Component, AfterViewInit } from '@angular/core';
-import { AuthService } from '../../providers/auth';
+import { AuthService } from '../auth/auth.service';
 import { MatesService } from '../../providers/mates.service';
 import { MatesAcceptedPage } from './tabs/accepted/mates.accepted';
 import { MatesRequestedPage } from './tabs/requested/mates.requested';

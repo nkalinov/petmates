@@ -2,7 +2,7 @@ import { NavParams, NavController, AlertController, LoadingController, ModalCont
 import { Component } from '@angular/core';
 import { MatesService } from '../../../providers/mates.service';
 import { User } from '../../../models/User';
-import { AuthService } from '../../../providers/auth';
+import { AuthService } from '../../auth/auth.service';
 import { STATUS_ACCEPTED, STATUS_PENDING, STATUS_REQUESTED } from '../../../models/interfaces/IFriendship';
 import { ReportModalPage } from '../../../components/report-modal/report-modal';
 

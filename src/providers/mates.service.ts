@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { Subject } from 'rxjs/Subject';
 import { User } from '../models/User';
-import { AuthService } from './auth';
+import { AuthService } from '../pages/auth/auth.service';
 import { IFriendship, STATUS_REQUESTED, STATUS_ACCEPTED, STATUS_PENDING } from '../models/interfaces/IFriendship';
 import { SocketService } from './socket.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Geolocation, Geoposition } from 'ionic-native';
 import { Http } from '@angular/http';
 import { Events } from 'ionic-angular';
-import { AuthService } from './auth';
+import { AuthService } from '../pages/auth/auth.service';
 import { Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable()

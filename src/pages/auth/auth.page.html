@@ -15,7 +15,7 @@
 
     <div [ngSwitch]="mode" padding-horizontal>
 
-        <form (ngSubmit)="auth.login(user.email, user.password)" *ngSwitchCase="'login'" #loginForm="ngForm">
+        <form (ngSubmit)="login()" *ngSwitchCase="'login'" #loginForm="ngForm">
             <div padding-bottom class="fb">
                 <button ion-button icon-left small block type="button" color="facebook"
                         (click)="loginFacebook()">

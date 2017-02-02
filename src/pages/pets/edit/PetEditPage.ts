@@ -8,7 +8,7 @@ import { PetService } from '../../../providers/pet.service';
 import { Pet } from '../../../models/Pet';
 import { BreedPage } from './breed/breed';
 import { makeFileRequest } from '../../../utils/common';
-import { AuthService } from '../../../providers/auth';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
     templateUrl: 'PetEditPage.html'

@@ -1,12 +1,12 @@
 import { Action } from '@ngrx/store';
-import { AuthActions } from '../actions/auth';
-import { User } from '../models/User';
-import { Pet } from '../models/Pet';
+import { AuthActions } from './auth.actions';
+import { User } from '../../models/User';
+import { Pet } from '../../models/Pet';
 
 export function authReducer(state = {}, action: Action) {
     switch (action.type) {
 
-        case AuthActions.LOGIN:
+        case AuthActions.LOGIN_SUCCESS:
             const user = new User(action.payload.user);
             // user.password = '';
             user.pets = user.pets.map(pet => new Pet(pet));
@@ -17,6 +17,12 @@ export function authReducer(state = {}, action: Action) {
             return Object.assign({}, state, {
                 user,
                 token: action.payload.token
+            });
+
+        case AuthActions.LOGOUT:
+            return Object.assign({}, state, {
+                user: null,
+                token: null
             });
 
         default:

@@ -5,7 +5,7 @@ import { Place } from '../../../models/place.model';
 import { PlaceEditPage } from './place-edit';
 import { ReportModalPage } from '../../../components/report-modal/report-modal';
 import { PlacesService } from '../../../providers/places.service';
-import { AuthService } from '../../../providers/auth';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
     templateUrl: 'places.html'

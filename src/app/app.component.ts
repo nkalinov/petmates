@@ -1,14 +1,16 @@
 import { Events, Nav, Platform, AlertController } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
-import { AuthModal } from '../pages/auth/auth';
-import { AuthService } from '../providers/auth';
+import { AuthPage } from '../pages/auth/auth.page';
+import { AuthService } from '../pages/auth/auth.service';
 import { WalkService } from '../providers/walk.service';
 import { getMenu } from '../utils/common';
 import { SocketService } from '../providers/socket.service';
 import { MatesService } from '../providers/mates.service';
 import { ChatService } from '../providers/chat.service';
-import { User } from '../models/User';
 import { ProfilePage } from '../pages/profile/profile';
+import { Store } from '@ngrx/store';
+import { AppState } from './state';
+import { AuthActions } from '../pages/auth/auth.actions';
 
 @Component({
     templateUrl: 'app.html',
@@ -22,20 +24,44 @@ export class PetMatesApp {
 
     private defaultRootPage: any = ProfilePage;
 
-    constructor(public auth: AuthService,
-                public walk: WalkService,
+    constructor(private auth: AuthService,
+                private walk: WalkService,
                 private platform: Platform,
                 private events: Events,
                 private sockets: SocketService,
                 private mates: MatesService,
                 private chat: ChatService,
-                private alertCtrl: AlertController) {
+                private alertCtrl: AlertController,
+                private store: Store<AppState>,
+                private authActions: AuthActions) {
         this.platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.
             // StatusBar.styleDefault();
-            this.initializeApp();
+
+            this.store.select(state => state.auth.user).subscribe(user => {
+                if (user) {
+                    // logged in
+                    this.loggedIn(user.region);
+                } else {
+                    // logged out
+                    this.loggedOut();
+                }
+            });
+
+            // try to restore session from persisted token
+            this.store.dispatch(
+                this.authActions.refresh()
+            );
+
+            this.events.subscribe('alert:error', err => {
+                this.showAlert(err);
+            });
+            this.events.subscribe('alert:info', data => {
+                this.showAlert(data, 'Info');
+            });
         });
+
     }
 
     openPage(page) {
@@ -50,28 +76,7 @@ export class PetMatesApp {
         }
     }
 
-    private initializeApp() {
-        this.auth.init().then(user => {
-            this.loggedIn(user);
-        }, (err) => {
-            this.loggedOut(err);
-        });
-
-        this.events.subscribe('user:login', user => {
-            this.loggedIn(user);
-        });
-        this.events.subscribe('user:logout', () => {
-            this.loggedOut();
-        });
-        this.events.subscribe('alert:error', err => {
-            this.showAlert(err);
-        });
-        this.events.subscribe('alert:info', data => {
-            this.showAlert(data, 'Info');
-        });
-    }
-
-    private loggedIn(user: User) {
+    private loggedIn(region: string) {
         this.mates.pending$.subscribe((count) => {
             this.newRequests = count;
         });
@@ -79,7 +84,7 @@ export class PetMatesApp {
 
         // todo get conversations list and show badge in menu on unread msgs
 
-        this.sockets.init(user.region).then(socket => {
+        this.sockets.init(region).then(socket => {
             this.pages = getMenu(true); // set logged in menu
 
             // open default logged in page
@@ -97,7 +102,7 @@ export class PetMatesApp {
     private loggedOut(err?) {
         this.pages = [];
         this.sockets.disconnect();
-        this.openPage({ component: AuthModal, active: false });
+        this.openPage({ component: AuthPage, active: false });
     }
 
     private showAlert(subTitle, title: string = 'Error') {

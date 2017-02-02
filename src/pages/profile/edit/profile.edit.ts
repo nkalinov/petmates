@@ -1,7 +1,7 @@
 import { ImagePicker } from 'ionic-native';
 import { ViewController, Events, Config, LoadingController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { AuthService } from '../../../providers/auth';
+import { AuthService } from '../../auth/auth.service';
 import { User } from '../../../models/User';
 import { makeFileRequest } from '../../../utils/common';
 import { LocationService } from '../../../providers/location.service';

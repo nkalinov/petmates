@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { MateViewPage } from '../../view/MateViewPage';
 import { IFriendship } from '../../../../models/interfaces/IFriendship';
 import { MatesService } from '../../../../providers/mates.service';
-import { AuthService } from '../../../../providers/auth';
+import { AuthService } from '../../../auth/auth.service';
 import { MatesSearchPage } from '../../search/mates.search';
 
 @Component({

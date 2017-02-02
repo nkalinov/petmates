@@ -1,6 +1,6 @@
 import { MatesPage } from '../pages/mates/mates';
 import { MapPage } from '../pages/map/MapPage';
-import { AuthModal } from '../pages/auth/auth';
+import { AuthPage } from '../pages/auth/auth.page';
 import { ProfilePage } from '../pages/profile/profile';
 import { HelpPage } from '../pages/help/help';
 import { ConversationsListPage } from '../pages/chat/conversations.list';
@@ -41,7 +41,7 @@ export function getMenu(auth: boolean = false): any[] {
         // {title: 'Donate', component: DonatePage} // todo
     ];
     let publicPages = [
-        { title: 'Login / sign-up', component: AuthModal },
+        { title: 'Login / sign-up', component: AuthPage },
         { title: 'Help', component: HelpPage }
         // {title: 'Donate', component: DonatePage} // todo
     ];

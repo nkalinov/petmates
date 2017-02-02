@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, Response } from '@angular/http';
 import { Events, Config } from 'ionic-angular';
-import { AuthService } from './auth';
+import { AuthService } from '../pages/auth/auth.service';
 import { Pet } from '../models/Pet';
 import { NearbyPet } from '../models/NearbyPet';
 import { IResponse } from '../models/interfaces/IResponse';

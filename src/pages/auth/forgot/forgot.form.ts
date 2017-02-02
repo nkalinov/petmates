@@ -1,6 +1,6 @@
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { AuthService } from '../../../providers/auth';
+import { AuthService } from '../auth.service';
 
 @Component({
     templateUrl: 'forgot.form.html'

@@ -35,6 +35,12 @@ export class AuthPage {
         );
     }
 
+    signup() {
+        this.store.dispatch(
+            this.authActions.signup(this.user)
+        );
+    }
+
     loginFacebook() {
         // const loading = this.loadingCtrl.create({
         //     content: 'Logging via Facebook...'
@@ -75,9 +81,6 @@ export class AuthPage {
 
                 let options = new FileUploadOptions();
                 options.fileKey = 'picture';
-                options.headers = {
-                    'Authorization': this.auth.token
-                };
                 const ft = new FileTransfer();
                 ft.upload(
                     images[0],

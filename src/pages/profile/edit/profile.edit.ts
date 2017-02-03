@@ -1,10 +1,12 @@
 import { ImagePicker } from 'ionic-native';
-import { ViewController, Events, Config, LoadingController } from 'ionic-angular';
+import { ViewController, Events, Config, LoadingController, NavParams } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { AuthService } from '../../auth/auth.service';
 import { User } from '../../../models/User';
 import { makeFileRequest } from '../../../utils/common';
 import { LocationService } from '../../../providers/location.service';
+import { AppState } from '../../../app/state';
+import { Store } from '@ngrx/store';
+import { AuthActions } from '../../auth/auth.actions';
 
 @Component({
     templateUrl: 'profile.edit.html'
@@ -14,15 +16,22 @@ export class ProfileEdit {
     user: User; // copy
 
     constructor(private viewCtrl: ViewController,
-                private auth: AuthService,
                 private location: LocationService,
                 private loadingCtrl: LoadingController,
                 private config: Config,
-                private events: Events) {
-        this.user = new User(this.auth.user);
+                private events: Events,
+                private store: Store<AppState>,
+                private authActions: AuthActions,
+                navParams: NavParams) {
+        this.user = new User(navParams.get('user'));
+        // this.store.select(state => state.auth).subscribe(auth => {
+        //     if (!auth.editing) {
+        //         this.close();
+        //     }
+        // });
     }
 
-    cancel() {
+    close() {
         this.viewCtrl.dismiss();
     }
 
@@ -36,10 +45,11 @@ export class ProfileEdit {
     }
 
     save() {
-        const { name, email, picture, password, location, city, region, country } = this.user;
-        this.auth.update({ name, email, picture, password, location, city, region, country }).then(() => {
-            this.cancel();
-        });
+        this.store.dispatch(
+            this.authActions.update(this.user)
+        );
+        // todo close AFTER successful update
+        this.close();
     }
 
     changePicture() {
@@ -54,9 +64,6 @@ export class ProfileEdit {
 
                 let options = new FileUploadOptions();
                 options.fileKey = 'picture';
-                options.headers = {
-                    'Authorization': this.auth.token
-                };
                 const ft = new FileTransfer();
                 ft.upload(images[0], `${this.config.get('API')}/upload`,
                     (res: any) => {
@@ -84,7 +91,7 @@ export class ProfileEdit {
     }
 
     fileChangeEvent(fileInput: any) {
-        makeFileRequest(`${this.config.get('API')}/upload`, fileInput.target.files[0], this.auth.token).then(
+        makeFileRequest(`${this.config.get('API')}/upload`, fileInput.target.files[0]).then(
             (res: any) => {
                 if (res.response.success) {
                     this.user.pic = res.response.data.url;

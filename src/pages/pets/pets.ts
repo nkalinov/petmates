@@ -1,13 +1,21 @@
 import { ModalController, NavController } from 'ionic-angular';
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { PetEditPage } from './edit/PetEditPage';
+import { Pet } from '../../models/Pet';
 
 @Component({
     selector: 'pets-list',
-    templateUrl: 'pets.html'
+    templateUrl: 'pets.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
+
 export class PetsPage {
+    @Input()
+    pets: Pet[];
+
+    @Input()
+    canCreate: boolean = false;
 
     constructor(public auth: AuthService,
                 private nav: NavController,
@@ -15,7 +23,9 @@ export class PetsPage {
     }
 
     petEdit(pet) {
-        this.nav.push(PetEditPage, { pet });
+        if (this.canCreate) {
+            this.nav.push(PetEditPage, { pet });
+        }
     }
 
     petCreateModal() {

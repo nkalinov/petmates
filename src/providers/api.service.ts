@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
-import { Events, Config } from 'ionic-angular';
+import { Config, Platform } from 'ionic-angular';
 import { Store } from '@ngrx/store';
 import { AppState } from '../app/state';
+import { makeFileRequest } from '../utils/common';
 
 @Injectable()
 export class ApiService {
-    token: string;
+    private token: string;
 
     constructor(private http: Http,
-                private events: Events,
                 private config: Config,
+                private platform: Platform,
                 private store: Store<AppState>) {
 
         this.store.select(state => state.auth).subscribe(auth => {
@@ -50,10 +51,30 @@ export class ApiService {
             .map(res => res.json());
     }
 
+    upload(image, onSuccess, onError) {
+        if (this.platform.is('cordova')) {
+            // mobile
+            const options = new FileUploadOptions();
+            options.fileKey = 'picture';
+            options.headers = { 'Authorization': this.token };
+
+            const ft = new FileTransfer();
+            ft.upload(image, `${this.config.get('API')}/upload`,
+                res => onSuccess(JSON.parse(res.response)),
+                onError,
+                options
+            );
+        } else {
+            // web
+            makeFileRequest(`${this.config.get('API')}/upload`, image, this.token)
+                .then(onSuccess, onError);
+        }
+    }
+
     private getHeaders(secure: boolean = true) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
-        if (secure) {
+        if (secure && this.token) {
             headers.append('Authorization', this.token);
         }
         return headers;

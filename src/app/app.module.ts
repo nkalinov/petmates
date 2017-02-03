@@ -17,7 +17,7 @@ import { NearbyService } from '../providers/nearby.service';
 import { LocationService } from '../providers/location.service';
 import { ForgotForm } from '../pages/auth/forgot/forgot.form';
 import { AuthPage } from '../pages/auth/auth.page';
-import { ConversationsListPage } from '../pages/chat/conversations.list';
+import { ConversationsListPage } from '../pages/chat/chats-list.page';
 import { ConversationPage } from '../pages/chat/view/conversation';
 import { ConversationEditPage } from '../pages/chat/edit/conversation.edit';
 import { ConversationEditMembersPage } from '../pages/chat/edit/conversation.edit.members';
@@ -66,6 +66,10 @@ import { AppEffects } from './app.effects';
 import rootReducer from './rootReducer';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { ApiService } from '../providers/api.service';
+import { SocketEffects } from '../effects/socket.effects';
+import { SocketActions } from '../actions/socket.actions';
+import { ChatEffects } from '../pages/chat/chat.effects';
+import { ChatActions } from '../pages/chat/chat.actions';
 
 const pages: Array<any> = [
     PetMatesApp,
@@ -73,32 +77,32 @@ const pages: Array<any> = [
     ForgotForm,
     AuthPage,
 
-    ConversationsListPage,
-    ConversationPage,
-    ConversationEditPage,
-    ConversationEditMembersPage,
-
-    HelpPage,
-
-    MapPage,
-    StartWalkPage,
-
-    MatesPage,
-    MateViewPage,
-    MatesSearchPage,
-    MatesAcceptedPage,
-    MatesPendingPage,
-    MatesRequestedPage,
-
-    NearbyPage,
-    NearbyPeoplePage,
-    NearbyPetsPage,
-    NearbyEventsPage,
-    EventEditPage,
-    EventViewPage,
-    NearybyPlacesPage,
-    PlaceEditPage,
-    ReportModalPage,
+    // ConversationsListPage,
+    // ConversationPage,
+    // ConversationEditPage,
+    // ConversationEditMembersPage,
+    //
+    // HelpPage,
+    //
+    // MapPage,
+    // StartWalkPage,
+    //
+    // MatesPage,
+    // MateViewPage,
+    // MatesSearchPage,
+    // MatesAcceptedPage,
+    // MatesPendingPage,
+    // MatesRequestedPage,
+    //
+    // NearbyPage,
+    // NearbyPeoplePage,
+    // NearbyPetsPage,
+    // NearbyEventsPage,
+    // EventEditPage,
+    // EventViewPage,
+    // NearybyPlacesPage,
+    // PlaceEditPage,
+    // ReportModalPage,
 
     PetsPage,
     PetEditPage,
@@ -133,6 +137,8 @@ const pages: Array<any> = [
         }),
         EffectsModule.run(AppEffects),
         EffectsModule.run(AuthEffects),
+        EffectsModule.run(SocketEffects),
+        EffectsModule.run(ChatEffects),
         IonicImageViewerModule
     ],
     bootstrap: [IonicApp],
@@ -142,23 +148,26 @@ const pages: Array<any> = [
         ApiService,
         AuthService,
         SocketService,
-        BreedService,
         WalkService,
         MatesService,
-        ChatService,
         NearbyService,
         LocationService,
         EventsService,
         PlacesService,
         ReportsService,
         PetService,
+        BreedService,
+        ChatService,
         {
             provide: ErrorHandler,
             useClass: IonicErrorHandler
         },
+
         // actions
         AuthActions,
-        AppActions
+        AppActions,
+        ChatActions,
+        SocketActions
     ]
 })
 export class AppModule {

@@ -2,16 +2,15 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, toPayload } from '@ngrx/effects';
 import { Observable } from 'rxjs/Observable';
 import { AuthActions } from './auth.actions';
-import { Events } from 'ionic-angular';
 import { AppActions } from '../../app/app.actions';
 import { Storage } from '@ionic/storage';
 import { AuthService } from './auth.service';
 import { IResponse } from '../../models/interfaces/IResponse';
+import { User } from '../../models/User';
 
 @Injectable()
 export class AuthEffects {
-    constructor(private events: Events,
-                private storage: Storage,
+    constructor(private storage: Storage,
                 private actions$: Actions,
                 private authService: AuthService,
                 private appActions: AppActions,
@@ -57,6 +56,20 @@ export class AuthEffects {
         )
         .catch(() => Observable.of(this.authActions.logout()));
 
+    @Effect()
+    signup$ = this.actions$
+        .ofType(AuthActions.SIGNUP)
+        .map(toPayload)
+        .switchMap(data =>
+            this.authService.signup(data)
+                .map(res =>
+                    res.success
+                        ? this.authActions.login(data.email, data.password)
+                        : this.appActions.error(res.msg)
+                )
+                .catch(e => Observable.of(this.appActions.error(e.toString())))
+        );
+
     @Effect({ dispatch: false })
     logout$ = this.actions$
         .ofType(AuthActions.LOGOUT)
@@ -65,4 +78,30 @@ export class AuthEffects {
 
             return this.appActions.unhandled();
         });
+
+    @Effect()
+    delete$ = this.actions$
+        .ofType(AuthActions.DELETE_PROFILE)
+        .switchMap(() =>
+            this.authService.deleteProfile()
+                .map((res: IResponse) =>
+                    res.success
+                        ? this.authActions.logout()
+                        : this.appActions.error(res.msg))
+        )
+        .catch(e => Observable.of(e.toString()));
+
+    @Effect()
+    update$ = this.actions$
+        .ofType(AuthActions.UPDATE)
+        .map(toPayload)
+        .switchMap((data: User) =>
+            this.authService.update(data)
+                .map(res =>
+                    res.success
+                        ? this.authActions.updateSuccess(data)
+                        : this.appActions.error(res.msg)
+                )
+                .catch(e => Observable.of(this.appActions.error(e.toString())))
+        );
 }

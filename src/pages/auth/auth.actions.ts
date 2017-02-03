@@ -1,5 +1,6 @@
 import { Action } from '@ngrx/store';
 import { Injectable } from '@angular/core';
+import { User } from '../../models/User';
 
 @Injectable()
 export class AuthActions {
@@ -7,9 +8,10 @@ export class AuthActions {
     static LOGIN_SUCCESS = 'AUTH_LOGIN_SUCCESS';
     static REFRESH = 'AUTH_REFRESH';
     static LOGOUT = 'AUTH_LOGOUT';
-
+    static DELETE_PROFILE = 'AUTH_DELETE_PROFILE';
     static SIGNUP = 'AUTH_SIGNUP';
     static UPDATE = 'AUTH_UPDATE_USER';
+    static UPDATE_SUCCESS = 'AUTH_UPDATE_USER_SUCCESS';
 
     login(email, password): Action {
         return {
@@ -43,17 +45,30 @@ export class AuthActions {
         };
     }
 
-    signup(data: any): Action {
+    deleteProfile(): Action {
         return {
-            type: AuthActions.SIGNUP,
-            payload: data
+            type: AuthActions.DELETE_PROFILE
         };
     }
 
-    update(data: any): Action {
+    signup(payload: User): Action {
+        return {
+            type: AuthActions.SIGNUP,
+            payload
+        };
+    }
+
+    update(payload: User): Action {
         return {
             type: AuthActions.UPDATE,
-            payload: data
+            payload
+        };
+    }
+
+    updateSuccess(payload: User): Action {
+        return {
+            type: AuthActions.UPDATE_SUCCESS,
+            payload
         };
     }
 }

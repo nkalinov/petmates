@@ -8,6 +8,9 @@ import { LocalNotifications } from 'ionic-native';
 import { MatesService } from './mates.service';
 import { IFriendship } from '../models/interfaces/IFriendship';
 import { userIcon, petIcon } from '../utils/icons';
+import { AppState } from '../app/state';
+import { Store } from '@ngrx/store';
+import { User } from '../models/User';
 
 @Injectable()
 export class WalkService {
@@ -17,18 +20,24 @@ export class WalkService {
     private walks: BehaviorSubject<Walk[]> = new BehaviorSubject([]);
     private stopEmitCoords: Function;
 
-    constructor(private auth: AuthService,
-                private mates: MatesService,
-                private sockets: SocketService) {
+    private user: User;
+
+    constructor(private mates: MatesService,
+                private sockets: SocketService,
+                private store: Store<AppState>) {
+
+        this.store.select(state => state.auth.user).subscribe(user => {
+            this.user = user;
+        });
         this.walks$ = this.walks.asObservable();
     }
 
     init(coords: L.LatLngExpression): L.Marker {
         this.walk = new Walk({
             coords,
-            user: this.auth.user,
+            user: this.user,
             marker: L.marker(coords, {
-                icon: userIcon(`${this.auth.user.pic}`, 'my-marker')
+                icon: userIcon(`${this.user.pic}`, 'my-marker')
             })
         });
 
@@ -36,7 +45,7 @@ export class WalkService {
     }
 
     start(petId: string) {
-        this.walk.pet = this.auth.user.pets.find((p: Pet) => p._id === petId).toPartial();
+        this.walk.pet = this.user.pets.find((p: Pet) => p._id === petId).toPartial();
         this.walk.start();
         this.sockets.socket.emit('walks:start', this.walk.toPartial());
         this.walk.marker.setIcon(petIcon(this.walk.pet.pic, 'my-marker'));
@@ -49,7 +58,7 @@ export class WalkService {
             this.stopEmitCoords();
             this.walk.stop();
             this.walk.pet = null;
-            this.walk.marker.setIcon(userIcon(this.auth.user.pic, 'my-marker'));
+            this.walk.marker.setIcon(userIcon(this.user.pic, 'my-marker'));
         }
     }
 

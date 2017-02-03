@@ -43,7 +43,7 @@
             </button>
         </form>
 
-        <form class="sign-up" (ngSubmit)="auth.signup(user)" *ngSwitchCase="'sign-up'" #signupForm="ngForm">
+        <form class="sign-up" (ngSubmit)="signup()" *ngSwitchCase="'sign-up'" #signupForm="ngForm">
             <div padding-bottom>
                 <button ion-button icon-left small block type="button" color="facebook"
                         (click)="loginFacebook()">

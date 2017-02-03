@@ -1,17 +1,15 @@
-import { Injectable } from '@angular/core';
-import { Http, Headers } from '@angular/http';
-import { Events, Config } from 'ionic-angular';
+import { forwardRef, Inject, Injectable } from '@angular/core';
+import { Events } from 'ionic-angular';
 import { IBreed } from '../models/interfaces/IBreed';
-import { AuthService } from '../pages/auth/auth.service';
+import { ApiService } from './api.service';
 
 @Injectable()
 export class BreedService {
     private cache: IBreed[];
 
-    constructor(private http: Http,
-                private events: Events,
-                private auth: AuthService,
-                private config: Config) {
+    constructor(@Inject(forwardRef(() => ApiService)) private http: ApiService,
+                private events: Events) {
+
     }
 
     findBreedById(id: string): IBreed {
@@ -25,10 +23,7 @@ export class BreedService {
             if (this.cache) {
                 resolve(this.cache);
             } else {
-                let headers = new Headers();
-                headers.append('Authorization', this.auth.token);
-                this.http.get(`${this.config.get('API')}/breeds`, { headers })
-                    .map(res => res.json())
+                this.http.get('/breeds')
                     .subscribe(
                         res => {
                             if (res.success) {

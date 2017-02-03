@@ -82,7 +82,7 @@ router.post('/signup', (req, res) => {
 
     user.save(err => {
         if (err)
-            return res.json({ success: false, msg: err });
+            return res.json({ success: false, msg: 'Username or email already registered' });
 
         return res.json({ success: true });
     });

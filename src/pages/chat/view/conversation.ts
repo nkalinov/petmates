@@ -39,9 +39,9 @@ export class ConversationPage {
             }
         }
 
-        this.chats.getMessages(this.conversation).then(() => {
-            this.scrollToBottom(0);
-        }, () => this.nav.pop());
+        // this.chats.getMessages(this.conversation).then(() => {
+        //     this.scrollToBottom(0);
+        // }, () => this.nav.pop());
     }
 
     ionViewWillLeave() {

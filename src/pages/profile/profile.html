@@ -8,7 +8,6 @@
         <ion-title>Profile</ion-title>
         <ion-buttons end>
             <button ion-button icon-only right
-                    [hidden]="edit"
                     (click)="openDangerSheet()">
                 <ion-icon name="settings"></ion-icon>
             </button>
@@ -17,16 +16,16 @@
 </ion-header>
 
 <ion-content>
-    <ion-card>
+    <ion-card *ngIf="user">
         <ion-item>
             <ion-avatar item-left>
-                <mate-image [image]="auth.user.pic"></mate-image>
+                <mate-image [image]="user.pic"></mate-image>
             </ion-avatar>
-            <h2>{{ auth.user.name }}</h2>
-            <p *ngIf="auth.user.city && auth.user.country">
-                {{ auth.user.city + ', ' + auth.user.country }}
+            <h2>{{ user.name }}</h2>
+            <p *ngIf="user.city && user.country">
+                {{ user.city + ', ' + user.country }}
             </p>
-            <p>{{ auth.user.email }} (private)</p>
+            <p>{{ user.email }} (private)</p>
         </ion-item>
         <ion-item>
             <button ion-button color="primary" clear item-left
@@ -35,5 +34,5 @@
             </button>
         </ion-item>
     </ion-card>
-    <pets-list></pets-list>
+    <pets-list *ngIf="user" [pets]="user.pets" [canCreate]="true"></pets-list>
 </ion-content>

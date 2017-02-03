@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, toPayload } from '@ngrx/effects';
-import { Events } from 'ionic-angular';
+import { AlertController } from 'ionic-angular';
 import { AppActions } from './app.actions';
 
 @Injectable()
 export class AppEffects {
     constructor(private actions$: Actions,
-                private events: Events) {
+                private alertCtrl: AlertController) {
     }
 
     @Effect({ dispatch: false })
@@ -14,6 +14,10 @@ export class AppEffects {
         .ofType(AppActions.APP_ERROR)
         .map(toPayload)
         .do(payload => {
-            this.events.publish('alert:error', payload.msg);
+            this.alertCtrl.create({
+                title: 'Error',
+                subTitle: payload.msg,
+                buttons: ['OK']
+            }).present();
         });
 }

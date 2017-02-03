@@ -1,8 +1,5 @@
-import { Events, Config } from 'ionic-angular';
-import { Storage } from '@ionic/storage';
 import { Injectable, EventEmitter } from '@angular/core';
 import { Headers } from '@angular/http';
-import { Pet } from '../../models/Pet';
 import { Observable } from 'rxjs/Observable';
 import { User } from '../../models/User';
 import { Facebook, FacebookLoginResponse } from 'ionic-native';
@@ -10,14 +7,11 @@ import { ApiService } from '../../providers/api.service';
 
 @Injectable()
 export class AuthService {
-    user: User;
-    token: string;
+    user: User; // todo remove
+    token: string; // todo remove
     regionUpdated: EventEmitter<string> = new EventEmitter<string>();
 
-    constructor(private http: ApiService,
-                private events: Events,
-                private config: Config,
-                private storage: Storage) {
+    constructor(private http: ApiService) {
     }
 
     refresh(token) {
@@ -31,6 +25,14 @@ export class AuthService {
 
     login(email, password) {
         return this.http.post('/auth', { email, password }, false);
+    }
+
+    signup(data) {
+        return this.http.post('/auth/signup', data, false);
+    }
+
+    deleteProfile() {
+        return this.http.delete('/user');
     }
 
     // todo
@@ -63,84 +65,8 @@ export class AuthService {
         });
     }
 
-    signup(data) {
-        return this.http.post('/auth/signup', data);
-        // .map(res => res.json())
-        // .subscribe(
-        //     (res: any) => {
-        //         if (res.success) {
-        //             // this.login(data.email, data.password);
-        //         } else {
-        //             this.events.publish('alert:error', 'Username or email already registered');
-        //         }
-        //     },
-        //     (err) => {
-        //         this.events.publish('alert:error', err);
-        //     }
-        // );
-    }
-
-    update(data) {
-        let headers = new Headers();
-        headers.append('Authorization', this.token);
-        headers.append('Content-Type', 'application/json');
-
-        return new Promise((resolve, reject) => {
-            // this.http
-            //     .put(
-            //         `${this.config.get('API')}/user`,
-            //         JSON.stringify(data),
-            //         { headers: headers }
-            //     )
-            //     .map(res => res.json())
-            //     .subscribe(
-            //         res => {
-            //             if (res.success) {
-            //                 // if (res.data) {
-            //                 if (data.region && data.region !== this.user.region) {
-            //                     this.regionUpdated.emit(data.region);
-            //                 }
-            //                 this.parseUser(res.data);
-            //                 // }
-            //                 resolve(this.user);
-            //             } else {
-            //                 this.events.publish('alert:error', res.msg);
-            //                 reject(res.msg);
-            //             }
-            //         },
-            //         err => {
-            //             this.events.publish('alert:error', err.text());
-            //             reject(err.text());
-            //         }
-            //     );
-        });
-    }
-
-    deleteProfile() {
-        let headers = new Headers();
-        headers.append('Authorization', this.token);
-        // this.http
-        //     .delete(`${this.config.get('API')}/user`,
-        //         { headers: headers }
-        //     )
-        //     .map(res => res.json())
-        //     .subscribe(
-        //         (res: any) => {
-        //             if (res.success) {
-        //                 this.logout();
-        //             } else {
-        //                 this.events.publish('alert:error', res.msg);
-        //             }
-        //         },
-        //         (err: Response) => {
-        //             this.events.publish('alert:error', err.text());
-        //         }
-        //     );
-    }
-
-    logout() {
-        this.cleanUser();
-        this.events.publish('user:logout');
+    update({ name, email, picture, password, location, city, region, country }: User) {
+        return this.http.put('/user', { name, email, picture, password, location, city, region, country });
     }
 
     submitForgotRequest(email: string) {
@@ -170,29 +96,29 @@ export class AuthService {
 
     checkResetToken(token: string): Observable<any> {
         return new Observable(observer => {
-            this.http
-                .get(`${this.config.get('API')}/auth/reset/${token}`)
-                .map(res => res.json())
-                .subscribe(
-                    (res: any) => {
-                        if (!res.success) {
-                            this.events.publish('alert:error', res.msg);
-                        }
-                        observer.next(res);
-                        observer.complete();
-                    },
-                    (err) => {
-                        this.events.publish('alert:error', err);
-                        observer.next(err);
-                        observer.complete();
-                    }
-                );
+            // this.http
+            //     .get(`${this.config.get('API')}/auth/reset/${token}`)
+            //     .map(res => res.json())
+            //     .subscribe(
+            //         (res: any) => {
+            //             if (!res.success) {
+            //                 this.events.publish('alert:error', res.msg);
+            //             }
+            //             observer.next(res);
+            //             observer.complete();
+            //         },
+            //         (err) => {
+            //             this.events.publish('alert:error', err);
+            //             observer.next(err);
+            //             observer.complete();
+            //         }
+            //     );
         });
     }
 
     changePassword(token: string, password: string): Observable<any> {
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
+        // let headers = new Headers();
+        // headers.append('Content-Type', 'application/json');
 
         return new Observable(observer => {
             // this.http
@@ -220,23 +146,5 @@ export class AuthService {
             //         }
             //     );
         });
-    }
-
-    private cleanUser() {
-        this.storage.remove('id_token');
-        this.user = new User();
-        this.token = null;
-    }
-
-    private parseUser(data: any) {
-        if (data) {
-            const user = new User(data);
-            user.password = '';
-            user.pets = user.pets.map(pet => new Pet(pet));
-            user.mates.forEach(mate => {
-                mate.friend = new User(mate.friend);
-            });
-            this.user = user;
-        }
     }
 }

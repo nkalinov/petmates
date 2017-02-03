@@ -1,29 +1,17 @@
-import { Injectable } from '@angular/core';
-import { Http, Headers } from '@angular/http';
-import { Config, Events } from 'ionic-angular';
-import { AuthService } from '../pages/auth/auth.service';
+import { forwardRef, Inject, Injectable } from '@angular/core';
+import { Events } from 'ionic-angular';
+import { ApiService } from './api.service';
 
 @Injectable()
 export class ReportsService {
 
-    constructor(private http: Http,
-                private config: Config,
-                private events: Events,
-                private auth: AuthService) {
+    constructor(@Inject(forwardRef(() => ApiService)) private http: ApiService,
+                private events: Events) {
     }
 
     createReport(description: string, id: string, type: 'user' | 'place') {
         return new Promise((resolve, reject) => {
-            let headers = new Headers();
-            headers.append('Authorization', this.auth.token);
-            headers.append('Content-Type', 'application/json');
-
-            this.http.post(`${this.config.get('API')}/reports`, JSON.stringify({
-                description,
-                id,
-                type
-            }), { headers })
-                .map(res => res.json())
+            this.http.post(`/reports`, { description, id, type })
                 .subscribe(
                     res => {
                         if (res.success) {

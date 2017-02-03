@@ -2,11 +2,9 @@ import { Events, Nav, Platform, AlertController } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
 import { AuthPage } from '../pages/auth/auth.page';
 import { AuthService } from '../pages/auth/auth.service';
-import { WalkService } from '../providers/walk.service';
 import { getMenu } from '../utils/common';
 import { SocketService } from '../providers/socket.service';
 import { MatesService } from '../providers/mates.service';
-import { ChatService } from '../providers/chat.service';
 import { ProfilePage } from '../pages/profile/profile';
 import { Store } from '@ngrx/store';
 import { AppState } from './state';
@@ -20,17 +18,15 @@ export class PetMatesApp {
     @ViewChild(Nav) nav: Nav;
     rootPage: any;
     pages: any[];
-    newRequests: number;
+    newRequests: number; // todo from store
 
     private defaultRootPage: any = ProfilePage;
 
     constructor(private auth: AuthService,
-                private walk: WalkService,
                 private platform: Platform,
                 private events: Events,
                 private sockets: SocketService,
                 private mates: MatesService,
-                private chat: ChatService,
                 private alertCtrl: AlertController,
                 private store: Store<AppState>,
                 private authActions: AuthActions) {
@@ -42,7 +38,7 @@ export class PetMatesApp {
             this.store.select(state => state.auth.user).subscribe(user => {
                 if (user) {
                     // logged in
-                    this.loggedIn(user.region);
+                    this.loggedIn();
                 } else {
                     // logged out
                     this.loggedOut();
@@ -76,27 +72,21 @@ export class PetMatesApp {
         }
     }
 
-    private loggedIn(region: string) {
-        this.mates.pending$.subscribe((count) => {
-            this.newRequests = count;
-        });
-        this.mates.sortMatesByStatus();
+    private loggedIn() {
+        // this.mates.pending$.subscribe((count) => {
+        //     this.newRequests = count;
+        // });
+        // this.mates.sortMatesByStatus();
 
         // todo get conversations list and show badge in menu on unread msgs
 
-        this.sockets.init(region).then(socket => {
-            this.pages = getMenu(true); // set logged in menu
+        // set logged in menu
+        this.pages = getMenu(true);
 
-            // open default logged in page
-            this.openPage(
-                this.pages.find(page => page.component === this.defaultRootPage)
-            );
-
-            // register socket events
-            this.chat.registerSocketEvents(socket);
-            this.mates.registerSocketEvents(socket);
-            this.walk.registerSocketEvents(socket);
-        });
+        // open default logged in page
+        this.openPage(
+            this.pages.find(page => page.component === this.defaultRootPage)
+        );
     }
 
     private loggedOut(err?) {

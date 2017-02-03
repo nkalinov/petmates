@@ -1,25 +1,34 @@
-import { Injectable } from '@angular/core';
+import { forwardRef, Inject, Injectable } from '@angular/core';
 import { Geolocation, Geoposition } from 'ionic-native';
 import { Http } from '@angular/http';
 import { Events } from 'ionic-angular';
 import { AuthService } from '../pages/auth/auth.service';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
+import { AppState } from '../app/state';
+import { Store } from '@ngrx/store';
+import { User } from '../models/User';
 
 @Injectable()
 export class LocationService {
     coords$;
     private coords = new BehaviorSubject([]);
+    private user: User;
 
     constructor(private http: Http,
-                private auth: AuthService,
-                private events: Events) {
+                @Inject(forwardRef(() => AuthService)) private auth: AuthService,
+                private events: Events,
+                private store: Store<AppState>) {
+
         this.coords$ = this.coords.asObservable();
+        this.store.select(state => state.auth).subscribe(auth => {
+            this.user = auth.user;
+        });
     }
 
     getLastCoords() {
         return this.coords.getValue().length
             ? this.coords.getValue()
-            : this.auth.user.location.coordinates;
+            : this.user.location.coordinates;
     }
 
     getGeolocation(opts?: any): Promise<L.LatLngTuple> {
@@ -74,7 +83,7 @@ export class LocationService {
                     coordinates: data
                 };
                 this.http
-                    .get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${data[1]},${data[0]}&key=AIzaSyCInsRcxf6Y6zI7xkYA5VWDjEH9asjPP3g`)
+                    .get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${data[1]},${data[0]}&key=AIzaSyAj2LrPi4ccm8TmfHEW7l0B4HvwM6q9-K0`)
                     .map(res => res.json())
                     .subscribe(res => {
                         res.results[0]['address_components'].map((item) => {
@@ -91,9 +100,9 @@ export class LocationService {
                     }, err => {
                         // Google API LIMIT probably reached
                         // todo something
-                        location.city = this.auth.user.city;
-                        location.region = this.auth.user.region;
-                        location.country = this.auth.user.country;
+                        // location.city = this.auth.user.city;
+                        // location.region = this.auth.user.region;
+                        // location.country = this.auth.user.country;
                     }, () => resolve(location));
             });
         });

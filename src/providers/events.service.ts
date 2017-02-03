@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
-import { Http, Headers } from '@angular/http';
-import { AuthService } from '../pages/auth/auth.service';
-import { Config, Events } from 'ionic-angular';
+import { forwardRef, Inject, Injectable } from '@angular/core';
+import { Events } from 'ionic-angular';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { LocationService } from './location.service';
 import { Event } from '../models/Event';
+import { ApiService } from './api.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app/state';
+import { User } from '../models/User';
 
 @Injectable()
 export class EventsService {
@@ -12,25 +14,24 @@ export class EventsService {
     nearby$ = new BehaviorSubject([]);
     mine$ = new BehaviorSubject([]);
     going$ = new BehaviorSubject([]);
-
     _events: Array<Event> = []; // events with populated details
+    private user: User;
 
-    constructor(private http: Http,
+    constructor(@Inject(forwardRef(() => ApiService)) private http: ApiService,
                 private events: Events,
-                private config: Config,
-                private auth: AuthService,
-                private location: LocationService) {
+                private location: LocationService,
+                private store: Store<AppState>) {
+        this.store.select(state => state.auth).subscribe(auth => {
+            this.user = auth.user;
+        });
     }
 
     getNearbyEvents(force = false) {
         return new Promise((resolve, reject) => {
             if (force || this.nearby$.getValue().length <= 0) {
                 this.location.getGeolocation().then(coords => {
-                    let headers = new Headers();
-                    headers.append('Authorization', this.auth.token);
 
-                    this.http.get(`${this.config.get('API')}/nearby/events?coords=${coords}`, { headers })
-                        .map(res => res.json())
+                    this.http.get(`/nearby/events?coords=${coords}`)
                         .subscribe(
                             res => {
                                 if (res.success) {
@@ -56,11 +57,7 @@ export class EventsService {
     getEvents(force = false) {
         return new Promise((resolve, reject) => {
             if (force || this[`${this.mode}$`].getValue().length <= 0) {
-                let headers = new Headers();
-                headers.append('Authorization', this.auth.token);
-
-                this.http.get(`${this.config.get('API')}/events?filter=${this.mode}`, { headers })
-                    .map(res => res.json())
+                this.http.get(`/events?filter=${this.mode}`)
                     .subscribe(
                         res => {
                             if (res.success) {
@@ -84,14 +81,9 @@ export class EventsService {
 
     editOrCreateEvent(event: Event) {
         return new Promise((resolve, reject) => {
-            let headers = new Headers();
-            headers.append('Authorization', this.auth.token);
-            headers.append('Content-Type', 'application/json');
-
             if (event._id) {
                 // update
-                this.http.put(`${this.config.get('API')}/events/${event._id}`, JSON.stringify(event), { headers })
-                    .map(res => res.json())
+                this.http.put(`/events/${event._id}`, event)
                     .subscribe(
                         res => {
                             if (res.success) {
@@ -116,8 +108,7 @@ export class EventsService {
                     );
             } else {
                 // create
-                this.http.post(`${this.config.get('API')}/events`, JSON.stringify(event), { headers })
-                    .map(res => res.json())
+                this.http.post(`/events`, event)
                     .subscribe(
                         res => {
                             if (res.success) {
@@ -143,11 +134,7 @@ export class EventsService {
 
     cancelEvent(id: string) {
         return new Promise((resolve, reject) => {
-            let headers = new Headers();
-            headers.append('Authorization', this.auth.token);
-
-            this.http.delete(`${this.config.get('API')}/events/${id}`, { headers })
-                .map(res => res.json())
+            this.http.delete(`/events/${id}`)
                 .subscribe(
                     res => {
                         if (res.success) {
@@ -181,11 +168,7 @@ export class EventsService {
         }
 
         return new Promise((resolve, reject) => {
-            let headers = new Headers();
-            headers.append('Authorization', this.auth.token);
-
-            this.http.get(`${this.config.get('API')}/events/${id}`, { headers })
-                .map(res => res.json())
+            this.http.get(`/events/${id}`)
                 .subscribe(
                     res => {
                         if (res.success) {
@@ -213,16 +196,11 @@ export class EventsService {
 
     join(event: Event) {
         return new Promise((resolve, reject) => {
-            let headers = new Headers();
-            headers.append('Authorization', this.auth.token);
-            headers.append('Content-Type', 'application/json');
-
-            this.http.post(`${this.config.get('API')}/events/${event._id}/participants/${this.auth.user._id}`, {}, { headers })
-                .map(res => res.json())
+            this.http.post(`/events/${event._id}/participants/${this.user._id}`, {})
                 .subscribe(
                     res => {
                         if (res.success) {
-                            event.participants.push(this.auth.user);
+                            event.participants.push(this.user);
                             resolve();
                         } else {
                             this.events.publish('alert:error', res.msg);
@@ -239,16 +217,12 @@ export class EventsService {
 
     notGoing(event: Event) {
         return new Promise((resolve, reject) => {
-            let headers = new Headers();
-            headers.append('Authorization', this.auth.token);
-            headers.append('Content-Type', 'application/json');
-
-            this.http.delete(`${this.config.get('API')}/events/${event._id}/participants/${this.auth.user._id}`, { headers })
+            this.http.delete(`/events/${event._id}/participants/${this.user._id}`)
                 .map(res => res.json())
                 .subscribe(
                     res => {
                         if (res.success) {
-                            const index = event.participants.findIndex(obj => obj._id === this.auth.user._id);
+                            const index = event.participants.findIndex(obj => obj._id === this.user._id);
                             event.participants.splice(index, 1);
                             resolve();
                         } else {

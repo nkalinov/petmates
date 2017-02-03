@@ -1,20 +1,17 @@
-import { Injectable } from '@angular/core';
-import { Http, Headers } from '@angular/http';
-import { AuthService } from '../pages/auth/auth.service';
-import { Config, Events } from 'ionic-angular';
+import { forwardRef, Inject, Injectable } from '@angular/core';
+import { Events } from 'ionic-angular';
 import { User } from '../models/User';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { LocationService } from './location.service';
+import { ApiService } from './api.service';
 
 @Injectable()
 export class NearbyService {
     people$ = new BehaviorSubject([]);
     people: User[] = [];
 
-    constructor(private http: Http,
+    constructor(@Inject(forwardRef(() => ApiService)) private http: ApiService,
                 private events: Events,
-                private config: Config,
-                private auth: AuthService,
                 private location: LocationService) {
     }
 
@@ -30,12 +27,8 @@ export class NearbyService {
         return new Promise((resolve, reject) => {
             if (force || !this.people.length) {
 
-                let headers = new Headers();
-                headers.append('Authorization', this.auth.token);
-
                 this.http
-                    .get(`${this.config.get('API')}/nearby/people?coords=${coords}`, { headers: headers })
-                    .map(res => res.json())
+                    .get(`/nearby/people?coords=${coords}`)
                     .subscribe(
                         res => {
                             this.people = res.data.map(u => new User(u));

@@ -26,7 +26,14 @@ export class User {
     distance?: number;
 
     constructor(data?, myCoordinates?) {
-        Object.assign(this, data);
+        if(data) {
+            Object.assign(this, data);
+            this.password = '';
+            this.mates.forEach(mate => {
+                mate.friend = new User(mate.friend);
+            });
+            this.pets = this.pets.map(pet => new Pet(pet));
+        }
 
         if (myCoordinates && this.location && this.location.coordinates.length > 0) {
             const lat1 = this.location.coordinates[1];

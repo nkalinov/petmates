@@ -1,22 +1,31 @@
 import { AlertController, ActionSheetController, ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
 import { ProfileEdit } from './edit/profile.edit';
+import { AppState } from '../../app/state';
+import { Store } from '@ngrx/store';
+import { User } from '../../models/User';
+import { AuthActions } from '../auth/auth.actions';
 
 @Component({
     templateUrl: 'profile.html'
 })
 
 export class ProfilePage {
+    user: User;
 
-    constructor(public auth: AuthService,
+    constructor(public authActions: AuthActions,
                 private modalCtrl: ModalController,
                 private alertCtrl: AlertController,
-                private actionSheetCtrl: ActionSheetController) {
+                private actionSheetCtrl: ActionSheetController,
+                private store: Store<AppState>) {
+
+        this.store.select(state => state.auth.user).subscribe(user => {
+            this.user = user;
+        });
     }
 
     editModal() {
-        this.modalCtrl.create(ProfileEdit).present();
+        this.modalCtrl.create(ProfileEdit, { user: this.user }).present();
     }
 
     openDangerSheet() {
@@ -38,7 +47,9 @@ export class ProfilePage {
                                     {
                                         text: 'Delete',
                                         handler: () => {
-                                            this.auth.deleteProfile();
+                                            this.store.dispatch(
+                                                this.authActions.deleteProfile()
+                                            );
                                         }
                                     }
                                 ]
@@ -50,7 +61,9 @@ export class ProfilePage {
                 {
                     text: 'Logout',
                     handler: () => {
-                        this.auth.logout();
+                        this.store.dispatch(
+                            this.authActions.logout()
+                        );
                     }
                 },
                 {

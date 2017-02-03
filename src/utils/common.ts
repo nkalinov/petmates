@@ -3,7 +3,7 @@ import { MapPage } from '../pages/map/MapPage';
 import { AuthPage } from '../pages/auth/auth.page';
 import { ProfilePage } from '../pages/profile/profile';
 import { HelpPage } from '../pages/help/help';
-import { ConversationsListPage } from '../pages/chat/conversations.list';
+import { ConversationsListPage } from '../pages/chat/chats-list.page';
 import { NearbyPage } from '../pages/nearby/nearby';
 
 export function localISO(dateString?: string) {

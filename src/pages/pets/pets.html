@@ -1,10 +1,11 @@
 <ion-list>
     <ion-list-header>Pets</ion-list-header>
-    <button ion-item (click)="petCreateModal()">
+    <button ion-item *ngIf="canCreate"
+            (click)="petCreateModal()">
         <ion-icon item-left name="add"></ion-icon>
         <span>Add new pet</span>
     </button>
-    <button ion-item type="button" *ngFor="let d of auth.user.pets" (click)="petEdit(d)">
+    <button ion-item type="button" *ngFor="let d of pets" (click)="petEdit(d)">
         <ion-avatar item-left>
             <pet-image [image]="d.pic"></pet-image>
         </ion-avatar>
@@ -13,6 +14,6 @@
         <p><span [gender]="d.sex"></span>, <span [age]="d.birthday"></span></p>
     </button>
 </ion-list>
-<div *ngIf="auth.user.pets.length===0">
+<div *ngIf="pets.length===0">
     <p text-center>No pets? :( You should adopt one!</p>
 </div>

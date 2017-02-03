@@ -8,7 +8,6 @@ import { PetService } from '../../../providers/pet.service';
 import { Pet } from '../../../models/Pet';
 import { BreedPage } from './breed/breed';
 import { makeFileRequest } from '../../../utils/common';
-import { AuthService } from '../../auth/auth.service';
 
 @Component({
     templateUrl: 'PetEditPage.html'
@@ -19,7 +18,6 @@ export class PetEditPage {
     constructor(navParams: NavParams,
                 public viewCtrl: ViewController,
                 private pets: PetService,
-                private auth: AuthService,
                 private config: Config,
                 private nav: NavController,
                 private modalCtrl: ModalController,
@@ -71,9 +69,6 @@ export class PetEditPage {
         }).then(images => {
                 let options = new FileUploadOptions();
                 options.fileKey = 'picture';
-                options.headers = {
-                    'Authorization': this.auth.token
-                };
                 let ft = new FileTransfer();
                 ft.upload(images[0], encodeURI(`${this.config.get('API')}/upload`),
                     res => {
@@ -107,8 +102,7 @@ export class PetEditPage {
     public fileChangeEvent(fileInput: any) {
         makeFileRequest(
             `${this.config.get('API')}/upload`,
-            fileInput.target.files[0],
-            this.auth.token
+            fileInput.target.files[0]
         ).then(
             (res: any) => {
                 if (res.response.success) {

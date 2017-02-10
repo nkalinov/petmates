@@ -43,18 +43,18 @@ export class AuthEffects {
         .switchMap(() =>
             Observable
                 .fromPromise(this.storage.get('id_token'))
-        )
-        .switchMap(token =>
-            token
-                ? this.authService.refresh(token)
-                    .map((res: IResponse) =>
-                        res.success
-                            ? this.authActions.loginSuccess(token, res.data)
-                            : Observable.throw('Username does not exist or the token is invalid')
-                    )
-                : Observable.throw('No token in storage')
-        )
-        .catch(() => Observable.of(this.authActions.logout()));
+                .switchMap(token =>
+                    token
+                        ? this.authService.refresh(token)
+                        .map((res: IResponse) =>
+                            res.success
+                                ? this.authActions.loginSuccess(token, res.data)
+                                : Observable.throw('Username does not exist or the token is invalid')
+                        )
+                        : Observable.throw('No token in storage')
+                )
+                .catch(() => Observable.of(this.authActions.logout()))
+        );
 
     @Effect()
     signup$ = this.actions$
@@ -73,10 +73,8 @@ export class AuthEffects {
     @Effect({ dispatch: false })
     logout$ = this.actions$
         .ofType(AuthActions.LOGOUT)
-        .map(() => {
+        .do(() => {
             this.storage.remove('id_token');
-
-            return this.appActions.unhandled();
         });
 
     @Effect()
@@ -100,6 +98,20 @@ export class AuthEffects {
                 .map(res =>
                     res.success
                         ? this.authActions.updateSuccess(data)
+                        : this.appActions.error(res.msg)
+                )
+                .catch(e => Observable.of(this.appActions.error(e.toString())))
+        );
+
+    @Effect()
+    forgotRequest$ = this.actions$
+        .ofType(AuthActions.FORGOT_REQ)
+        .map(toPayload)
+        .switchMap((email: string) =>
+            this.authService.submitForgotRequest(email)
+                .map(res =>
+                    res.success
+                        ? this.authActions.submitForgotRequestSuccess(res.msg)
                         : this.appActions.error(res.msg)
                 )
                 .catch(e => Observable.of(this.appActions.error(e.toString())))

@@ -35,12 +35,10 @@ export class PetMatesApp {
             // Here you can do any higher level native things you might need.
             // StatusBar.styleDefault();
 
-            this.store.select(state => state.auth.user).subscribe(user => {
-                if (user) {
-                    // logged in
+            this.store.select(state => state.auth.connected).subscribe(connected => {
+                if (connected) {
                     this.loggedIn();
                 } else {
-                    // logged out
                     this.loggedOut();
                 }
             });
@@ -57,7 +55,6 @@ export class PetMatesApp {
                 this.showAlert(data, 'Info');
             });
         });
-
     }
 
     openPage(page) {

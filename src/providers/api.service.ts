@@ -4,6 +4,10 @@ import { Config, Platform } from 'ionic-angular';
 import { Store } from '@ngrx/store';
 import { AppState } from '../app/state';
 import { makeFileRequest } from '../utils/common';
+import { Observable, Observer } from 'rxjs';
+import { AppActions } from '../app/app.actions';
+import { ApiActions } from '../actions/api.actions';
+import { IResponseUpload } from '../models/interfaces/IResponseUpload';
 
 @Injectable()
 export class ApiService {
@@ -12,10 +16,12 @@ export class ApiService {
     constructor(private http: Http,
                 private config: Config,
                 private platform: Platform,
+                private appActions: AppActions,
+                private apiActions: ApiActions,
                 private store: Store<AppState>) {
 
-        this.store.select(state => state.auth).subscribe(auth => {
-            this.token = auth.token;
+        this.store.select(state => state.auth.token).subscribe(token => {
+            this.token = token;
         });
     }
 
@@ -51,24 +57,59 @@ export class ApiService {
             .map(res => res.json());
     }
 
-    upload(image, onSuccess, onError) {
-        if (this.platform.is('cordova')) {
-            // mobile
-            const options = new FileUploadOptions();
-            options.fileKey = 'picture';
-            options.headers = { 'Authorization': this.token };
+    upload(file) {
+        return Observable.create((observer: Observer<IResponseUpload>) => {
+            this.store.dispatch(this.apiActions.upload());
 
-            const ft = new FileTransfer();
-            ft.upload(image, `${this.config.get('API')}/upload`,
-                res => onSuccess(JSON.parse(res.response)),
-                onError,
-                options
-            );
-        } else {
-            // web
-            makeFileRequest(`${this.config.get('API')}/upload`, image, this.token)
-                .then(onSuccess, onError);
-        }
+            if (this.platform.is('cordova')) {
+                // mobile
+                const options = new FileUploadOptions();
+                options.fileKey = 'picture';
+                options.headers = { 'Authorization': this.token };
+
+                const ft = new FileTransfer();
+                ft.upload(file, `${this.config.get('API')}/upload`,
+                    // (res: FileUploadResult) => {
+                    (res: any) => {
+                        const response = JSON.parse(res.response);
+
+                        if (response.success) {
+                            this.store.dispatch(this.apiActions.uploadSuccess());
+                            observer.next(response);
+                        } else {
+                            this.store.dispatch(this.appActions.error(response.msg));
+                            observer.error(response);
+                        }
+                    },
+                    // (err: FileTransferError) => {
+                    (err: any) => {
+                        this.store.dispatch(this.appActions.error(err.body));
+                        observer.error(err);
+                    },
+                    options
+                );
+            } else {
+                // web
+                makeFileRequest(`${this.config.get('API')}/upload`, file, this.token)
+                    .then(
+                        (res: any) => {
+                            const response = res.response;
+
+                            if (response.success) {
+                                this.store.dispatch(this.apiActions.uploadSuccess());
+                                observer.next(response);
+                            } else {
+                                this.store.dispatch(this.appActions.error(response.msg));
+                                observer.error(response);
+                            }
+                        },
+                        err => {
+                            this.store.dispatch(this.appActions.error(err.toString()));
+                            observer.error(err);
+                        }
+                    );
+            }
+        });
     }
 
     private getHeaders(secure: boolean = true) {

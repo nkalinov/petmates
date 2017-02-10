@@ -1,6 +1,9 @@
 import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { AuthService } from '../auth.service';
+import { AuthActions } from '../auth.actions';
+import { AppState } from '../../../app/state';
+import { Store } from '@ngrx/store';
 
 @Component({
     templateUrl: 'forgot.form.html'
@@ -15,7 +18,14 @@ export class ForgotForm {
     password2: string = '';
 
     constructor(public viewCtrl: ViewController,
-                private auth: AuthService) {
+                private authActions: AuthActions,
+                private auth: AuthService,
+                private store: Store<AppState>) {
+    }
+
+    submitForgotRequest(email: string) {
+        this.store.dispatch(this.authActions.forgotRequest(email));
+        this.mode = 'verify';
     }
 
     checkResetToken() {
@@ -35,10 +45,5 @@ export class ForgotForm {
                 }
             }
         );
-    }
-
-    submitForgotRequest(email: string) {
-        this.auth.submitForgotRequest(email)
-            .then(() => this.mode = 'verify');
     }
 }

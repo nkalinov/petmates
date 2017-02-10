@@ -24,11 +24,6 @@ export class ProfileEdit {
                 private authActions: AuthActions,
                 navParams: NavParams) {
         this.user = new User(navParams.get('user'));
-        // this.store.select(state => state.auth).subscribe(auth => {
-        //     if (!auth.editing) {
-        //         this.close();
-        //     }
-        // });
     }
 
     close() {
@@ -48,7 +43,7 @@ export class ProfileEdit {
         this.store.dispatch(
             this.authActions.update(this.user)
         );
-        // todo close AFTER successful update
+        // todo close only AFTER successful update
         this.close();
     }
 

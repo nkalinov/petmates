@@ -70,6 +70,7 @@ import { SocketEffects } from '../effects/socket.effects';
 import { SocketActions } from '../actions/socket.actions';
 import { ChatEffects } from '../pages/chat/chat.effects';
 import { ChatActions } from '../pages/chat/chat.actions';
+import { ApiActions } from '../actions/api.actions';
 
 const pages: Array<any> = [
     PetMatesApp,
@@ -164,8 +165,9 @@ const pages: Array<any> = [
         },
 
         // actions
-        AuthActions,
+        ApiActions,
         AppActions,
+        AuthActions,
         ChatActions,
         SocketActions
     ]

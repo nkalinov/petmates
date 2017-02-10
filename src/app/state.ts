@@ -1,11 +1,8 @@
-import { User } from '../models/User';
 import { Conversation } from '../models/Conversation';
+import { AuthState } from '../pages/auth/auth.reducers';
 
 export interface AppState {
-    auth: {
-        user: User,
-        token: string
-    };
+    auth: AuthState;
     chat: {
         list: Conversation[]
     };

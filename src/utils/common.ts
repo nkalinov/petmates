@@ -123,14 +123,6 @@ export function getAge(fromdate, todate?) {
     return age.join('');
 }
 
-/**
- *
- * @param url
- * @param file
- * @param token
- * @param fieldName
- * @returns {Promise<R>|Promise<T>|Promise}
- */
 export function makeFileRequest(url: string, file: File, token?: string, fieldName: string = 'picture') {
     return new Promise((resolve, reject) => {
         let formData: any = new FormData();
@@ -141,7 +133,7 @@ export function makeFileRequest(url: string, file: File, token?: string, fieldNa
                 if (xhr.status === 200) {
                     resolve({ response: JSON.parse(xhr.response) });
                 } else {
-                    reject(xhr.response);
+                    reject(JSON.parse(xhr.response));
                 }
             }
         };

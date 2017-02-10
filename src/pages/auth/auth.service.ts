@@ -70,28 +70,7 @@ export class AuthService {
     }
 
     submitForgotRequest(email: string) {
-        return new Promise((resolve, reject) => {
-            // const headers = new Headers();
-            // headers.append('Content-Type', 'application/json');
-            // this.http
-            //     .post(`${this.config.get('API')}/auth/forgot`, JSON.stringify({ email }), { headers })
-            //     .map(res => res.json())
-            //     .subscribe(
-            //         res => {
-            //             if (res.success) {
-            //                 this.events.publish('alert:info', res.msg);
-            //                 resolve();
-            //             } else {
-            //                 this.events.publish('alert:error', res.msg);
-            //                 reject();
-            //             }
-            //         },
-            //         err => {
-            //             this.events.publish('alert:error', err);
-            //             reject();
-            //         }
-            //     );
-        });
+        return this.http.post('/auth/forgot', { email });
     }
 
     checkResetToken(token: string): Observable<any> {

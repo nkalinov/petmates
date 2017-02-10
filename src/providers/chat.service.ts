@@ -184,7 +184,7 @@ export class ChatService {
                 this.events.publish('alert:error', err);
                 reject();
             };
-            this.http.upload(file, onSuccess, onError);
+            // this.http.upload(file, onSuccess, onError);
         });
     }
 

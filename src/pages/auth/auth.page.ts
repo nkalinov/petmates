@@ -1,14 +1,15 @@
-import { ModalController, LoadingController, Config, Events } from 'ionic-angular';
+import { ModalController, Platform } from 'ionic-angular';
 import { ImagePicker } from 'ionic-native';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AuthService } from './auth.service';
 import { ForgotForm } from './forgot/forgot.form';
 import { LocationService } from '../../providers/location.service';
 import { User } from '../../models/User';
-import { makeFileRequest } from '../../utils/common';
 import { AuthActions } from './auth.actions';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../app/state';
+import { ApiService } from '../../providers/api.service';
+import { IResponseUpload } from '../../models/interfaces/IResponseUpload';
 
 @Component({
     selector: 'auth-page',
@@ -18,15 +19,15 @@ import { AppState } from '../../app/state';
 export class AuthPage {
     mode: string = 'login';
     user: User = new User();
+    @ViewChild('fileInput') fileInput: ElementRef;
 
-    constructor(public auth: AuthService,
+    constructor(private auth: AuthService,
+                private apiService: ApiService,
                 private modalCtrl: ModalController,
                 private locationService: LocationService,
-                private loadingCtrl: LoadingController,
-                private config: Config,
-                private events: Events,
                 private store: Store<AppState>,
-                private authActions: AuthActions) {
+                private authActions: AuthActions,
+                private platform: Platform) {
     }
 
     login() {
@@ -70,56 +71,30 @@ export class AuthPage {
     }
 
     changePicture() {
-        ImagePicker.getPictures({
-            maximumImagesCount: 1,
-            width: 500,
-            height: 500
-        }).then(images => {
-            if (images && images.length > 0) {
-                const loader = this.loadingCtrl.create();
-                loader.present();
-
-                let options = new FileUploadOptions();
-                options.fileKey = 'picture';
-                const ft = new FileTransfer();
-                ft.upload(
-                    images[0],
-                    encodeURI(`${this.config.get('API')}/upload`),
-                    (res: any) => {
-                        res.response = JSON.parse(res.response);
-
-                        if (res.response.success) {
-                            this.user.pic = res.response.data.url;
-                            this.user.picture = res.response.data.filename;
-                        } else {
-                            this.events.publish('alert:error', res.response.msg);
-                        }
-
-                        loader.dismiss();
-                    },
-                    err => {
-                        this.events.publish('alert:error', err.body);
-                        loader.dismiss();
-                    },
-                    options
-                );
-            }
-        }, err => {
-            this.events.publish('alert:error', err);
-        });
+        if (this.platform.is('cordova')) {
+            ImagePicker.getPictures({
+                maximumImagesCount: 1,
+                width: 500,
+                height: 500
+            }).then(images => {
+                if (images && images.length > 0) {
+                    this.apiService.upload(images[0])
+                        .subscribe(this.uploadSuccessCallback.bind(this));
+                }
+            });
+        } else {
+            // web
+            this.fileInput.nativeElement.click();
+        }
     }
 
-    // dev
     fileChangeEvent(fileInput: any) {
-        makeFileRequest(`${this.config.get('API')}/upload`, fileInput.target.files[0], this.auth.token).then(
-            (res: any) => {
-                if (res.response.success) {
-                    this.user.pic = res.response.data.url;
-                    this.user.picture = res.response.data.filename;
-                } else {
-                    this.events.publish('alert:error', res.response.msg);
-                }
-            },
-            err => console.error(err));
+        this.apiService.upload(fileInput.target.files[0])
+            .subscribe(this.uploadSuccessCallback.bind(this));
+    }
+
+    private uploadSuccessCallback(res: IResponseUpload) {
+        this.user.pic = res.data.url;
+        this.user.picture = res.data.filename;
     }
 }

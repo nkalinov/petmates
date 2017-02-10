@@ -35,27 +35,24 @@ export class ProfilePage {
                     text: 'Delete profile',
                     role: 'destructive',
                     handler: () => {
-                        actionSheet.dismiss().then(() => {
-                            const alert = this.alertCtrl.create({
-                                title: 'Confirm profile deletion',
-                                message: 'Are you sure?',
-                                buttons: [
-                                    {
-                                        text: 'Cancel',
-                                        role: 'cancel'
-                                    },
-                                    {
-                                        text: 'Delete',
-                                        handler: () => {
-                                            this.store.dispatch(
-                                                this.authActions.deleteProfile()
-                                            );
-                                        }
+                        this.alertCtrl.create({
+                            title: 'Confirm profile deletion',
+                            message: 'Are you sure?',
+                            buttons: [
+                                {
+                                    text: 'Cancel',
+                                    role: 'cancel'
+                                },
+                                {
+                                    text: 'Delete',
+                                    handler: () => {
+                                        this.store.dispatch(
+                                            this.authActions.deleteProfile()
+                                        );
                                     }
-                                ]
-                            });
-                            alert.present();
-                        });
+                                }
+                            ]
+                        }).present();
                     }
                 },
                 {

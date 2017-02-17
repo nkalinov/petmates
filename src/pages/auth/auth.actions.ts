@@ -6,7 +6,7 @@ import { User } from '../../models/User';
 export class AuthActions {
     static LOGIN = 'AUTH_LOGIN';
 
-    login(email, password): Action {
+    login(email: string, password: string): Action {
         return {
             type: AuthActions.LOGIN,
             payload: {
@@ -18,7 +18,7 @@ export class AuthActions {
 
     static LOGIN_SUCCESS = 'AUTH_LOGIN_SUCCESS';
 
-    loginSuccess(token, user): Action {
+    loginSuccess(token: string, user: User): Action {
         return {
             type: AuthActions.LOGIN_SUCCESS,
             payload: {
@@ -81,7 +81,7 @@ export class AuthActions {
 
     static FORGOT_REQ = 'AUTH_FORGOT_REQ';
 
-    forgotRequest(email: string): Action {
+    requestForgotToken(email: string): Action {
         return {
             type: AuthActions.FORGOT_REQ,
             payload: email
@@ -90,10 +90,51 @@ export class AuthActions {
 
     static FORGOT_REQ_SUCCESS = 'AUTH_FORGOT_REQ_SUCCESS';
 
-    submitForgotRequestSuccess(msg: string): Action {
+    requestForgotTokenSuccess(msg: string): Action {
         return {
             type: AuthActions.FORGOT_REQ_SUCCESS,
             payload: msg
+        };
+    }
+
+    static FORGOT_VERIFY_TOKEN = 'AUTH_FORGOT_VERIFY_TOKEN';
+
+    verifyToken(token: string): Action {
+        return {
+            type: AuthActions.FORGOT_VERIFY_TOKEN,
+            payload: token
+        };
+    }
+
+    static FORGOT_VERIFY_TOKEN_SUCCESS = 'AUTH_FORGOT_VERIFY_TOKEN_SUCCESS';
+
+    verifyTokenSuccess(): Action {
+        return {
+            type: AuthActions.FORGOT_VERIFY_TOKEN_SUCCESS
+        };
+    }
+
+    static FORGOT_CHANGE_PASSWORD = 'AUTH_FORGOT_CHANGE_PASSWORD';
+
+    changePassword(token: string, password: string): Action {
+        return {
+            type: AuthActions.FORGOT_CHANGE_PASSWORD,
+            payload: {
+                token,
+                password
+            }
+        };
+    }
+
+    static FORGOT_CHANGE_PASSWORD_SUCCESS = 'AUTH_FORGOT_CHANGE_PASSWORD_SUCCESS';
+
+    changePasswordSuccess(email?: string, password?: string): Action {
+        return {
+            type: AuthActions.FORGOT_CHANGE_PASSWORD_SUCCESS,
+            payload: {
+                email,
+                password
+            }
         };
     }
 }

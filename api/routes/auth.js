@@ -135,24 +135,34 @@ router.post('/forgot', (req, res) => {
 });
 
 // check reset token
-router.get('/reset/:token', function (req, res) {
+router.get('/reset/:token', (req, res) => {
+    const resetPasswordToken = req.params.token
+
+    if (!resetPasswordToken)
+        return res.json({ success: false, msg: 'Provide password reset token.' })
+
     User.findOne({
-        resetPasswordToken: req.params.token,
+        resetPasswordToken,
         resetPasswordExpires: {
             $gt: Date.now()
         }
     }, function (err, user) {
         if (!user)
-            return res.json({ success: false, msg: 'Password reset token is invalid or has expired.' });
+            return res.json({ success: false, msg: 'Password reset token is invalid or has expired.' })
 
-        res.json({ success: true });
+        res.json({ success: true })
     });
 });
 
 // change password
 router.post('/reset/:token', function (req, res) {
+    const resetPasswordToken = req.params.token
+
+    if (!resetPasswordToken)
+        return res.json({ success: false, msg: 'Provide password reset token.' })
+
     User.findOne({
-        resetPasswordToken: req.params.token,
+        resetPasswordToken,
         resetPasswordExpires: {
             $gt: Date.now()
         }

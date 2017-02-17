@@ -104,16 +104,47 @@ export class AuthEffects {
         );
 
     @Effect()
-    forgotRequest$ = this.actions$
+    requestToken$ = this.actions$
         .ofType(AuthActions.FORGOT_REQ)
         .map(toPayload)
         .switchMap((email: string) =>
-            this.authService.submitForgotRequest(email)
+            this.authService.requestToken(email)
                 .map(res =>
                     res.success
-                        ? this.authActions.submitForgotRequestSuccess(res.msg)
+                        ? this.authActions.requestForgotTokenSuccess(res.msg)
                         : this.appActions.error(res.msg)
                 )
                 .catch(e => Observable.of(this.appActions.error(e.toString())))
+        );
+
+    @Effect()
+    verifyToken$ = this.actions$
+        .ofType(AuthActions.FORGOT_VERIFY_TOKEN)
+        .map(toPayload)
+        .switchMap((token: string) =>
+            this.authService.verifyToken(token)
+                .map(res =>
+                    res.success
+                        ? this.authActions.verifyTokenSuccess()
+                        : this.appActions.error(res.msg)
+                )
+                .catch(e => Observable.of(this.appActions.error(e.toString())))
+        );
+
+    @Effect()
+    changePassword = this.actions$
+        .ofType(AuthActions.FORGOT_CHANGE_PASSWORD)
+        .map(toPayload)
+        .switchMap(({ token, password }) =>
+            this.authService.changePassword(token, password)
+                .map(res => ({ password, res }))
+                .catch(e => Observable.of(this.appActions.error(e.toString())))
+        )
+        .mergeMap(({ password, res }) => res.success
+            ? Observable.of(
+                this.authActions.changePasswordSuccess(),
+                this.authActions.login(res.data.email, password)
+            )
+            : Observable.of(this.appActions.error(res.msg))
         );
 }

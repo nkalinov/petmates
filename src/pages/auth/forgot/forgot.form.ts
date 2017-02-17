@@ -1,49 +1,47 @@
 import { ViewController } from 'ionic-angular';
-import { Component } from '@angular/core';
-import { AuthService } from '../auth.service';
+import { Component, OnDestroy } from '@angular/core';
 import { AuthActions } from '../auth.actions';
 import { AppState } from '../../../app/state';
 import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     templateUrl: 'forgot.form.html'
 })
 
-export class ForgotForm {
+export class ForgotForm implements OnDestroy {
     mode: 'request' | 'verify' = 'request';
     email: string = '';
     token: string = '';
-    tokenValid = false;
     password: string = '';
     password2: string = '';
 
+    tokenValid: boolean;
+    private subscription: Subscription;
+
     constructor(public viewCtrl: ViewController,
                 private authActions: AuthActions,
-                private auth: AuthService,
                 private store: Store<AppState>) {
+
+        this.subscription = this.store.select(state => state.auth.forgot.tokenValid)
+            .subscribe(tokenValid => this.tokenValid = tokenValid);
     }
 
-    submitForgotRequest(email: string) {
-        this.store.dispatch(this.authActions.forgotRequest(email));
+    requestToken() {
+        this.store.dispatch(this.authActions.requestForgotToken(this.email));
         this.mode = 'verify';
     }
 
-    checkResetToken() {
-        this.auth.checkResetToken(this.token).subscribe((res: any) => {
-            this.tokenValid = !!res.success;
-            if (!this.tokenValid) {
-                this.token = '';
-            }
-        });
+    verifyToken() {
+        this.store.dispatch(this.authActions.verifyToken(this.token));
     }
 
     changePassword() {
-        this.auth.changePassword(this.token, this.password).subscribe(
-            (res: any) => {
-                if (res.success) {
-                    this.viewCtrl.dismiss();
-                }
-            }
-        );
+        this.store.dispatch(this.authActions.changePassword(this.token, this.password));
+        this.viewCtrl.dismiss();
+    }
+
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
     }
 }

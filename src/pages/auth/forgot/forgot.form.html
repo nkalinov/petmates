@@ -21,7 +21,9 @@
         </ion-segment>
     </div>
     <div [ngSwitch]="mode" *ngIf="!tokenValid">
-        <form (ngSubmit)="submitForgotRequest(email)" *ngSwitchCase="'request'" #tokenForm="ngForm">
+        <form *ngSwitchCase="'request'"
+              (ngSubmit)="requestToken()"
+              #tokenForm="ngForm">
             <ion-list>
                 <ion-item>
                     <ion-input required type="email" placeholder="Account email"
@@ -37,7 +39,9 @@
             </div>
         </form>
 
-        <form (ngSubmit)="checkResetToken()" *ngSwitchCase="'verify'" #checkTokenForm="ngForm">
+        <form *ngSwitchCase="'verify'"
+              (ngSubmit)="verifyToken()"
+              #checkTokenForm="ngForm">
             <ion-list>
                 <ion-item>
                     <ion-input required type="text" placeholder="Copy the received token"

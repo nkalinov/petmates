@@ -69,61 +69,40 @@ export class AuthService {
         return this.http.put('/user', { name, email, picture, password, location, city, region, country });
     }
 
-    submitForgotRequest(email: string) {
+    requestToken(email: string) {
         return this.http.post('/auth/forgot', { email });
     }
 
-    checkResetToken(token: string): Observable<any> {
-        return new Observable(observer => {
-            // this.http
-            //     .get(`${this.config.get('API')}/auth/reset/${token}`)
-            //     .map(res => res.json())
-            //     .subscribe(
-            //         (res: any) => {
-            //             if (!res.success) {
-            //                 this.events.publish('alert:error', res.msg);
-            //             }
-            //             observer.next(res);
-            //             observer.complete();
-            //         },
-            //         (err) => {
-            //             this.events.publish('alert:error', err);
-            //             observer.next(err);
-            //             observer.complete();
-            //         }
-            //     );
-        });
+    verifyToken(token: string): Observable<any> {
+        return this.http.get(`/auth/reset/${token}`);
     }
 
-    changePassword(token: string, password: string): Observable<any> {
-        // let headers = new Headers();
-        // headers.append('Content-Type', 'application/json');
+    changePassword(token: string, password: string) {
+        return this.http.post(`/auth/reset/${token}`, { password });
 
-        return new Observable(observer => {
-            // this.http
-            //     .post(
-            //         `${this.config.get('API')}/auth/reset/${token}`,
-            //         JSON.stringify({ password }),
-            //         { headers: headers }
-            //     )
-            //     .map(res => res.json())
-            //     .subscribe(
-            //         (res: any) => {
-            //             if (res.success) {
-            //                 this.events.publish('alert:info', 'Your password has been changed.');
-            //                 // this.login(res.data.email, password);
-            //             } else {
-            //                 this.events.publish('alert:error', res.msg);
-            //             }
-            //             observer.next(res);
-            //             observer.complete();
-            //         },
-            //         (err) => {
-            //             this.events.publish('alert:error', err);
-            //             observer.next(err);
-            //             observer.complete();
-            //         }
-            //     );
-        });
+        // this.http
+        //     .post(
+        //         `${this.config.get('API')}/auth/reset/${token}`,
+        //         JSON.stringify({ password }),
+        //         { headers: headers }
+        //     )
+        //     .map(res => res.json())
+        //     .subscribe(
+        //         (res: any) => {
+        //             if (res.success) {
+        //                 this.events.publish('alert:info', 'Your password has been changed.');
+        //                 // this.login(res.data.email, password);
+        //             } else {
+        //                 this.events.publish('alert:error', res.msg);
+        //             }
+        //             observer.next(res);
+        //             observer.complete();
+        //         },
+        //         (err) => {
+        //             this.events.publish('alert:error', err);
+        //             observer.next(err);
+        //             observer.complete();
+        //         }
+        //     );
     }
 }

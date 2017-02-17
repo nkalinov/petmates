@@ -71,6 +71,7 @@ import { SocketActions } from '../actions/socket.actions';
 import { ChatEffects } from '../pages/chat/chat.effects';
 import { ChatActions } from '../pages/chat/chat.actions';
 import { ApiActions } from '../actions/api.actions';
+import { ImageUpload } from '../components/image-upload';
 
 const pages: Array<any> = [
     PetMatesApp,
@@ -83,18 +84,18 @@ const pages: Array<any> = [
     // ConversationEditPage,
     // ConversationEditMembersPage,
     //
-    // HelpPage,
+    HelpPage,
     //
     // MapPage,
     // StartWalkPage,
-    //
+
     // MatesPage,
     // MateViewPage,
     // MatesSearchPage,
     // MatesAcceptedPage,
     // MatesPendingPage,
     // MatesRequestedPage,
-    //
+
     // NearbyPage,
     // NearbyPeoplePage,
     // NearbyPetsPage,
@@ -123,7 +124,8 @@ const pages: Array<any> = [
         LastActivity,
         PlaceIcon,
         TimeAgo,
-        DistancePipe
+        DistancePipe,
+        ImageUpload
     ],
     imports: [
         IonicModule.forRoot(

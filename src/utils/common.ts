@@ -36,16 +36,11 @@ export function localISO(dateString?: string) {
 }
 
 export function getMenu(auth: boolean = false): any[] {
-    let commonPages = [
-        { title: 'Help', component: HelpPage }
-        // {title: 'Donate', component: DonatePage} // todo
-    ];
-    let publicPages = [
+    const publicPages = [
         { title: 'Login / sign-up', component: AuthPage },
         { title: 'Help', component: HelpPage }
         // {title: 'Donate', component: DonatePage} // todo
-    ];
-    let loggedInPages = [
+    ], loggedInPages = [
         { title: 'Map', component: MapPage },
         { title: 'Explore', component: NearbyPage },
         { title: 'Chats', component: ConversationsListPage },

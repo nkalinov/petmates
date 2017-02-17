@@ -53,10 +53,12 @@
             </div>
             <ion-grid>
                 <ion-row>
-                    <ion-col width-25 class="profile-picture" (click)="changePicture()">
-                        <mate-image [image]="user.pic"></mate-image>
-                        <p class="change-text">Change</p>
-                    </ion-col>
+                    <image-upload>
+                        <ion-col width-25 class="profile-picture">
+                            <mate-image [image]="user.pic"></mate-image>
+                            <p class="change-text">Change</p>
+                        </ion-col>
+                    </image-upload>
                     <ion-col width-75>
                         <ion-list>
                             <ion-item>

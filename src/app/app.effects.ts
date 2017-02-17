@@ -6,6 +6,33 @@ import { AuthActions } from '../pages/auth/auth.actions';
 import { getLoaderMessage, getToastMessage } from '../utils/messages';
 import { ApiActions } from '../actions/api.actions';
 
+const showToastActions = [
+    AuthActions.FORGOT_REQ_SUCCESS,
+    AuthActions.UPDATE_SUCCESS,
+    AuthActions.FORGOT_CHANGE_PASSWORD_SUCCESS
+];
+
+const showLoaderActions = [
+    ApiActions.UPLOAD,
+
+    AuthActions.LOGIN,
+    AuthActions.UPDATE,
+    AuthActions.FORGOT_REQ,
+    AuthActions.FORGOT_VERIFY_TOKEN,
+    AuthActions.FORGOT_CHANGE_PASSWORD
+];
+
+const hideLoaderActions = [
+    AppActions.APP_ERROR,
+    ApiActions.UPLOAD_SUCCESS,
+
+    AuthActions.LOGIN_SUCCESS,
+    AuthActions.UPDATE_SUCCESS,
+    AuthActions.FORGOT_REQ_SUCCESS,
+    AuthActions.FORGOT_VERIFY_TOKEN_SUCCESS,
+    AuthActions.FORGOT_CHANGE_PASSWORD_SUCCESS
+];
+
 @Injectable()
 export class AppEffects {
     private loader: Loading;
@@ -13,8 +40,7 @@ export class AppEffects {
     constructor(private actions$: Actions,
                 private alertCtrl: AlertController,
                 private toastCtrl: ToastController,
-                loadingCtrl: LoadingController) {
-        this.loader = loadingCtrl.create();
+                private loadingCtrl: LoadingController) {
     }
 
     @Effect({ dispatch: false })
@@ -30,34 +56,26 @@ export class AppEffects {
 
     @Effect({ dispatch: false })
     showLoader$ = this.actions$
-        .ofType(
-            AuthActions.LOGIN,
-            AuthActions.UPDATE,
-            ApiActions.UPLOAD
-        )
+        .ofType(...showLoaderActions)
         .do(action => {
-            this.loader.setContent(getLoaderMessage(action));
+            this.loader = this.loadingCtrl.create({
+                content: getLoaderMessage(action)
+            });
             this.loader.present();
         });
 
     @Effect({ dispatch: false })
     hideLoader$ = this.actions$
-        .ofType(
-            AppActions.APP_ERROR,
-            AuthActions.LOGIN_SUCCESS,
-            AuthActions.UPDATE_SUCCESS,
-            ApiActions.UPLOAD_SUCCESS
-        )
+        .ofType(...hideLoaderActions)
         .do(() => {
-            this.loader.dismissAll();
+            if (this.loader) {
+                this.loader.dismissAll();
+            }
         });
 
     @Effect({ dispatch: false })
     toast$ = this.actions$
-        .ofType(
-            AuthActions.FORGOT_REQ_SUCCESS,
-            AuthActions.UPDATE_SUCCESS
-        )
+        .ofType(...showToastActions)
         .do(action => {
             this.toastCtrl.create({
                 position: 'bottom',

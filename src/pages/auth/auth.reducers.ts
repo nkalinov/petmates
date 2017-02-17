@@ -6,9 +6,14 @@ export interface AuthState {
     user?: User;
     token?: string;
     connected?: boolean;
+    forgot: {
+        tokenValid?: boolean
+    };
 }
 
-export function authReducer(state: AuthState = {}, action: Action) {
+export function authReducer(state: AuthState = {
+    forgot: {}
+}, action: Action) {
     switch (action.type) {
 
         case AuthActions.LOGIN_SUCCESS:
@@ -28,6 +33,20 @@ export function authReducer(state: AuthState = {}, action: Action) {
         case AuthActions.UPDATE_SUCCESS:
             return Object.assign({}, state, {
                 user: action.payload
+            });
+
+        case AuthActions.FORGOT_VERIFY_TOKEN_SUCCESS:
+            return Object.assign({}, state, {
+                forgot: Object.assign({}, state.forgot, {
+                    tokenValid: true
+                })
+            });
+
+        case AuthActions.FORGOT_CHANGE_PASSWORD_SUCCESS:
+            return Object.assign({}, state, {
+                forgot: Object.assign({}, state.forgot, {
+                    tokenValid: false
+                })
             });
 
         default:

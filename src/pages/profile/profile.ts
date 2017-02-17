@@ -5,6 +5,7 @@ import { AppState } from '../../app/state';
 import { Store } from '@ngrx/store';
 import { User } from '../../models/User';
 import { AuthActions } from '../auth/auth.actions';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     templateUrl: 'profile.html'
@@ -12,6 +13,7 @@ import { AuthActions } from '../auth/auth.actions';
 
 export class ProfilePage {
     user: User;
+    private subscription: Subscription;
 
     constructor(public authActions: AuthActions,
                 private modalCtrl: ModalController,
@@ -19,7 +21,7 @@ export class ProfilePage {
                 private actionSheetCtrl: ActionSheetController,
                 private store: Store<AppState>) {
 
-        this.store.select(state => state.auth.user).subscribe(user => {
+        this.subscription = this.store.select(state => state.auth.user).subscribe(user => {
             this.user = user;
         });
     }
@@ -46,9 +48,7 @@ export class ProfilePage {
                                 {
                                     text: 'Delete',
                                     handler: () => {
-                                        this.store.dispatch(
-                                            this.authActions.deleteProfile()
-                                        );
+                                        this.store.dispatch(this.authActions.deleteProfile());
                                     }
                                 }
                             ]
@@ -58,9 +58,7 @@ export class ProfilePage {
                 {
                     text: 'Logout',
                     handler: () => {
-                        this.store.dispatch(
-                            this.authActions.logout()
-                        );
+                        this.store.dispatch(this.authActions.logout());
                     }
                 },
                 {
@@ -70,5 +68,9 @@ export class ProfilePage {
             ]
         });
         actionSheet.present();
+    }
+
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
     }
 }

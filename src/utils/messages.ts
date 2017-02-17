@@ -3,11 +3,12 @@ import { Action } from '@ngrx/store';
 
 const messages = {
     [AuthActions.UPDATE]: 'Updating your profile...',
-    [AuthActions.UPDATE_SUCCESS]: 'Profile updated!'
+    [AuthActions.UPDATE_SUCCESS]: 'Profile updated.',
+    [AuthActions.FORGOT_CHANGE_PASSWORD_SUCCESS]: 'Your password has been changed.'
 };
 
 export function getLoaderMessage(action: Action) {
-    return messages[action.type] || 'Please wait';
+    return messages[action.type] || 'Please wait...';
 }
 
 export function getToastMessage(action: Action) {
@@ -15,6 +16,6 @@ export function getToastMessage(action: Action) {
         case AuthActions.FORGOT_REQ_SUCCESS:
             return action.payload;
         default:
-            return messages[action.type] || 'Success';
+            return messages[action.type] || 'Success!';
     }
 }

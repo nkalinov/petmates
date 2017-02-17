@@ -1,7 +1,6 @@
 import { Events, Nav, Platform, AlertController } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
 import { AuthPage } from '../pages/auth/auth.page';
-import { AuthService } from '../pages/auth/auth.service';
 import { getMenu } from '../utils/common';
 import { SocketService } from '../providers/socket.service';
 import { MatesService } from '../providers/mates.service';
@@ -22,8 +21,7 @@ export class PetMatesApp {
 
     private defaultRootPage: any = ProfilePage;
 
-    constructor(private auth: AuthService,
-                private platform: Platform,
+    constructor(private platform: Platform,
                 private events: Events,
                 private sockets: SocketService,
                 private mates: MatesService,

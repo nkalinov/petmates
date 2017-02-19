@@ -71,7 +71,7 @@ import { SocketActions } from '../actions/socket.actions';
 import { ChatEffects } from '../pages/chat/chat.effects';
 import { ChatActions } from '../pages/chat/chat.actions';
 import { ApiActions } from '../actions/api.actions';
-import { ImageUpload } from '../components/image-upload';
+import { ImageUpload } from '../components/image-upload/image-upload';
 
 const pages: Array<any> = [
     PetMatesApp,

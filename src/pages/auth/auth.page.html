@@ -53,12 +53,11 @@
             </div>
             <ion-grid>
                 <ion-row>
-                    <image-upload>
-                        <ion-col width-25 class="profile-picture">
+                    <ion-col width-25>
+                        <image-upload (uploadSuccess)="onUploadSuccess($event)">
                             <mate-image [image]="user.pic"></mate-image>
-                            <p class="change-text">Change</p>
-                        </ion-col>
-                    </image-upload>
+                        </image-upload>
+                    </ion-col>
                     <ion-col width-75>
                         <ion-list>
                             <ion-item>

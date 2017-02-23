@@ -18,9 +18,9 @@
 <ion-content>
     <ion-card *ngIf="user">
         <ion-item>
-            <ion-avatar item-left>
+            <ion-thumbnail item-left>
                 <mate-image [image]="user.pic"></mate-image>
-            </ion-avatar>
+            </ion-thumbnail>
             <h2>{{ user.name }}</h2>
             <p *ngIf="user.city && user.country">
                 {{ user.city + ', ' + user.country }}

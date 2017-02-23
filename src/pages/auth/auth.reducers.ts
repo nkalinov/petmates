@@ -1,6 +1,8 @@
 import { Action } from '@ngrx/store';
 import { AuthActions } from './auth.actions';
 import { User } from '../../models/User';
+import { PetsActions } from '../pets/pets.actions';
+import { Pet } from '../../models/Pet';
 
 export interface AuthState {
     user?: User;
@@ -11,11 +13,8 @@ export interface AuthState {
     };
 }
 
-export function authReducer(state: AuthState = {
-    forgot: {}
-}, action: Action) {
+export default function (state: AuthState = { forgot: {} }, action: Action) {
     switch (action.type) {
-
         case AuthActions.LOGIN_SUCCESS:
             return Object.assign({}, state, {
                 user: new User(action.payload.user),
@@ -46,6 +45,17 @@ export function authReducer(state: AuthState = {
             return Object.assign({}, state, {
                 forgot: Object.assign({}, state.forgot, {
                     tokenValid: false
+                })
+            });
+
+        case PetsActions.UPDATE_SUCCESS:
+            return Object.assign({}, state, {
+                user: Object.assign({}, state.user, {
+                    pets: [
+                        ...state.user.pets.slice(0, action.payload.index),
+                        new Pet(action.payload.pet),
+                        ...state.user.pets.slice(action.payload.index + 1),
+                    ]
                 })
             });
 

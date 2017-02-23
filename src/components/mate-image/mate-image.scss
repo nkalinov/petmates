@@ -1,8 +1,23 @@
 mate-image {
   display: block;
-  text-align: center;
+  width: 100%;
+  height: 100%;
 
   & > ion-icon {
     font-size: 30px;
+  }
+}
+
+ion-avatar {
+  & > mate-image {
+    border-radius: 50%;
+    overflow: hidden;
+  }
+}
+
+ion-thumbnail {
+  & > mate-image {
+    border-radius: 50%;
+    overflow: hidden;
   }
 }

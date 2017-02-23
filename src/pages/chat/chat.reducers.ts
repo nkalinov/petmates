@@ -2,7 +2,7 @@ import { ChatActions } from './chat.actions';
 import { Action } from '@ngrx/store';
 import { Conversation } from '../../models/Conversation';
 
-export const chatReducer = {
+export default {
     list: chatListReducer
 };
 

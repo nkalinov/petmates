@@ -39,11 +39,12 @@ import { NearbyPetsPage } from '../pages/nearby/pets/NearbyPetsPage';
 import { NearybyPlacesPage } from '../pages/nearby/places/places';
 import { PlaceEditPage } from '../pages/nearby/places/place-edit';
 import { ReportModalPage } from '../components/report-modal/report-modal';
-import { PetsPage } from '../pages/pets/pets';
-import { PetEditPage } from '../pages/pets/edit/PetEditPage';
+import { PetsListPage } from '../pages/pets/list/pets-list.page';
+import { PetEditPage } from '../pages/pets/edit/pet-edit.page';
 import { BreedPage } from '../pages/pets/edit/breed/breed';
-import { ProfilePage } from '../pages/profile/profile';
-import { ProfileEdit } from '../pages/profile/edit/profile.edit';
+import { PetsActions } from '../pages/pets/pets.actions';
+import { ProfilePage } from '../pages/profile/profile.page';
+import { ProfileEdit } from '../pages/profile/edit/profile-edit.page';
 import { MateImage } from '../components/mate-image/mate-image';
 import { PetImage } from '../components/pet-image/pet-image';
 import { AgeInfo } from '../components/age';
@@ -55,7 +56,7 @@ import { TimeAgo } from '../components/timeago';
 import { PlacesService } from '../providers/places.service';
 import { ReportsService } from '../providers/reports.service';
 import { IonicImageViewerModule } from 'ionic-img-viewer';
-import { PetService } from '../providers/pet.service';
+import { PetsService } from '../pages/pets/pets.service';
 import { DistancePipe } from '../pipes/distance';
 import { StoreModule } from '@ngrx/store';
 import { AuthActions } from '../pages/auth/auth.actions';
@@ -63,7 +64,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { AppActions } from './app.actions';
 import { AuthEffects } from '../pages/auth/auth.effects';
 import { AppEffects } from './app.effects';
-import rootReducer from './rootReducer';
+import reducers from './reducers';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { ApiService } from '../providers/api.service';
 import { SocketEffects } from '../effects/socket.effects';
@@ -72,6 +73,7 @@ import { ChatEffects } from '../pages/chat/chat.effects';
 import { ChatActions } from '../pages/chat/chat.actions';
 import { ApiActions } from '../actions/api.actions';
 import { ImageUpload } from '../components/image-upload/image-upload';
+import { PetsEffects } from '../pages/pets/pets.effects';
 
 const pages: Array<any> = [
     PetMatesApp,
@@ -106,7 +108,7 @@ const pages: Array<any> = [
     // PlaceEditPage,
     // ReportModalPage,
 
-    PetsPage,
+    PetsListPage,
     PetEditPage,
     BreedPage,
 
@@ -134,13 +136,14 @@ const pages: Array<any> = [
                 tabsPlacement: 'bottom'
             })
         ),
-        StoreModule.provideStore(rootReducer),
+        StoreModule.provideStore(reducers),
         StoreDevtoolsModule.instrumentOnlyWithExtension({
-            maxAge: 5
+            maxAge: 8
         }),
         EffectsModule.run(AppEffects),
         EffectsModule.run(AuthEffects),
         EffectsModule.run(SocketEffects),
+        EffectsModule.run(PetsEffects),
         EffectsModule.run(ChatEffects),
         IonicImageViewerModule
     ],
@@ -158,7 +161,7 @@ const pages: Array<any> = [
         EventsService,
         PlacesService,
         ReportsService,
-        PetService,
+        PetsService,
         BreedService,
         ChatService,
         {
@@ -171,7 +174,8 @@ const pages: Array<any> = [
         AppActions,
         AuthActions,
         ChatActions,
-        SocketActions
+        SocketActions,
+        PetsActions
     ]
 })
 export class AppModule {

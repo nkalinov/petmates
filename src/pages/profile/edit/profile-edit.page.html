@@ -2,7 +2,7 @@
     <ion-toolbar>
         <ion-buttons start>
             <button ion-button color="modalClose"
-                    (click)="close()">
+                    (click)="viewCtrl.dismiss()">
                 Cancel
             </button>
         </ion-buttons>
@@ -18,9 +18,10 @@
 
 <ion-content>
     <ion-row no-padding wrap center>
-        <ion-col no-padding width-100 class="profile-picture" (click)="changePicture()">
-            <mate-image [image]="user.pic"></mate-image>
-            <p class="change-text">Change picture</p>
+        <ion-col no-padding width-100>
+            <image-upload (uploadSuccess)="onUploadSuccess($event)" height-200>
+                <mate-image [image]="user.pic"></mate-image>
+            </image-upload>
         </ion-col>
     </ion-row>
     <form (submit)="save()">
@@ -45,5 +46,4 @@
             </ion-item>
         </ion-list>
     </form>
-    <input type="file" #fileInput (change)="fileChangeEvent($event)"/>
 </ion-content>

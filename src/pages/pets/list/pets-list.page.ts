@@ -1,16 +1,16 @@
 import { ModalController, NavController } from 'ionic-angular';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
-import { PetEditPage } from './edit/PetEditPage';
-import { Pet } from '../../models/Pet';
+import { AuthService } from '../../auth/auth.service';
+import { PetEditPage } from '../edit/pet-edit.page';
+import { Pet } from '../../../models/Pet';
 
 @Component({
     selector: 'pets-list',
-    templateUrl: 'pets.html',
+    templateUrl: 'pets-list.page.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class PetsPage {
+export class PetsListPage {
     @Input()
     pets: Pet[];
 
@@ -22,9 +22,9 @@ export class PetsPage {
                 private modalCtrl: ModalController) {
     }
 
-    petEdit(pet) {
+    petEdit(pet: Pet, index: number) {
         if (this.canCreate) {
-            this.nav.push(PetEditPage, { pet });
+            this.nav.push(PetEditPage, { pet, index });
         }
     }
 

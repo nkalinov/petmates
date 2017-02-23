@@ -5,7 +5,7 @@ import icons from '../../utils/icons';
     selector: 'mate-image',
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <img *ngIf="src" [attr.src]="src">
+        <div class="image-container" *ngIf="src" [style.background-image]="'url(' + src + ')'"></div>
         <ion-icon *ngIf="!src" name="people"></ion-icon>
     `
 })

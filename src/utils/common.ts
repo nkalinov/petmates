@@ -1,7 +1,7 @@
 import { MatesPage } from '../pages/mates/mates';
 import { MapPage } from '../pages/map/MapPage';
 import { AuthPage } from '../pages/auth/auth.page';
-import { ProfilePage } from '../pages/profile/profile';
+import { ProfilePage } from '../pages/profile/profile.page';
 import { HelpPage } from '../pages/help/help';
 import { ConversationsListPage } from '../pages/chat/chats-list.page';
 import { NearbyPage } from '../pages/nearby/nearby';

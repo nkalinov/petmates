@@ -4,7 +4,7 @@ import { AuthPage } from '../pages/auth/auth.page';
 import { getMenu } from '../utils/common';
 import { SocketService } from '../providers/socket.service';
 import { MatesService } from '../providers/mates.service';
-import { ProfilePage } from '../pages/profile/profile';
+import { ProfilePage } from '../pages/profile/profile.page';
 import { Store } from '@ngrx/store';
 import { AppState } from './state';
 import { AuthActions } from '../pages/auth/auth.actions';

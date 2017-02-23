@@ -79,7 +79,7 @@ export class AuthEffects {
 
     @Effect()
     delete$ = this.actions$
-        .ofType(AuthActions.DELETE_PROFILE)
+        .ofType(AuthActions.REMOVE)
         .switchMap(() =>
             this.authService.deleteProfile()
                 .map((res: IResponse) =>

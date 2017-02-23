@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ApiService } from '../../providers/api.service';
 import { IResponseUpload } from '../../models/interfaces/IResponseUpload';
 import { ImagePicker } from 'ionic-native';
@@ -7,14 +7,18 @@ import { Platform } from 'ionic-angular';
 @Component({
     selector: 'image-upload',
     template:`
-        <ng-content (click)="changePicture()"></ng-content>
-        <p class="change-text">Change</p>
-        <input #fileInput class="fileInput" type="file" (change)="fileChangeEvent($event)"/>
+        <div (click)="changePicture()">
+            <ng-content></ng-content>
+            <p class="change-text">{{placeholder}}</p>
+            <input #fileInput class="fileInput" type="file" (change)="fileChangeEvent($event)"/>
+        </div>
     `
 })
 
 export class ImageUpload {
+    @Input() placeholder: string = 'Click to change';
     @Output() uploadSuccess: EventEmitter<IResponseUpload> = new EventEmitter<IResponseUpload>();
+
     @ViewChild('fileInput') fileInput: ElementRef;
 
     constructor(private apiService: ApiService,
@@ -45,6 +49,8 @@ export class ImageUpload {
     private upload(file) {
         this.apiService
             .upload(file)
-            .subscribe(this.uploadSuccess.emit.bind(this));
+            .subscribe(res => {
+                this.uploadSuccess.emit(res);
+            });
     }
 }

@@ -2,7 +2,7 @@ import { ViewController, ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
 import { WalkService } from '../../../providers/walk.service';
-import { PetEditPage } from '../../pets/edit/PetEditPage';
+import { PetEditPage } from '../../pets/edit/pet-edit.page';
 
 @Component({
     templateUrl: 'StartWalkPage.html'

@@ -44,11 +44,11 @@ export class AuthActions {
         };
     }
 
-    static DELETE_PROFILE = 'AUTH_DELETE_PROFILE';
+    static REMOVE = 'AUTH_DELETE_PROFILE';
 
-    deleteProfile(): Action {
+    remove(): Action {
         return {
-            type: AuthActions.DELETE_PROFILE
+            type: AuthActions.REMOVE
         };
     }
 

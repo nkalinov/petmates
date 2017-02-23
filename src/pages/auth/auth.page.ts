@@ -32,9 +32,7 @@ export class AuthPage {
     }
 
     signup() {
-        this.store.dispatch(
-            this.authActions.signup(this.user)
-        );
+        this.store.dispatch(this.authActions.signup(this.user));
     }
 
     loginFacebook() {

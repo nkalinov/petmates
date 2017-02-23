@@ -23,9 +23,10 @@
 
 <ion-content>
     <ion-row no-padding wrap center>
-        <ion-col no-padding width-100 class="profile-picture" (click)="changePicture()">
-            <pet-image [image]="pet.pic"></pet-image>
-            <p class="change-text">Change picture</p>
+        <ion-col no-padding width-100>
+            <image-upload (uploadSuccess)="onUploadSuccess($event)" height-200>
+                <pet-image [image]="pet.pic"></pet-image>
+            </image-upload>
         </ion-col>
     </ion-row>
 
@@ -59,5 +60,4 @@
             Delete pet
         </button>
     </div>
-    <input type="file" (change)="fileChangeEvent($event)"/>
 </ion-content>

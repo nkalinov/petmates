@@ -79,30 +79,5 @@ export class AuthService {
 
     changePassword(token: string, password: string) {
         return this.http.post(`/auth/reset/${token}`, { password });
-
-        // this.http
-        //     .post(
-        //         `${this.config.get('API')}/auth/reset/${token}`,
-        //         JSON.stringify({ password }),
-        //         { headers: headers }
-        //     )
-        //     .map(res => res.json())
-        //     .subscribe(
-        //         (res: any) => {
-        //             if (res.success) {
-        //                 this.events.publish('alert:info', 'Your password has been changed.');
-        //                 // this.login(res.data.email, password);
-        //             } else {
-        //                 this.events.publish('alert:error', res.msg);
-        //             }
-        //             observer.next(res);
-        //             observer.complete();
-        //         },
-        //         (err) => {
-        //             this.events.publish('alert:error', err);
-        //             observer.next(err);
-        //             observer.complete();
-        //         }
-        //     );
     }
 }

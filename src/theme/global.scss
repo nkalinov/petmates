@@ -1,14 +1,15 @@
+ion-avatar,
+ion-thumbnail {
+  // http://stackoverflow.com/questions/8468066/child-inside-parent-with-min-height-100-not-inheriting-height
+  height: 1px;
+}
+
 a[disabled],
 button[disabled] {
   opacity: 0.5;
 }
 
-input.fileInput {
-  display: none;
-}
-
 ion-menu#main-menu {
-
   .menu-inner {
     background: #fff url('../assets/img/menu.jpg') bottom center;
   }
@@ -39,31 +40,5 @@ ion-menu#main-menu {
     &.active {
 
     }
-  }
-}
-
-.profile-picture {
-  position: relative;
-  max-height: 200px;
-
-  img {
-    display: block;
-    margin: 0 auto;
-    max-height: 200px;
-  }
-
-  .change-text {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: block;
-    text-align: center;
-    width: 100%;
-    padding: 3px 0;
-    margin: 0;
-    background: transparentize(#000, 0.9);
-    color: #fff;
-    font-size: 11px;
-    letter-spacing: 1px;
   }
 }

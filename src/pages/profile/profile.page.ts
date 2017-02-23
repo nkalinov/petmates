@@ -1,6 +1,6 @@
 import { AlertController, ActionSheetController, ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { ProfileEdit } from './edit/profile.edit';
+import { ProfileEdit } from './edit/profile-edit.page';
 import { AppState } from '../../app/state';
 import { Store } from '@ngrx/store';
 import { User } from '../../models/User';
@@ -8,7 +8,8 @@ import { AuthActions } from '../auth/auth.actions';
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({
-    templateUrl: 'profile.html'
+    selector: 'profile',
+    templateUrl: 'profile.page.html'
 })
 
 export class ProfilePage {
@@ -48,7 +49,7 @@ export class ProfilePage {
                                 {
                                     text: 'Delete',
                                     handler: () => {
-                                        this.store.dispatch(this.authActions.deleteProfile());
+                                        this.store.dispatch(this.authActions.remove());
                                     }
                                 }
                             ]

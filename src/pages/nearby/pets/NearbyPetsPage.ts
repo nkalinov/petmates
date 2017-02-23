@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, Refresher } from 'ionic-angular';
-import { PetService } from '../../../providers/pet.service';
+import { PetsService } from '../../pets/pets.service';
 import { NearbyPet } from '../../../models/NearbyPet';
 import { MateViewPage } from '../../mates/view/MateViewPage';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -13,7 +13,7 @@ export class NearbyPetsPage {
     nearby$: BehaviorSubject<NearbyPet[]>;
 
     constructor(private navCtrl: NavController,
-                private pets: PetService) {
+                private pets: PetsService) {
         this.nearby$ = pets.nearby$;
     }
 

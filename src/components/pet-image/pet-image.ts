@@ -3,7 +3,9 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 @Component({
     selector: 'pet-image',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    template: `<img [attr.src]="src" />`
+    template: `
+        <div class="image-container" *ngIf="src" [style.background-image]="'url(' + src + ')'"></div>
+    `
 })
 
 export class PetImage {

@@ -5,7 +5,9 @@
         <ion-icon item-left name="add"></ion-icon>
         <span>Add new pet</span>
     </button>
-    <button ion-item type="button" *ngFor="let d of pets" (click)="petEdit(d)">
+    <button ion-item type="button"
+            *ngFor="let d of pets; let i = index"
+            (click)="petEdit(d, i)">
         <ion-avatar item-left>
             <pet-image [image]="d.pic"></pet-image>
         </ion-avatar>

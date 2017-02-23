@@ -7,7 +7,7 @@ export class PetsActions {
     save(payload: Pet, index: number): Action {
         return payload._id
             ? this.update(payload, index)
-            : this.create(payload, index);
+            : this.create(payload);
     }
 
     static UPDATE = 'PET_UPDATE';
@@ -24,13 +24,19 @@ export class PetsActions {
 
     static CREATE = 'PET_CREATE';
 
-    create(pet: Pet, index: number): Action {
+    create(pet: Pet): Action {
         return {
             type: PetsActions.CREATE,
-            payload: {
-                pet,
-                index
-            }
+            payload: pet
+        };
+    }
+
+    static CREATE_SUCCESS = 'PET_CREATE_SUCCESS';
+
+    createSuccess(pet: Pet): Action {
+        return {
+            type: PetsActions.CREATE_SUCCESS,
+            payload: pet
         };
     }
 
@@ -48,9 +54,24 @@ export class PetsActions {
 
     static REMOVE = 'PET_REMOVE';
 
-    remove(): Action {
+    remove(id: string, index: number): Action {
         return {
-            type: PetsActions.REMOVE
+            type: PetsActions.REMOVE,
+            payload: {
+                id,
+                index
+            }
+        };
+    }
+
+    static REMOVE_SUCCESS = 'PET_REMOVE_SUCCESS';
+
+    removeSuccess(index: number): Action {
+        return {
+            type: PetsActions.REMOVE_SUCCESS,
+            payload: {
+                index
+            }
         };
     }
 }

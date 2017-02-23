@@ -48,12 +48,32 @@ export default function (state: AuthState = { forgot: {} }, action: Action) {
                 })
             });
 
+        case PetsActions.CREATE_SUCCESS:
+            return Object.assign({}, state, {
+                user: Object.assign({}, state.user, {
+                    pets: [
+                        new Pet(action.payload),
+                        ...state.user.pets
+                    ]
+                })
+            });
+
         case PetsActions.UPDATE_SUCCESS:
             return Object.assign({}, state, {
                 user: Object.assign({}, state.user, {
                     pets: [
                         ...state.user.pets.slice(0, action.payload.index),
                         new Pet(action.payload.pet),
+                        ...state.user.pets.slice(action.payload.index + 1),
+                    ]
+                })
+            });
+
+        case PetsActions.REMOVE_SUCCESS:
+            return Object.assign({}, state, {
+                user: Object.assign({}, state.user, {
+                    pets: [
+                        ...state.user.pets.slice(0, action.payload.index),
                         ...state.user.pets.slice(action.payload.index + 1),
                     ]
                 })

@@ -1,8 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@angular/core';
-import { Response } from '@angular/http';
 import { Pet } from '../../models/Pet';
 import { NearbyPet } from '../../models/NearbyPet';
-import { IResponse } from '../../models/interfaces/IResponse';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { LocationService } from '../../providers/location.service';
 import { ApiService } from '../../providers/api.service';
@@ -16,15 +14,15 @@ export class PetsService {
     }
 
     create(pet: Pet) {
-        return this.http.post(`/pets/${pet._id}`, pet);
+        return this.http.post('/pets', pet);
     }
 
     update(pet: Pet) {
         return this.http.put(`/pets/${pet._id}`, pet);
     }
 
-    remove(pet) {
-        return this.http.delete(`/pets/${pet._id}`);
+    remove(id: string) {
+        return this.http.delete(`/pets/${id}`);
     }
 
     getLocationThenNearbyPets(force = false) {

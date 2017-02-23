@@ -45,11 +45,9 @@ export class PetEditPage {
                     text: 'Delete',
                     role: 'destructive',
                     handler: () => {
-                        // this.petService.deletePet(this.pet)
-                        //     .then(() => alert.dismiss())
-                        //     .then(() => {
-                        //         this.goBack();
-                        //     });
+                        this.store.dispatch(this.petActions.remove(this.pet._id, this.index));
+                        alert.dismiss();
+                        this.goBack();
                     }
                 }
             ]

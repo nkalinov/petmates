@@ -5,11 +5,16 @@ import { AppActions } from './app.actions';
 import { AuthActions } from '../pages/auth/auth.actions';
 import { getLoaderMessage, getToastMessage } from '../utils/messages';
 import { ApiActions } from '../actions/api.actions';
+import { PetsActions } from '../pages/pets/pets.actions';
 
 const showToastActions = [
     AuthActions.FORGOT_REQ_SUCCESS,
     AuthActions.UPDATE_SUCCESS,
-    AuthActions.FORGOT_CHANGE_PASSWORD_SUCCESS
+    AuthActions.FORGOT_CHANGE_PASSWORD_SUCCESS,
+
+    PetsActions.CREATE_SUCCESS,
+    PetsActions.UPDATE_SUCCESS,
+    PetsActions.REMOVE_SUCCESS
 ];
 
 const showLoaderActions = [
@@ -19,7 +24,11 @@ const showLoaderActions = [
     AuthActions.UPDATE,
     AuthActions.FORGOT_REQ,
     AuthActions.FORGOT_VERIFY_TOKEN,
-    AuthActions.FORGOT_CHANGE_PASSWORD
+    AuthActions.FORGOT_CHANGE_PASSWORD,
+
+    PetsActions.CREATE,
+    PetsActions.UPDATE,
+    PetsActions.REMOVE
 ];
 
 const hideLoaderActions = [
@@ -30,7 +39,11 @@ const hideLoaderActions = [
     AuthActions.UPDATE_SUCCESS,
     AuthActions.FORGOT_REQ_SUCCESS,
     AuthActions.FORGOT_VERIFY_TOKEN_SUCCESS,
-    AuthActions.FORGOT_CHANGE_PASSWORD_SUCCESS
+    AuthActions.FORGOT_CHANGE_PASSWORD_SUCCESS,
+
+    PetsActions.CREATE_SUCCESS,
+    PetsActions.UPDATE_SUCCESS,
+    PetsActions.REMOVE_SUCCESS
 ];
 
 @Injectable()

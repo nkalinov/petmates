@@ -2,7 +2,7 @@ import { IBreed } from './interfaces/IBreed';
 import { IWalkPet } from './interfaces/IWalkPet';
 
 export class Pet {
-    _id: string;
+    readonly _id: string;
     name: string;
     sex: string;
     breed: IBreed = {

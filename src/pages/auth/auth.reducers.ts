@@ -52,7 +52,7 @@ export default function (state: AuthState = { forgot: {} }, action: Action) {
             return Object.assign({}, state, {
                 user: Object.assign({}, state.user, {
                     pets: [
-                        new Pet(action.payload),
+                        new Pet(action.payload.pet),
                         ...state.user.pets
                     ]
                 })

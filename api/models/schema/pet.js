@@ -40,13 +40,14 @@ const Pet = new Schema({
 Pet.pre('save', true, function (next, done) {
     next(); // in parallel ^
 
-    if (this.isModified('picture') || this.isNew) {
+    if (this.isModified('picture') || (this.isNew && this.picture)) {
         if (this._oldPicture) {
             // delete old one
             fs.unlink(`${upload.dest}${this._oldPicture}`);
         }
 
         // copy photo from tmp
+        // todo save as Buffer in the database and delete ?
         fs.rename(
             `${upload.destTmp}${this.picture}`,
             `${upload.dest}${this.picture}`,

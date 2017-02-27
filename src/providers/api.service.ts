@@ -27,7 +27,7 @@ export class ApiService {
 
     get(url: string, secure: boolean = true) {
         return this.http
-            .get(`${this.config.get('API') || 'http://127.0.0.1/api'}${url}`, {
+            .get(`${this.config.get('API')}${url}`, {
                 headers: this.getHeaders(secure)
             })
             .map(res => res.json());

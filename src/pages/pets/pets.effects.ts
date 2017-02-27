@@ -17,11 +17,11 @@ export class PetsEffects {
     create$ = this.actions$
         .ofType(PetsActions.CREATE)
         .map(toPayload)
-        .switchMap(pet =>
+        .switchMap(({ pet }) =>
             this.petsService.create(pet)
                 .map(res =>
                     res.success
-                        ? this.petsActions.createSuccess(pet)
+                        ? this.petsActions.createSuccess(res.data)
                         : this.appActions.error(res.msg)
                 )
                 .catch(e => Observable.of(this.appActions.error(e.toString())))

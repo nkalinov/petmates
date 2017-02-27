@@ -4,10 +4,10 @@ import { Pet } from '../../models/Pet';
 
 @Injectable()
 export class PetsActions {
-    save(payload: Pet, index: number): Action {
-        return payload._id
-            ? this.update(payload, index)
-            : this.create(payload);
+    save(pet: Pet, index: number): Action {
+        return pet._id
+            ? this.update(pet, index)
+            : this.create(pet);
     }
 
     static UPDATE = 'PET_UPDATE';
@@ -27,7 +27,9 @@ export class PetsActions {
     create(pet: Pet): Action {
         return {
             type: PetsActions.CREATE,
-            payload: pet
+            payload: {
+                pet
+            }
         };
     }
 
@@ -36,7 +38,9 @@ export class PetsActions {
     createSuccess(pet: Pet): Action {
         return {
             type: PetsActions.CREATE_SUCCESS,
-            payload: pet
+            payload: {
+                pet
+            }
         };
     }
 

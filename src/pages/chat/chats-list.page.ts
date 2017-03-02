@@ -18,7 +18,6 @@ export class ConversationsListPage {
 
     constructor(private modalCtrl: ModalController,
                 private nav: NavController,
-                private chatActions: ChatActions,
                 store: Store<AppState>) {
 
         this.chats = store.select(state => state.chat.list);
@@ -27,7 +26,7 @@ export class ConversationsListPage {
                 this.me = user._id;
             });
 
-        this.chatActions.requestList();
+        ChatActions.requestList();
     }
 
     doRefresh(refresher: Refresher) {

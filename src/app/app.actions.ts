@@ -5,7 +5,7 @@ import { Action } from '@ngrx/store';
 export class AppActions {
     static APP_ERROR = 'APP_ERROR';
 
-    error(msg: string): Action {
+    static error(msg: string): Action {
         return {
             type: AppActions.APP_ERROR,
             payload: msg

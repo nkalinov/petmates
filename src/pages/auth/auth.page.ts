@@ -1,6 +1,5 @@
 import { ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { AuthService } from './auth.service';
 import { ForgotForm } from './forgot/forgot.form';
 import { LocationService } from '../../providers/location.service';
 import { User } from '../../models/User';
@@ -18,21 +17,17 @@ export class AuthPage {
     mode: string = 'login';
     user: User = new User();
 
-    constructor(private auth: AuthService,
-                private modalCtrl: ModalController,
+    constructor(private modalCtrl: ModalController,
                 private locationService: LocationService,
-                private store: Store<AppState>,
-                private authActions: AuthActions) {
+                private store: Store<AppState>) {
     }
 
     login() {
-        this.store.dispatch(
-            this.authActions.login(this.user.email, this.user.password)
-        );
+        this.store.dispatch(AuthActions.login(this.user.email, this.user.password));
     }
 
     signup() {
-        this.store.dispatch(this.authActions.signup(this.user));
+        this.store.dispatch(AuthActions.signup(this.user));
     }
 
     loginFacebook() {

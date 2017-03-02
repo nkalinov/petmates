@@ -1,19 +1,22 @@
 import { ViewController, NavParams, AlertController, NavController, ModalController } from 'ionic-angular';
-import { Component } from '@angular/core';
-import { PetsService } from '../pets.service';
+import { Component, OnDestroy } from '@angular/core';
 import { Pet } from '../../../models/Pet';
 import { BreedPage } from './breed/breed';
 import { IResponseUpload } from '../../../models/interfaces/IResponseUpload';
 import { PetsActions } from '../pets.actions';
 import { AppState } from '../../../app/state';
 import { Store } from '@ngrx/store';
+import { PetsEffects } from '../pets.effects';
+import { Observable } from 'rxjs';
 
 @Component({
     templateUrl: 'pet-edit.page.html'
 })
-export class PetEditPage {
+export class PetEditPage implements OnDestroy {
     pet: Pet;
     index: number;
+
+    private _close$;
 
     constructor(navParams: NavParams,
                 public viewCtrl: ViewController,
@@ -21,15 +24,38 @@ export class PetEditPage {
                 private modalCtrl: ModalController,
                 private alertCtrl: AlertController,
                 private store: Store<AppState>,
-                private petActions: PetsActions) {
-
+                private petsEffects: PetsEffects) {
         this.pet = new Pet(navParams.get('pet'));
         this.index = navParams.get('index');
+
+        this._close$ = Observable
+            .merge(
+                this.petsEffects.create$,
+                this.petsEffects.update$,
+                this.petsEffects.remove$
+            )
+            .filter(({ type }) =>
+                [
+                    PetsActions.CREATE_SUCCESS,
+                    PetsActions.UPDATE_SUCCESS,
+                    PetsActions.REMOVE_SUCCESS
+                ].indexOf(type) > -1
+            )
+            .subscribe(() => {
+                if (this.nav.canGoBack()) {
+                    this.nav.pop();
+                } else {
+                    this.viewCtrl.dismiss();
+                }
+            });
+    }
+
+    ngOnDestroy() {
+        this._close$.unsubscribe();
     }
 
     save() {
-        this.store.dispatch(this.petActions.save(this.pet, this.index));
-        this.goBack();
+        this.store.dispatch(PetsActions.save(this.pet, this.index));
     }
 
     remove() {
@@ -45,9 +71,8 @@ export class PetEditPage {
                     text: 'Delete',
                     role: 'destructive',
                     handler: () => {
-                        this.store.dispatch(this.petActions.remove(this.pet._id, this.index));
                         alert.dismiss();
-                        this.goBack();
+                        this.store.dispatch(PetsActions.remove(this.pet._id, this.index));
                     }
                 }
             ]
@@ -62,13 +87,5 @@ export class PetEditPage {
     onUploadSuccess(res: IResponseUpload) {
         this.pet.pic = res.data.url;
         this.pet.picture = res.data.filename;
-    }
-
-    private goBack() {
-        if (this.nav.canGoBack()) {
-            this.nav.pop();
-        } else {
-            this.viewCtrl.dismiss();
-        }
     }
 }

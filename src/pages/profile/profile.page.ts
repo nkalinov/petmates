@@ -16,8 +16,7 @@ export class ProfilePage {
     user: User;
     private subscription: Subscription;
 
-    constructor(public authActions: AuthActions,
-                private modalCtrl: ModalController,
+    constructor(private modalCtrl: ModalController,
                 private alertCtrl: AlertController,
                 private actionSheetCtrl: ActionSheetController,
                 private store: Store<AppState>) {
@@ -49,7 +48,7 @@ export class ProfilePage {
                                 {
                                     text: 'Delete',
                                     handler: () => {
-                                        this.store.dispatch(this.authActions.remove());
+                                        this.store.dispatch(AuthActions.remove());
                                     }
                                 }
                             ]
@@ -59,7 +58,7 @@ export class ProfilePage {
                 {
                     text: 'Logout',
                     handler: () => {
-                        this.store.dispatch(this.authActions.logout());
+                        this.store.dispatch(AuthActions.logout());
                     }
                 },
                 {

@@ -15,7 +15,6 @@ export class LocationService {
     private user: User;
 
     constructor(private http: Http,
-                @Inject(forwardRef(() => AuthService)) private auth: AuthService,
                 private events: Events,
                 private store: Store<AppState>) {
 

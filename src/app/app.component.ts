@@ -26,8 +26,7 @@ export class PetMatesApp {
                 private sockets: SocketService,
                 private mates: MatesService,
                 private alertCtrl: AlertController,
-                private store: Store<AppState>,
-                private authActions: AuthActions) {
+                private store: Store<AppState>) {
         this.platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
             // Here you can do any higher level native things you might need.
@@ -42,9 +41,7 @@ export class PetMatesApp {
             });
 
             // try to restore session from persisted token
-            this.store.dispatch(
-                this.authActions.refresh()
-            );
+            this.store.dispatch(AuthActions.refresh());
 
             this.events.subscribe('alert:error', err => {
                 this.showAlert(err);

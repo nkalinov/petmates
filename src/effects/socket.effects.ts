@@ -10,7 +10,6 @@ import { WalkService } from '../providers/walk.service';
 @Injectable()
 export class SocketEffects {
     constructor(private actions$: Actions,
-                private socketActions: SocketActions,
                 private socketService: SocketService,
                 private chatService: ChatService,
                 private matesService: MatesService,
@@ -28,7 +27,7 @@ export class SocketEffects {
                         this.chatService.registerSocketEvents(socket);
                         this.matesService.registerSocketEvents(socket);
                         this.walkService.registerSocketEvents(socket);
-                        return this.socketActions.connected(socket);
+                        return SocketActions.connected(socket);
                     })
             // todo catch?
         );
@@ -38,6 +37,6 @@ export class SocketEffects {
         .ofType(AuthActions.LOGOUT)
         .map(() => {
             this.socketService.disconnect();
-            return this.socketActions.disconnected();
+            return SocketActions.disconnected();
         });
 }

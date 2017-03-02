@@ -17,7 +17,6 @@ export class ProfileEdit {
     constructor(public viewCtrl: ViewController,
                 private location: LocationService,
                 private store: Store<AppState>,
-                private authActions: AuthActions,
                 navParams: NavParams) {
         this.user = new User(navParams.get('user'));
     }
@@ -32,7 +31,7 @@ export class ProfileEdit {
     }
 
     save() {
-        this.store.dispatch(this.authActions.update(this.user));
+        this.store.dispatch(AuthActions.update(this.user));
         // todo close only AFTER successful update
         this.viewCtrl.dismiss();
     }

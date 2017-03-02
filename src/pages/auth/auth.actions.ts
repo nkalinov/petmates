@@ -6,7 +6,7 @@ import { User } from '../../models/User';
 export class AuthActions {
     static LOGIN = 'AUTH_LOGIN';
 
-    login(email: string, password: string): Action {
+    static login(email: string, password: string): Action {
         return {
             type: AuthActions.LOGIN,
             payload: {
@@ -18,7 +18,7 @@ export class AuthActions {
 
     static LOGIN_SUCCESS = 'AUTH_LOGIN_SUCCESS';
 
-    loginSuccess(token: string, user: User): Action {
+    static loginSuccess(token: string, user: User): Action {
         return {
             type: AuthActions.LOGIN_SUCCESS,
             payload: {
@@ -30,7 +30,7 @@ export class AuthActions {
 
     static REFRESH = 'AUTH_REFRESH';
 
-    refresh(): Action {
+    static refresh(): Action {
         return {
             type: AuthActions.REFRESH
         };
@@ -38,7 +38,7 @@ export class AuthActions {
 
     static LOGOUT = 'AUTH_LOGOUT';
 
-    logout(): Action {
+    static logout(): Action {
         return {
             type: AuthActions.LOGOUT
         };
@@ -46,7 +46,7 @@ export class AuthActions {
 
     static REMOVE = 'AUTH_DELETE_PROFILE';
 
-    remove(): Action {
+    static remove(): Action {
         return {
             type: AuthActions.REMOVE
         };
@@ -54,7 +54,7 @@ export class AuthActions {
 
     static SIGNUP = 'AUTH_SIGNUP';
 
-    signup(payload: User): Action {
+    static signup(payload: User): Action {
         return {
             type: AuthActions.SIGNUP,
             payload
@@ -63,7 +63,7 @@ export class AuthActions {
 
     static UPDATE = 'AUTH_UPDATE_USER';
 
-    update(payload: User): Action {
+    static update(payload: User): Action {
         return {
             type: AuthActions.UPDATE,
             payload
@@ -72,7 +72,7 @@ export class AuthActions {
 
     static UPDATE_SUCCESS = 'AUTH_UPDATE_USER_SUCCESS';
 
-    updateSuccess(payload: User): Action {
+    static updateSuccess(payload: User): Action {
         return {
             type: AuthActions.UPDATE_SUCCESS,
             payload
@@ -81,7 +81,7 @@ export class AuthActions {
 
     static FORGOT_REQ = 'AUTH_FORGOT_REQ';
 
-    requestForgotToken(email: string): Action {
+    static requestForgotToken(email: string): Action {
         return {
             type: AuthActions.FORGOT_REQ,
             payload: email
@@ -90,7 +90,7 @@ export class AuthActions {
 
     static FORGOT_REQ_SUCCESS = 'AUTH_FORGOT_REQ_SUCCESS';
 
-    requestForgotTokenSuccess(msg: string): Action {
+    static requestForgotTokenSuccess(msg: string): Action {
         return {
             type: AuthActions.FORGOT_REQ_SUCCESS,
             payload: msg
@@ -99,7 +99,7 @@ export class AuthActions {
 
     static FORGOT_VERIFY_TOKEN = 'AUTH_FORGOT_VERIFY_TOKEN';
 
-    verifyToken(token: string): Action {
+    static verifyToken(token: string): Action {
         return {
             type: AuthActions.FORGOT_VERIFY_TOKEN,
             payload: token
@@ -108,7 +108,7 @@ export class AuthActions {
 
     static FORGOT_VERIFY_TOKEN_SUCCESS = 'AUTH_FORGOT_VERIFY_TOKEN_SUCCESS';
 
-    verifyTokenSuccess(): Action {
+    static verifyTokenSuccess(): Action {
         return {
             type: AuthActions.FORGOT_VERIFY_TOKEN_SUCCESS
         };
@@ -116,7 +116,7 @@ export class AuthActions {
 
     static FORGOT_CHANGE_PASSWORD = 'AUTH_FORGOT_CHANGE_PASSWORD';
 
-    changePassword(token: string, password: string): Action {
+    static changePassword(token: string, password: string): Action {
         return {
             type: AuthActions.FORGOT_CHANGE_PASSWORD,
             payload: {
@@ -128,7 +128,7 @@ export class AuthActions {
 
     static FORGOT_CHANGE_PASSWORD_SUCCESS = 'AUTH_FORGOT_CHANGE_PASSWORD_SUCCESS';
 
-    changePasswordSuccess(email?: string, password?: string): Action {
+    static changePasswordSuccess(email?: string, password?: string): Action {
         return {
             type: AuthActions.FORGOT_CHANGE_PASSWORD_SUCCESS,
             payload: {

@@ -8,9 +8,7 @@ import { PetsService } from './pets.service';
 @Injectable()
 export class PetsEffects {
     constructor(private actions$: Actions,
-                private petsService: PetsService,
-                private appActions: AppActions,
-                private petsActions: PetsActions) {
+                private petsService: PetsService) {
     }
 
     @Effect()
@@ -21,11 +19,12 @@ export class PetsEffects {
             this.petsService.create(pet)
                 .map(res =>
                     res.success
-                        ? this.petsActions.createSuccess(res.data)
-                        : this.appActions.error(res.msg)
+                        ? PetsActions.createSuccess(res.data)
+                        : AppActions.error(res.msg)
                 )
-                .catch(e => Observable.of(this.appActions.error(e.toString())))
-        );
+                .catch(e => Observable.of(AppActions.error(e.toString())))
+        )
+        .share();
 
     @Effect()
     update$ = this.actions$
@@ -35,11 +34,12 @@ export class PetsEffects {
             this.petsService.update(pet)
                 .map(res =>
                     res.success
-                        ? this.petsActions.updateSuccess(pet, index)
-                        : this.appActions.error(res.msg)
+                        ? PetsActions.updateSuccess(pet, index)
+                        : AppActions.error(res.msg)
                 )
-                .catch(e => Observable.of(this.appActions.error(e.toString())))
-        );
+                .catch(e => Observable.of(AppActions.error(e.toString())))
+        )
+        .share();
 
     @Effect()
     remove$ = this.actions$
@@ -49,9 +49,10 @@ export class PetsEffects {
             this.petsService.remove(id)
                 .map(res =>
                     res.success
-                        ? this.petsActions.removeSuccess(index)
-                        : this.appActions.error(res.msg)
+                        ? PetsActions.removeSuccess(index)
+                        : AppActions.error(res.msg)
                 )
-                .catch(e => Observable.of(this.appActions.error(e.toString())))
-        );
+                .catch(e => Observable.of(AppActions.error(e.toString())))
+        )
+        .share();
 }

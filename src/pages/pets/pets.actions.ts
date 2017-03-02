@@ -1,18 +1,16 @@
 import { Action } from '@ngrx/store';
-import { Injectable } from '@angular/core';
 import { Pet } from '../../models/Pet';
 
-@Injectable()
 export class PetsActions {
-    save(pet: Pet, index: number): Action {
+    static save(pet: Pet, index: number): Action {
         return pet._id
-            ? this.update(pet, index)
-            : this.create(pet);
+            ? PetsActions.update(pet, index)
+            : PetsActions.create(pet);
     }
 
     static UPDATE = 'PET_UPDATE';
 
-    update(pet: Pet, index: number): Action {
+    static update(pet: Pet, index: number): Action {
         return {
             type: PetsActions.UPDATE,
             payload: {
@@ -24,7 +22,7 @@ export class PetsActions {
 
     static CREATE = 'PET_CREATE';
 
-    create(pet: Pet): Action {
+    static create(pet: Pet): Action {
         return {
             type: PetsActions.CREATE,
             payload: {
@@ -35,7 +33,7 @@ export class PetsActions {
 
     static CREATE_SUCCESS = 'PET_CREATE_SUCCESS';
 
-    createSuccess(pet: Pet): Action {
+    static createSuccess(pet: Pet): Action {
         return {
             type: PetsActions.CREATE_SUCCESS,
             payload: {
@@ -46,7 +44,7 @@ export class PetsActions {
 
     static UPDATE_SUCCESS = 'PET_UPDATE_SUCCESS';
 
-    updateSuccess(pet: Pet, index: number): Action {
+    static updateSuccess(pet: Pet, index: number): Action {
         return {
             type: PetsActions.UPDATE_SUCCESS,
             payload: {
@@ -58,7 +56,7 @@ export class PetsActions {
 
     static REMOVE = 'PET_REMOVE';
 
-    remove(id: string, index: number): Action {
+    static remove(id: string, index: number): Action {
         return {
             type: PetsActions.REMOVE,
             payload: {
@@ -70,7 +68,7 @@ export class PetsActions {
 
     static REMOVE_SUCCESS = 'PET_REMOVE_SUCCESS';
 
-    removeSuccess(index: number): Action {
+    static removeSuccess(index: number): Action {
         return {
             type: PetsActions.REMOVE_SUCCESS,
             payload: {

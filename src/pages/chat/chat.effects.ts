@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Actions, Effect, toPayload } from '@ngrx/effects';
+import { Actions, Effect } from '@ngrx/effects';
 import { AppActions } from '../../app/app.actions';
 import { ChatActions } from './chat.actions';
 import { ChatService } from '../../providers/chat.service';
@@ -9,9 +9,7 @@ import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class ChatEffects {
     constructor(private actions$: Actions,
-                private chatService: ChatService,
-                private chatActions: ChatActions,
-                private appActions: AppActions) {
+                private chatService: ChatService) {
     }
 
     @Effect()
@@ -21,9 +19,9 @@ export class ChatEffects {
             this.chatService.getList()
                 .map((res: IResponse) =>
                     res.success
-                        ? this.chatActions.requestListSuccess(res.data)
-                        : this.appActions.error(res.msg)
+                        ? ChatActions.requestListSuccess(res.data)
+                        : AppActions.error(res.msg)
                 )
-                .catch(e => Observable.of(this.appActions.error(e.toString())))
+                .catch(e => Observable.of(AppActions.error(e.toString())))
         );
 }

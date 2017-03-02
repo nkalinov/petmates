@@ -42,7 +42,6 @@ import { ReportModalPage } from '../components/report-modal/report-modal';
 import { PetsListPage } from '../pages/pets/list/pets-list.page';
 import { PetEditPage } from '../pages/pets/edit/pet-edit.page';
 import { BreedPage } from '../pages/pets/edit/breed/breed';
-import { PetsActions } from '../pages/pets/pets.actions';
 import { ProfilePage } from '../pages/profile/profile.page';
 import { ProfileEdit } from '../pages/profile/edit/profile-edit.page';
 import { MateImage } from '../components/mate-image/mate-image';
@@ -59,19 +58,14 @@ import { IonicImageViewerModule } from 'ionic-img-viewer';
 import { PetsService } from '../pages/pets/pets.service';
 import { DistancePipe } from '../pipes/distance';
 import { StoreModule } from '@ngrx/store';
-import { AuthActions } from '../pages/auth/auth.actions';
 import { EffectsModule } from '@ngrx/effects';
-import { AppActions } from './app.actions';
 import { AuthEffects } from '../pages/auth/auth.effects';
 import { AppEffects } from './app.effects';
 import reducers from './reducers';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { ApiService } from '../providers/api.service';
 import { SocketEffects } from '../effects/socket.effects';
-import { SocketActions } from '../actions/socket.actions';
 import { ChatEffects } from '../pages/chat/chat.effects';
-import { ChatActions } from '../pages/chat/chat.actions';
-import { ApiActions } from '../actions/api.actions';
 import { ImageUpload } from '../components/image-upload/image-upload';
 import { PetsEffects } from '../pages/pets/pets.effects';
 
@@ -156,8 +150,8 @@ const pages: Array<any> = [
         SocketService,
         WalkService,
         MatesService,
-        NearbyService,
         LocationService,
+        NearbyService,
         EventsService,
         PlacesService,
         ReportsService,
@@ -167,15 +161,7 @@ const pages: Array<any> = [
         {
             provide: ErrorHandler,
             useClass: IonicErrorHandler
-        },
-
-        // actions
-        ApiActions,
-        AppActions,
-        AuthActions,
-        ChatActions,
-        SocketActions,
-        PetsActions
+        }
     ]
 })
 export class AppModule {

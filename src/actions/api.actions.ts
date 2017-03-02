@@ -1,11 +1,9 @@
-import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 
-@Injectable()
 export class ApiActions {
     static UPLOAD = 'API_UPLOAD';
 
-    upload(): Action {
+    static upload(): Action {
         return {
             type: ApiActions.UPLOAD
         };
@@ -13,7 +11,7 @@ export class ApiActions {
 
     static UPLOAD_SUCCESS = 'API_UPLOAD_SUCCESS';
 
-    uploadSuccess(): Action {
+    static uploadSuccess(): Action {
         return {
             type: ApiActions.UPLOAD_SUCCESS
         };

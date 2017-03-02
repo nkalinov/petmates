@@ -20,7 +20,6 @@ export class ForgotForm implements OnDestroy {
     private subscription: Subscription;
 
     constructor(public viewCtrl: ViewController,
-                private authActions: AuthActions,
                 private store: Store<AppState>) {
 
         this.subscription = this.store.select(state => state.auth.forgot.tokenValid)
@@ -28,16 +27,16 @@ export class ForgotForm implements OnDestroy {
     }
 
     requestToken() {
-        this.store.dispatch(this.authActions.requestForgotToken(this.email));
+        this.store.dispatch(AuthActions.requestForgotToken(this.email));
         this.mode = 'verify';
     }
 
     verifyToken() {
-        this.store.dispatch(this.authActions.verifyToken(this.token));
+        this.store.dispatch(AuthActions.verifyToken(this.token));
     }
 
     changePassword() {
-        this.store.dispatch(this.authActions.changePassword(this.token, this.password));
+        this.store.dispatch(AuthActions.changePassword(this.token, this.password));
         this.viewCtrl.dismiss();
     }
 

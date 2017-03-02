@@ -12,9 +12,7 @@ import { User } from '../../models/User';
 export class AuthEffects {
     constructor(private storage: Storage,
                 private actions$: Actions,
-                private authService: AuthService,
-                private appActions: AppActions,
-                private authActions: AuthActions) {
+                private authService: AuthService) {
     }
 
     @Effect()
@@ -30,11 +28,11 @@ export class AuthEffects {
 
                         this.storage.set('id_token', token);
 
-                        return this.authActions.loginSuccess(token, user);
+                        return AuthActions.loginSuccess(token, user);
                     }
-                    return this.appActions.error(res.msg);
+                    return AppActions.error(res.msg);
                 })
-                .catch(e => Observable.of(this.appActions.error(e.toString())))
+                .catch(e => Observable.of(AppActions.error(e.toString())))
         );
 
     @Effect()
@@ -48,12 +46,12 @@ export class AuthEffects {
                         ? this.authService.refresh(token)
                         .map((res: IResponse) =>
                             res.success
-                                ? this.authActions.loginSuccess(token, res.data)
+                                ? AuthActions.loginSuccess(token, res.data)
                                 : Observable.throw('Username does not exist or the token is invalid')
                         )
                         : Observable.throw('No token in storage')
                 )
-                .catch(() => Observable.of(this.authActions.logout()))
+                .catch(() => Observable.of(AuthActions.logout()))
         );
 
     @Effect()
@@ -64,10 +62,10 @@ export class AuthEffects {
             this.authService.signup(data)
                 .map(res =>
                     res.success
-                        ? this.authActions.login(data.email, data.password)
-                        : this.appActions.error(res.msg)
+                        ? AuthActions.login(data.email, data.password)
+                        : AppActions.error(res.msg)
                 )
-                .catch(e => Observable.of(this.appActions.error(e.toString())))
+                .catch(e => Observable.of(AppActions.error(e.toString())))
         );
 
     @Effect({ dispatch: false })
@@ -84,8 +82,8 @@ export class AuthEffects {
             this.authService.deleteProfile()
                 .map((res: IResponse) =>
                     res.success
-                        ? this.authActions.logout()
-                        : this.appActions.error(res.msg))
+                        ? AuthActions.logout()
+                        : AppActions.error(res.msg))
         )
         .catch(e => Observable.of(e.toString()));
 
@@ -97,10 +95,10 @@ export class AuthEffects {
             this.authService.update(data)
                 .map(res =>
                     res.success
-                        ? this.authActions.updateSuccess(data)
-                        : this.appActions.error(res.msg)
+                        ? AuthActions.updateSuccess(data)
+                        : AppActions.error(res.msg)
                 )
-                .catch(e => Observable.of(this.appActions.error(e.toString())))
+                .catch(e => Observable.of(AppActions.error(e.toString())))
         );
 
     @Effect()
@@ -111,10 +109,10 @@ export class AuthEffects {
             this.authService.requestToken(email)
                 .map(res =>
                     res.success
-                        ? this.authActions.requestForgotTokenSuccess(res.msg)
-                        : this.appActions.error(res.msg)
+                        ? AuthActions.requestForgotTokenSuccess(res.msg)
+                        : AppActions.error(res.msg)
                 )
-                .catch(e => Observable.of(this.appActions.error(e.toString())))
+                .catch(e => Observable.of(AppActions.error(e.toString())))
         );
 
     @Effect()
@@ -125,10 +123,10 @@ export class AuthEffects {
             this.authService.verifyToken(token)
                 .map(res =>
                     res.success
-                        ? this.authActions.verifyTokenSuccess()
-                        : this.appActions.error(res.msg)
+                        ? AuthActions.verifyTokenSuccess()
+                        : AppActions.error(res.msg)
                 )
-                .catch(e => Observable.of(this.appActions.error(e.toString())))
+                .catch(e => Observable.of(AppActions.error(e.toString())))
         );
 
     @Effect()
@@ -138,13 +136,13 @@ export class AuthEffects {
         .switchMap(({ token, password }) =>
             this.authService.changePassword(token, password)
                 .map(res => ({ password, res }))
-                .catch(e => Observable.of(this.appActions.error(e.toString())))
+                .catch(e => Observable.of(AppActions.error(e.toString())))
         )
         .mergeMap(({ password, res }) => res.success
             ? Observable.of(
-                this.authActions.changePasswordSuccess(),
-                this.authActions.login(res.data.email, password)
+                AuthActions.changePasswordSuccess(),
+                AuthActions.login(res.data.email, password)
             )
-            : Observable.of(this.appActions.error(res.msg))
+            : Observable.of(AppActions.error(res.msg))
         );
 }

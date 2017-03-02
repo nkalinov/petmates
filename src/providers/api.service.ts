@@ -16,8 +16,6 @@ export class ApiService {
     constructor(private http: Http,
                 private config: Config,
                 private platform: Platform,
-                private appActions: AppActions,
-                private apiActions: ApiActions,
                 private store: Store<AppState>) {
 
         this.store.select(state => state.auth.token).subscribe(token => {
@@ -59,7 +57,7 @@ export class ApiService {
 
     upload(file) {
         return Observable.create((observer: Observer<IResponseUpload>) => {
-            this.store.dispatch(this.apiActions.upload());
+            this.store.dispatch(ApiActions.upload());
 
             if (this.platform.is('cordova')) {
                 // mobile
@@ -74,16 +72,16 @@ export class ApiService {
                         const response = JSON.parse(res.response);
 
                         if (response.success) {
-                            this.store.dispatch(this.apiActions.uploadSuccess());
+                            this.store.dispatch(ApiActions.uploadSuccess());
                             observer.next(response);
                         } else {
-                            this.store.dispatch(this.appActions.error(response.msg));
+                            this.store.dispatch(AppActions.error(response.msg));
                             observer.error(response);
                         }
                     },
                     // (err: FileTransferError) => {
                     (err: any) => {
-                        this.store.dispatch(this.appActions.error(err.body));
+                        this.store.dispatch(AppActions.error(err.body));
                         observer.error(err);
                     },
                     options
@@ -96,15 +94,15 @@ export class ApiService {
                             const response = res.response;
 
                             if (response.success) {
-                                this.store.dispatch(this.apiActions.uploadSuccess());
+                                this.store.dispatch(ApiActions.uploadSuccess());
                                 observer.next(response);
                             } else {
-                                this.store.dispatch(this.appActions.error(response.msg));
+                                this.store.dispatch(AppActions.error(response.msg));
                                 observer.error(response);
                             }
                         },
                         err => {
-                            this.store.dispatch(this.appActions.error(err.toString()));
+                            this.store.dispatch(AppActions.error(err.toString()));
                             observer.error(err);
                         }
                     );

@@ -6,16 +6,16 @@
         <span>Add new pet</span>
     </button>
     <button ion-item type="button"
-            *ngFor="let d of pets; let i = index"
-            (click)="petEdit(d, i)">
+            *ngFor="let item of pets | async"
+            (click)="petEdit(item)">
         <ion-avatar item-left>
-            <pet-image [image]="d.pic"></pet-image>
+            <pet-image [image]="item.pic"></pet-image>
         </ion-avatar>
-        <h2>{{d.name}}</h2>
-        <h3>{{d.breed.name}}</h3>
-        <p><span [gender]="d.sex"></span>, <span [age]="d.birthday"></span></p>
+        <h2>{{item.name}}</h2>
+        <h3>{{item.breed.name}}</h3>
+        <p><span [gender]="item.sex"></span>, <span [age]="item.birthday"></span></p>
     </button>
 </ion-list>
-<div *ngIf="pets.length===0">
+<div *ngIf="!(pets | async).length">
     <p text-center>No pets? :( You should adopt one!</p>
 </div>

@@ -13,17 +13,15 @@ const passport = require('passport');
 
 // send Facebook users an endless local JWT token
 // todo get profile info
-router.get('/facebook',
-    passport.authenticate('facebook-token', { session: false }),
-    (req, res) => {
-        const token = jwt.sign({ _id: req.user._id }, auth.Jwt.secretOrKey);
+router.get('/facebook', passport.authenticate('facebook-token', {session: false}), (req, res) => {
+        const token = jwt.sign({_id: req.user._id}, auth.Jwt.secretOrKey);
 
         // return the information including token as JSON
         return res.json({
             success: true,
             data: {
                 token: 'JWT ' + token,
-                profile: req.user
+                user: req.user
             }
         });
     }
@@ -31,41 +29,37 @@ router.get('/facebook',
 
 // login by email
 router.post('/', (req, res) => {
-    User.findOne(
-        { email: req.body.email.toLowerCase().trim() },
-        (err, profile) => {
-            if (err)
-                return res.json({ success: false, msg: err });
+    User.findOne({email: req.body.email.toLowerCase().trim()}, (err, user) => {
+        if (err)
+            return res.json({success: false, msg: err});
 
-            if (!profile)
-                return res.json({ success: false, msg: 'Wrong email or password' });
+        if (!user)
+            return res.json({success: false, msg: 'Wrong email or password'});
 
-            // check if password matches
-            profile.comparePassword(req.body.password, function (err, isMatch) {
-                if (isMatch && !err) {
-                    // if user is found and password is right create a token
-                    var token = jwt.sign({
-                        _id: profile._id
-                    }, auth.Jwt.secretOrKey);
+        // check if password matches
+        user.comparePassword(req.body.password, function (err, isMatch) {
+            if (isMatch && !err) {
+                // if user is found and password is right create a token
+                var token = jwt.sign({_id: user._id}, auth.Jwt.secretOrKey);
 
-                    // return the information including token as JSON
-                    return res.json({
-                        success: true,
-                        data: {
-                            token: 'JWT ' + token,
-                            profile
-                        }
-                    });
-                }
+                // return the information including token as JSON
+                return res.json({
+                    success: true,
+                    data: {
+                        token: 'JWT ' + token,
+                        user
+                    }
+                });
+            }
 
-                return res.json({ success: false, msg: 'Wrong email or password' });
-            });
+            return res.json({success: false, msg: 'Wrong email or password'});
         });
+    });
 });
 
 // create
 router.post('/signup', (req, res) => {
-    const { name, email, location: { coordinates }, password, picture, city, region, country } = req.body;
+    const {name, email, location: {coordinates}, password, picture, city, region, country} = req.body;
 
     var user = new User({
         name,
@@ -82,9 +76,9 @@ router.post('/signup', (req, res) => {
 
     user.save(err => {
         if (err)
-            return res.json({ success: false, msg: 'Username or email already registered' });
+            return res.json({success: false, msg: 'Username or email already registered'});
 
-        return res.json({ success: true });
+        return res.json({success: true});
     });
 });
 
@@ -92,7 +86,7 @@ router.post('/signup', (req, res) => {
 router.post('/forgot', (req, res) => {
     const email = req.body.email.toLowerCase();
 
-    User.findOne({ email })
+    User.findOne({email})
         .exec()
         .then(user => {
             if (!user)
@@ -103,7 +97,7 @@ router.post('/forgot', (req, res) => {
                 token: buf.toString('hex')
             }));
         })
-        .then(({ user, token }) => {
+        .then(({user, token}) => {
             user.resetPasswordToken = token;
             user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
 
@@ -131,7 +125,7 @@ router.post('/forgot', (req, res) => {
                 });
             });
         })
-        .catch(msg => res.json({ success: false, msg }));
+        .catch(msg => res.json({success: false, msg}));
 });
 
 // check reset token
@@ -139,7 +133,7 @@ router.get('/reset/:token', (req, res) => {
     const resetPasswordToken = req.params.token
 
     if (!resetPasswordToken)
-        return res.json({ success: false, msg: 'Provide password reset token.' })
+        return res.json({success: false, msg: 'Provide password reset token.'})
 
     User.findOne({
         resetPasswordToken,
@@ -148,9 +142,9 @@ router.get('/reset/:token', (req, res) => {
         }
     }, function (err, user) {
         if (!user)
-            return res.json({ success: false, msg: 'Password reset token is invalid or has expired.' })
+            return res.json({success: false, msg: 'Password reset token is invalid or has expired.'})
 
-        res.json({ success: true })
+        res.json({success: true})
     });
 });
 
@@ -159,7 +153,7 @@ router.post('/reset/:token', function (req, res) {
     const resetPasswordToken = req.params.token
 
     if (!resetPasswordToken)
-        return res.json({ success: false, msg: 'Provide password reset token.' })
+        return res.json({success: false, msg: 'Provide password reset token.'})
 
     User.findOne({
         resetPasswordToken,
@@ -168,7 +162,7 @@ router.post('/reset/:token', function (req, res) {
         }
     }, function (err, user) {
         if (!user)
-            return res.json({ success: false, msg: 'Password reset token is invalid or has expired.' });
+            return res.json({success: false, msg: 'Password reset token is invalid or has expired.'});
 
         user.password = req.body.password;
         user.resetPasswordToken = undefined;
@@ -176,9 +170,9 @@ router.post('/reset/:token', function (req, res) {
 
         user.save(err => {
             if (err)
-                return res.json({ success: false, msg: err });
+                return res.json({success: false, msg: err});
 
-            return res.json({ success: true, data: { email: user.email } });
+            return res.json({success: true, data: {email: user.email}});
         });
     });
 });

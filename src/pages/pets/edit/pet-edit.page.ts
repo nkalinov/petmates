@@ -7,15 +7,15 @@ import { PetsActions } from '../pets.actions';
 import { AppState } from '../../../app/state';
 import { Store } from '@ngrx/store';
 import { PetsEffects } from '../pets.effects';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
     templateUrl: 'pet-edit.page.html'
 })
 export class PetEditPage implements OnDestroy {
     pet: Pet;
-    index: number;
 
+    private _userId: string;
     private _close$;
 
     constructor(navParams: NavParams,
@@ -26,7 +26,7 @@ export class PetEditPage implements OnDestroy {
                 private store: Store<AppState>,
                 private petsEffects: PetsEffects) {
         this.pet = new Pet(navParams.get('pet'));
-        this.index = navParams.get('index');
+        this._userId = navParams.get('userId');
 
         this._close$ = Observable
             .merge(
@@ -55,7 +55,7 @@ export class PetEditPage implements OnDestroy {
     }
 
     save() {
-        this.store.dispatch(PetsActions.save(this.pet, this.index));
+        this.store.dispatch(PetsActions.save(this.pet, this._userId));
     }
 
     remove() {
@@ -72,7 +72,7 @@ export class PetEditPage implements OnDestroy {
                     role: 'destructive',
                     handler: () => {
                         alert.dismiss();
-                        this.store.dispatch(PetsActions.remove(this.pet._id, this.index));
+                        this.store.dispatch(PetsActions.remove(this.pet._id, this._userId));
                     }
                 }
             ]

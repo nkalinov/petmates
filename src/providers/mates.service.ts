@@ -29,9 +29,9 @@ export class MatesService {
                 private sockets: SocketService,
                 private store: Store<AppState>) {
 
-        this.store.select(state => state.auth).subscribe(auth => {
-            this.user = auth.user;
-        });
+        // this.store.select(state => state.auth).subscribe(auth => {
+        //     this.user = auth.user;
+        // });
     }
 
     getById(id: string): Promise<User> {

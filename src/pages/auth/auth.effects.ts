@@ -23,12 +23,9 @@ export class AuthEffects {
             this.authService.login(email, password)
                 .map(res => {
                     if (res.success) {
-                        const token = res.data.token,
-                            user = res.data.profile;
-
+                        const token = res.data.token;
                         this.storage.set('id_token', token);
-
-                        return AuthActions.loginSuccess(token, user);
+                        return AuthActions.loginSuccess(token, res.data.user);
                     }
                     return AppActions.error(res.msg);
                 })
@@ -76,7 +73,7 @@ export class AuthEffects {
         });
 
     @Effect()
-    delete$ = this.actions$
+    remove$ = this.actions$
         .ofType(AuthActions.REMOVE)
         .switchMap(() =>
             this.authService.deleteProfile()
@@ -91,11 +88,11 @@ export class AuthEffects {
     update$ = this.actions$
         .ofType(AuthActions.UPDATE)
         .map(toPayload)
-        .switchMap((data: User) =>
-            this.authService.update(data)
+        .switchMap((user: User) =>
+            this.authService.update(user)
                 .map(res =>
                     res.success
-                        ? AuthActions.updateSuccess(data)
+                        ? AuthActions.updateSuccess(user)
                         : AppActions.error(res.msg)
                 )
                 .catch(e => Observable.of(AppActions.error(e.toString())))

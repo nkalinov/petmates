@@ -34,5 +34,5 @@
             </button>
         </ion-item>
     </ion-card>
-    <pets-list *ngIf="user" [pets]="user.pets" [canCreate]="true"></pets-list>
+    <pets-list [userId]="user._id" [pets]="pets$" [canCreate]="true"></pets-list>
 </ion-content>

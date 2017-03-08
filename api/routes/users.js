@@ -99,7 +99,7 @@ router.put('/', passport.authenticate('jwt', { session: false }), (req, res) => 
         if (err)
             return res.json({ success: false, msg: err });
 
-        return res.json({ success: true, data });
+        return res.json({ success: true });
     });
 });
 

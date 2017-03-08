@@ -15,11 +15,11 @@ export class PetsEffects {
     create$ = this.actions$
         .ofType(PetsActions.CREATE)
         .map(toPayload)
-        .switchMap(({ pet }) =>
+        .switchMap(({ pet, userId }) =>
             this.petsService.create(pet)
                 .map(res =>
                     res.success
-                        ? PetsActions.createSuccess(res.data)
+                        ? PetsActions.createSuccess(res.data, userId)
                         : AppActions.error(res.msg)
                 )
                 .catch(e => Observable.of(AppActions.error(e.toString())))
@@ -30,11 +30,11 @@ export class PetsEffects {
     update$ = this.actions$
         .ofType(PetsActions.UPDATE)
         .map(toPayload)
-        .switchMap(({ pet, index }) =>
+        .switchMap(({ pet }) =>
             this.petsService.update(pet)
                 .map(res =>
                     res.success
-                        ? PetsActions.updateSuccess(pet, index)
+                        ? PetsActions.updateSuccess(pet)
                         : AppActions.error(res.msg)
                 )
                 .catch(e => Observable.of(AppActions.error(e.toString())))
@@ -45,11 +45,11 @@ export class PetsEffects {
     remove$ = this.actions$
         .ofType(PetsActions.REMOVE)
         .map(toPayload)
-        .switchMap(({ id, index }) =>
-            this.petsService.remove(id)
+        .switchMap(({ petId, userId }) =>
+            this.petsService.remove(petId)
                 .map(res =>
                     res.success
-                        ? PetsActions.removeSuccess(index)
+                        ? PetsActions.removeSuccess(petId, userId)
                         : AppActions.error(res.msg)
                 )
                 .catch(e => Observable.of(AppActions.error(e.toString())))

@@ -6,4 +6,12 @@ export interface AppState {
     chat: {
         list: Conversation[]
     };
+    entities: {
+        users: { [key: string]: {} },
+        pets: { [key: string]: {} }
+    };
+    location: {
+        lat: number,
+        lng: number
+    };
 }

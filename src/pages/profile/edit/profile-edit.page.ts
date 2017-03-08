@@ -12,13 +12,13 @@ import { IResponseUpload } from '../../../models/interfaces/IResponseUpload';
 })
 
 export class ProfileEdit {
-    user: User; // copy
+    user: User;
 
     constructor(public viewCtrl: ViewController,
                 private location: LocationService,
                 private store: Store<AppState>,
                 navParams: NavParams) {
-        this.user = new User(navParams.get('user'));
+        this.user = Object.assign({}, navParams.get('user'));
     }
 
     geoLocalizeMe() {

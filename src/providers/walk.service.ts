@@ -26,9 +26,9 @@ export class WalkService {
                 private sockets: SocketService,
                 private store: Store<AppState>) {
 
-        this.store.select(state => state.auth.user).subscribe(user => {
-            this.user = user;
-        });
+        // this.store.select(state => state.auth.user).subscribe(user => {
+        //     this.user = user;
+        // });
         this.walks$ = this.walks.asObservable();
     }
 

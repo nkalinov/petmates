@@ -1,11 +1,9 @@
 import { Action } from '@ngrx/store';
 import { AuthActions } from './auth.actions';
-import { User } from '../../models/User';
-import { PetsActions } from '../pets/pets.actions';
-import { Pet } from '../../models/Pet';
+const dotProp = require('dot-prop-immutable');
 
 export interface AuthState {
-    user?: User;
+    user?: string;
     token?: string;
     connected?: boolean;
     forgot: {
@@ -13,11 +11,15 @@ export interface AuthState {
     };
 }
 
-export default function (state: AuthState = { forgot: {} }, action: Action) {
+const defaultState = {
+    forgot: {}
+};
+
+export default function (state: AuthState = defaultState, action: Action) {
     switch (action.type) {
         case AuthActions.LOGIN_SUCCESS:
             return Object.assign({}, state, {
-                user: new User(action.payload.user),
+                user: action.payload.userId,
                 token: action.payload.token,
                 connected: true
             });
@@ -29,55 +31,9 @@ export default function (state: AuthState = { forgot: {} }, action: Action) {
                 connected: false
             });
 
-        case AuthActions.UPDATE_SUCCESS:
-            return Object.assign({}, state, {
-                user: action.payload
-            });
-
         case AuthActions.FORGOT_VERIFY_TOKEN_SUCCESS:
-            return Object.assign({}, state, {
-                forgot: Object.assign({}, state.forgot, {
-                    tokenValid: true
-                })
-            });
-
         case AuthActions.FORGOT_CHANGE_PASSWORD_SUCCESS:
-            return Object.assign({}, state, {
-                forgot: Object.assign({}, state.forgot, {
-                    tokenValid: false
-                })
-            });
-
-        case PetsActions.CREATE_SUCCESS:
-            return Object.assign({}, state, {
-                user: Object.assign({}, state.user, {
-                    pets: [
-                        new Pet(action.payload.pet),
-                        ...state.user.pets
-                    ]
-                })
-            });
-
-        case PetsActions.UPDATE_SUCCESS:
-            return Object.assign({}, state, {
-                user: Object.assign({}, state.user, {
-                    pets: [
-                        ...state.user.pets.slice(0, action.payload.index),
-                        new Pet(action.payload.pet),
-                        ...state.user.pets.slice(action.payload.index + 1),
-                    ]
-                })
-            });
-
-        case PetsActions.REMOVE_SUCCESS:
-            return Object.assign({}, state, {
-                user: Object.assign({}, state.user, {
-                    pets: [
-                        ...state.user.pets.slice(0, action.payload.index),
-                        ...state.user.pets.slice(action.payload.index + 1),
-                    ]
-                })
-            });
+            return dotProp.toggle(state, 'forgot.tokenValid');
 
         default:
             return state;

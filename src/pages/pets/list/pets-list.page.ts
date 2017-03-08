@@ -1,8 +1,8 @@
 import { ModalController, NavController } from 'ionic-angular';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { AuthService } from '../../auth/auth.service';
 import { PetEditPage } from '../edit/pet-edit.page';
 import { Pet } from '../../../models/Pet';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
     selector: 'pets-list',
@@ -11,24 +11,30 @@ import { Pet } from '../../../models/Pet';
 })
 
 export class PetsListPage {
-    @Input()
-    pets: Pet[];
+    @Input() pets: Observable<Pet[]>;
+    @Input() userId: string;
+    @Input() canCreate: boolean = false;
 
-    @Input()
-    canCreate: boolean = false;
-
-    constructor(public auth: AuthService,
-                private nav: NavController,
+    constructor(private nav: NavController,
                 private modalCtrl: ModalController) {
     }
 
-    petEdit(pet: Pet, index: number) {
+    petEdit(pet: Pet) {
         if (this.canCreate) {
-            this.nav.push(PetEditPage, { pet, index });
+            this.nav.push(PetEditPage, {
+                pet,
+                userId: this.userId
+            });
+        } else {
+            // todo PetViewPage
         }
     }
 
     petCreateModal() {
-        this.modalCtrl.create(PetEditPage).present();
+        if (this.canCreate) {
+            this.modalCtrl.create(PetEditPage, {
+                userId: this.userId
+            }).present();
+        }
     }
 }

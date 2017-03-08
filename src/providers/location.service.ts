@@ -19,9 +19,9 @@ export class LocationService {
                 private store: Store<AppState>) {
 
         this.coords$ = this.coords.asObservable();
-        this.store.select(state => state.auth).subscribe(auth => {
-            this.user = auth.user;
-        });
+        // this.store.select(state => state.auth).subscribe(auth => {
+        //     this.user = auth.user;
+        // });
     }
 
     getLastCoords() {

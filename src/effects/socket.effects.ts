@@ -20,8 +20,8 @@ export class SocketEffects {
     login$ = this.actions$
         .ofType(AuthActions.LOGIN_SUCCESS)
         .map(toPayload)
-        .switchMap(({ token, user }) =>
-                this.socketService.connect(user.region, token)
+        .switchMap(({ token, region }) =>
+                this.socketService.connect(region, token)
                     .map(socket => {
                         // todo for each service, create [service].effects and attach listeners on SOCKET_CONNECTED ?
                         this.chatService.registerSocketEvents(socket);

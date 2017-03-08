@@ -1,6 +1,8 @@
 import { Action } from '@ngrx/store';
 import { Injectable } from '@angular/core';
 import { User } from '../../models/User';
+import { normalize } from 'normalizr';
+import { userEntity } from '../../app/schemas';
 
 @Injectable()
 export class AuthActions {
@@ -23,7 +25,9 @@ export class AuthActions {
             type: AuthActions.LOGIN_SUCCESS,
             payload: {
                 token,
-                user
+                userId: user._id,
+                region: user.region,
+                data: normalize(user, userEntity)
             }
         };
     }
@@ -72,10 +76,14 @@ export class AuthActions {
 
     static UPDATE_SUCCESS = 'AUTH_UPDATE_USER_SUCCESS';
 
-    static updateSuccess(payload: User): Action {
+    static updateSuccess(user: User): Action {
         return {
             type: AuthActions.UPDATE_SUCCESS,
-            payload
+            payload: {
+                userId: user._id,
+                region: user.region,
+                data: normalize(user, userEntity)
+            }
         };
     }
 

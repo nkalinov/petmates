@@ -22,17 +22,19 @@ export class User {
         coordinates: undefined
     };
 
-    lastActive: Date = null;
+    lastActive: Date;
     distance?: number;
 
     constructor(data?, myCoordinates?) {
-        if(data) {
+        if (data) {
             Object.assign(this, data);
-            this.password = '';
-            this.mates.forEach(mate => {
-                mate.friend = new User(mate.friend);
-            });
-            this.pets = this.pets.map(pet => new Pet(pet));
+            if (this.password) {
+                delete this.password;
+            }
+            // this.mates.forEach(mate => {
+            //     mate.friend = new User(mate.friend);
+            // });
+            // this.pets = this.pets.map(pet => new Pet(pet));
         }
 
         if (myCoordinates && this.location && this.location.coordinates.length > 0) {

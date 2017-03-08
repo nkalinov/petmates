@@ -21,9 +21,9 @@ export class EventsService {
                 private events: Events,
                 private location: LocationService,
                 private store: Store<AppState>) {
-        this.store.select(state => state.auth).subscribe(auth => {
-            this.user = auth.user;
-        });
+        // this.store.select(state => state.auth).subscribe(auth => {
+        //     this.user = auth.user;
+        // });
     }
 
     getNearbyEvents(force = false) {

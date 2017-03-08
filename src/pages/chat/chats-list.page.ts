@@ -21,10 +21,10 @@ export class ConversationsListPage {
                 store: Store<AppState>) {
 
         this.chats = store.select(state => state.chat.list);
-        store.select(state => state.auth.user)
-            .map(user => {
-                this.me = user._id;
-            });
+        // store.select(state => state.auth.user)
+        //     .map(user => {
+        //         this.me = user._id;
+        //     });
 
         ChatActions.requestList();
     }

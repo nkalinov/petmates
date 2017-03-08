@@ -1,6 +1,7 @@
 import auth from '../pages/auth/auth.reducers';
-import chat from '../pages/chat/chat.reducers';
+import entities from '../reducers/entities';
 
 export default {
-    auth
+    auth,
+    entities
 };

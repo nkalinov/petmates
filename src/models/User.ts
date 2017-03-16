@@ -11,7 +11,7 @@ export class User {
     password: string;
     picture: string; // filename
     pic: string; // picture url
-    pets: Array<Pet> = [];
+    pets: any[] = []; // string[] | Pet[] = [];
     mates: Array<IFriendship> = [];
     city: string = '';
     region: string = '';
@@ -31,10 +31,10 @@ export class User {
             if (this.password) {
                 delete this.password;
             }
-            // this.mates.forEach(mate => {
-            //     mate.friend = new User(mate.friend);
-            // });
-            // this.pets = this.pets.map(pet => new Pet(pet));
+            this.mates.forEach(mate => {
+                mate.friend = new User(mate.friend);
+            });
+            this.pets = this.pets.map(pet => new Pet(pet));
         }
 
         if (myCoordinates && this.location && this.location.coordinates.length > 0) {
@@ -62,5 +62,9 @@ export class User {
             name: this.name,
             pic: this.pic
         };
+    }
+
+    toString() {
+        return this._id;
     }
 }

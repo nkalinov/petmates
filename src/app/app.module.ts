@@ -11,7 +11,7 @@ import { AuthService } from '../pages/auth/auth.service';
 import { SocketService } from '../providers/socket.service';
 import { BreedService } from '../providers/breed.service';
 import { WalkService } from '../providers/walk.service';
-import { MatesService } from '../providers/mates.service';
+import { MatesService } from '../pages/mates//mates.service';
 import { ChatService } from '../providers/chat.service';
 import { NearbyService } from '../providers/nearby.service';
 import { LocationService } from '../providers/location.service';
@@ -25,10 +25,10 @@ import { HelpPage } from '../pages/help/help';
 import { MapPage } from '../pages/map/MapPage';
 import { StartWalkPage } from '../pages/map/start-walk/StartWalkPage';
 import { NearbyPage } from '../pages/nearby/nearby';
-import { MatesPage } from '../pages/mates/mates';
-import { MateViewPage } from '../pages/mates/view/MateViewPage';
+import { MatesPage } from '../pages/mates/mates.page';
+import { MateViewPage } from '../pages/mates/view/mate-view.page';
 import { MatesSearchPage } from '../pages/mates/search/mates.search';
-import { MatesAcceptedPage } from '../pages/mates/tabs/accepted/mates.accepted';
+import { MatesAcceptedPage } from '../pages/mates/tabs/accepted/mates-accepted.page';
 import { MatesPendingPage } from '../pages/mates/tabs/pending/mates.pending';
 import { MatesRequestedPage } from '../pages/mates/tabs/requested/mates.requested';
 import { NearbyEventsPage } from '../pages/nearby/events/events';
@@ -68,6 +68,8 @@ import { SocketEffects } from '../effects/socket.effects';
 import { ChatEffects } from '../pages/chat/chat.effects';
 import { ImageUpload } from '../components/image-upload/image-upload';
 import { PetsEffects } from '../pages/pets/pets.effects';
+import { IonicStorageModule } from '@ionic/storage';
+import { MatesEffects } from '../pages/mates/mates.effects';
 
 const pages: Array<any> = [
     PetMatesApp,
@@ -85,12 +87,12 @@ const pages: Array<any> = [
     // MapPage,
     // StartWalkPage,
 
-    // MatesPage,
-    // MateViewPage,
-    // MatesSearchPage,
-    // MatesAcceptedPage,
-    // MatesPendingPage,
-    // MatesRequestedPage,
+    MatesPage,
+    MateViewPage,
+    MatesSearchPage,
+    MatesAcceptedPage,
+    MatesPendingPage,
+    MatesRequestedPage,
 
     // NearbyPage,
     // NearbyPeoplePage,
@@ -100,7 +102,7 @@ const pages: Array<any> = [
     // EventViewPage,
     // NearybyPlacesPage,
     // PlaceEditPage,
-    // ReportModalPage,
+    ReportModalPage,
 
     PetsListPage,
     PetEditPage,
@@ -130,21 +132,22 @@ const pages: Array<any> = [
                 tabsPlacement: 'bottom'
             })
         ),
+        IonicStorageModule.forRoot(),
         StoreModule.provideStore(reducers),
         StoreDevtoolsModule.instrumentOnlyWithExtension({
-            maxAge: 8
+            maxAge: 5
         }),
         EffectsModule.run(AppEffects),
         EffectsModule.run(AuthEffects),
         EffectsModule.run(SocketEffects),
         EffectsModule.run(PetsEffects),
+        EffectsModule.run(MatesEffects),
         EffectsModule.run(ChatEffects),
         IonicImageViewerModule
     ],
     bootstrap: [IonicApp],
     entryComponents: pages,
     providers: [
-        Storage,
         ApiService,
         AuthService,
         SocketService,

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Conversation } from '../../../models/Conversation';
 import { ChatService } from '../../../providers/chat.service';
 import { ConversationEditMembersPage } from './conversation.edit.members';
-import { MateViewPage } from '../../mates/view/MateViewPage';
+import { MateViewPage } from '../../mates/view/mate-view.page';
 
 @Component({
     templateUrl: 'conversation.edit.html'

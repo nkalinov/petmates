@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { ViewController, NavController } from 'ionic-angular';
-import { MatesService } from '../../../providers/mates.service';
+import { MatesService } from '../mates.service';
 import { User } from '../../../models/User';
 import { Subscription } from 'rxjs/Subscription';
-import { MateViewPage } from '../view/MateViewPage';
+import { MateViewPage } from '../view/mate-view.page';
 
 @Component({
     templateUrl: 'mates.search.html'
@@ -27,7 +27,7 @@ export class MatesSearchPage {
     }
 
     addMate(mate) {
-        this.mates.add(mate).then(() => this.searchResults.splice(this.searchResults.indexOf(mate), 1));
+        // this.mates.add(mate).then(() => this.searchResults.splice(this.searchResults.indexOf(mate), 1));
     }
 
     ionViewWillLeave() {

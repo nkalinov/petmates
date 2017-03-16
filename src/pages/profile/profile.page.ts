@@ -36,7 +36,7 @@ export class ProfilePage implements OnDestroy {
             this.store.select(state => state.auth.user),
             this.store.select(state => state.entities.users),
             this.store.select(state => state.entities.pets),
-            (uid, users, pets) => (users[uid].pets || []).map(petId => pets[petId])
+            (uid, users, pets) => (uid && users[uid].pets || []).map(petId => pets[<string>petId])
         );
     }
 

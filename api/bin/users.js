@@ -7,12 +7,8 @@ function onSocketAuthenticated(socket, uid) {
     });
 
     socket.on('online:get', onOnlineGet);
-    socket.on('mate:', onMateEvent);
+    // socket.on('mate:', onMateEvent);
 
-    /**
-     * Get last activities of ids[]
-     * @param ids[]
-     */
     function onOnlineGet(ids) {
         const lastActivities = Object.create(null);
 
@@ -28,17 +24,12 @@ function onSocketAuthenticated(socket, uid) {
             socket.emit('online', lastActivities);
     }
 
-    /**
-     * Mate request status change
-     * @param action
-     * @param data
-     */
-    function onMateEvent(action, data) {
-        const fid = data.myRequest.friend._id;
-
-        if (users.has(fid))
-            users.get(fid).socket.emit('mate:', action, data);
-    }
+    // function onMateEvent(action, data) {
+    //     const fid = data.myRequest.friend._id;
+    //
+    //     if (users.has(fid))
+    //         users.get(fid).socket.emit('mate:', action, data);
+    // }
 }
 
 module.exports = {

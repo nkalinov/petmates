@@ -1,4 +1,4 @@
-import { MatesPage } from '../pages/mates/mates';
+import { MatesPage } from '../pages/mates/mates.page';
 import { MapPage } from '../pages/map/MapPage';
 import { AuthPage } from '../pages/auth/auth.page';
 import { ProfilePage } from '../pages/profile/profile.page';

@@ -5,7 +5,7 @@ import { Pet } from '../models/Pet';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { SocketService } from './socket.service';
 import { LocalNotifications } from 'ionic-native';
-import { MatesService } from './mates.service';
+import { MatesService } from '../pages/mates/mates.service';
 import { IFriendship } from '../models/interfaces/IFriendship';
 import { userIcon, petIcon } from '../utils/icons';
 import { AppState } from '../app/state';
@@ -45,7 +45,7 @@ export class WalkService {
     }
 
     start(petId: string) {
-        this.walk.pet = this.user.pets.find((p: Pet) => p._id === petId).toPartial();
+        // todo this.walk.pet = this.user.pets.find((p: Pet) => p._id === petId).toPartial();
         this.walk.start();
         this.sockets.socket.emit('walks:start', this.walk.toPartial());
         this.walk.marker.setIcon(petIcon(this.walk.pet.pic, 'my-marker'));

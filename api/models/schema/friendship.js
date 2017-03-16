@@ -15,7 +15,7 @@ const Friendship = new Schema({
         ref: 'User',
         autopopulate: { select: '_id name picture location.coordinates city country' }
     }
-});
+}, { _id: false });
 
 module.exports = {
     Schema: Friendship,

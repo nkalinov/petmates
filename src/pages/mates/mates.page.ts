@@ -1,35 +1,29 @@
 import { Tab } from 'ionic-angular';
 import { QueryList, ViewChildren, Component, AfterViewInit } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
-import { MatesService } from '../../providers/mates.service';
-import { MatesAcceptedPage } from './tabs/accepted/mates.accepted';
+import { MatesService } from './mates.service';
+import { MatesAcceptedPage } from './tabs/accepted/mates-accepted.page';
 import { MatesRequestedPage } from './tabs/requested/mates.requested';
 import { MatesPendingPage } from './tabs/pending/mates.pending';
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({
-    templateUrl: 'mates.html'
+    templateUrl: 'mates.page.html'
 })
 
 export class MatesPage implements AfterViewInit {
-    @ViewChildren(Tab)
-    tabs: QueryList<Tab>;
-
+    @ViewChildren(Tab) tabs: QueryList<Tab>;
     tabAccepted = MatesAcceptedPage;
     tabRequested = MatesRequestedPage;
     tabNew = MatesPendingPage;
-
     private pendingRequestsBadgeSubscription: Subscription;
 
-    constructor(public auth: AuthService,
-                private mates: MatesService) {
+    constructor(public matesService: MatesService) {
     }
 
     ngAfterViewInit() {
-        this.pendingRequestsBadgeSubscription = this.mates.pending$.subscribe((length) => {
-            // set new requests badge
+        this.pendingRequestsBadgeSubscription = this.matesService.pending$.subscribe((mates) => {
             setTimeout(() => {
-                this.tabs.last.tabBadge = length > 0 ? length.toString() : null;
+                this.tabs.last.tabBadge = mates.length ? mates.length.toString() : null;
             });
         });
     }

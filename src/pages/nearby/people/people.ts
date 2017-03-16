@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, Refresher } from 'ionic-angular';
 import { NearbyService } from '../../../providers/nearby.service';
-import { MateViewPage } from '../../mates/view/MateViewPage';
+import { MateViewPage } from '../../mates/view/mate-view.page';
 
 @Component({
     templateUrl: 'people.html'

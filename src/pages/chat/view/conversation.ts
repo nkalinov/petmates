@@ -31,9 +31,7 @@ export class ConversationPage {
             const otherMemberIndex = this.conversation.members.findIndex(m => m._id !== this.auth.user._id),
                 otherMember = this.conversation.members[otherMemberIndex];
 
-            const find = this.auth.user.mates.find(
-                m => m.friend._id === otherMember._id
-            );
+            const find = this.auth.user.mates.find(m => m.friend._id === otherMember._id);
             if (find) {
                 otherMember.lastActive = find.friend.lastActive;
             }

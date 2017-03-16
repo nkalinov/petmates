@@ -14,23 +14,23 @@
 </ion-header>
 
 <ion-content>
-    <div *ngIf="mates.mates.requested.length===0" padding-horizontal>
+    <div *ngIf="!(matesService.requested$ | async).length" padding-horizontal>
         <p text-center>
             <ion-icon name="information-circle"></ion-icon>
             No requests without response.
         </p>
     </div>
-    <ion-list *ngIf="mates.mates.requested.length > 0">
-        <ion-item-sliding *ngFor="let friendship of mates.mates.requested">
-            <button ion-item (click)="viewMate(friendship.friend._id)">
+    <ion-list>
+        <ion-item-sliding *ngFor="let item of (matesService.requested$ | async)">
+            <button ion-item (click)="viewMate(item.friend._id)">
                 <ion-avatar item-left>
-                    <mate-image [image]="friendship.friend.pic"></mate-image>
+                    <mate-image [image]="item.friend.pic"></mate-image>
                 </ion-avatar>
-                <h2>{{friendship.friend.name}}</h2>
+                <h2>{{item.friend.name}}</h2>
             </button>
             <ion-item-options>
                 <button ion-button icon-left color="danger"
-                        (click)="mates.remove(friendship)">
+                        (click)="mates.remove(item)">
                     <ion-icon name="close"></ion-icon>
                     Cancel
                 </button>

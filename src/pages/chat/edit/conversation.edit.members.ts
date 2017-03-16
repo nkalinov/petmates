@@ -1,7 +1,7 @@
 import { NavParams, ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { User } from '../../../models/User';
-import { MatesService } from '../../../providers/mates.service';
+import { MatesService } from '../../../pages/mates/mates.service';
 import { Conversation } from '../../../models/Conversation';
 
 @Component({

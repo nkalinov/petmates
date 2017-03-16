@@ -3,11 +3,12 @@ import { ViewChild, Component } from '@angular/core';
 import { AuthPage } from '../pages/auth/auth.page';
 import { getMenu } from '../utils/common';
 import { SocketService } from '../providers/socket.service';
-import { MatesService } from '../providers/mates.service';
+import { MatesService } from '../pages/mates/mates.service';
 import { ProfilePage } from '../pages/profile/profile.page';
 import { Store } from '@ngrx/store';
 import { AppState } from './state';
 import { AuthActions } from '../pages/auth/auth.actions';
+import { MatesPage } from '../pages/mates/mates.page';
 
 @Component({
     templateUrl: 'app.html',
@@ -19,7 +20,7 @@ export class PetMatesApp {
     pages: any[];
     newRequests: number; // todo from store
 
-    private defaultRootPage: any = ProfilePage;
+    private defaultRootPage: any = MatesPage;
 
     constructor(private platform: Platform,
                 private events: Events,

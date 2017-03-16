@@ -3,7 +3,8 @@ const express = require('express'),
     passport = require('passport'),
     fs = require('fs'),
     User = require('../models/schema/user'),
-    Conversation = require('../models/schema/conversation');
+    Conversation = require('../models/schema/conversation'),
+    Friendship = require('../models/schema/friendship');
 
 // check token validity and that user exists
 router.post('/check', passport.authenticate('jwt', { session: false }), (req, res) => res.json({
@@ -24,6 +25,11 @@ router.get('/:id', passport.authenticate('jwt', { session: false }), (req, res) 
 
         if (!user)
             return res.json({ success: false, msg: 'User not found' });
+
+        user.mates = (user.mates || []).filter(mate =>
+            mate.friend.id !== req.user.id // exclude me
+            && mate.status === Friendship.Status.ACCEPTED // only accepted
+        );
 
         return res.json({ success: true, data: user });
     });

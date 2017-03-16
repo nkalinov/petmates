@@ -27,7 +27,7 @@ export class AuthActions {
                 token,
                 userId: user._id,
                 region: user.region,
-                data: normalize(user, userEntity)
+                data: normalize(new User(user), userEntity)
             }
         };
     }

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavParams, NavController, AlertController } from 'ionic-angular';
 import { Event } from '../../../models/Event';
 import { LocationService } from '../../../providers/location.service';
-import { MateViewPage } from '../../mates/view/MateViewPage';
+import { MateViewPage } from '../../mates/view/mate-view.page';
 import { localISO } from '../../../utils/common';
 import { EventsService } from '../../../providers/events.service';
 

@@ -137,106 +137,106 @@ UserSchema.methods.comparePassword = function (passw, cb) {
     });
 };
 
-UserSchema.methods.requestFriend = function (uid, cb) {
-    // search for existing request
-    var find = this.mates.find(m => m.friend._id ? m.friend._id.equals(uid) : m.friend.equals(uid));
+UserSchema.methods.requestFriend = function (uid) {
+    if (!uid)
+        return Promise.reject('You can delete only your own mates');
 
-    if (find) {
+    // search for existing request
+    const myRequest = this.mates.find(m => m.friend._id ? m.friend._id.equals(uid) : m.friend.equals(uid));
+
+    if (myRequest) {
         // no action if already accepted OR requested
-        if (find.status === Friendship.Status.ACCEPTED || find.status === Friendship.Status.REQUESTED)
-            return cb('Already added');
+        if (myRequest.status === Friendship.Status.ACCEPTED || myRequest.status === Friendship.Status.REQUESTED)
+            return Promise.reject('Already added');
 
         // accept other's 'requested'
-        this.model('User').findOneAndUpdate({
-            _id: uid,
-            mates: {
-                $elemMatch: {
-                    friend: this._id
-                }
-            }
-        }, {
-            $set: {
-                'mates.$.status': Friendship.Status.ACCEPTED,
-                'mates.$.added': Date.now()
-            }
-        }, { new: true }, (err, friendUpdated) => {
-            var myRequest = this.mates.id(find._id);
-            if (err) {
-                // delete
-                myRequest.remove();
-            } else {
-                // accept my 'pending' request
+        return this.model('User')
+            .findOneAndUpdate({
+                    _id: uid,
+                    mates: {
+                        $elemMatch: {
+                            friend: this._id
+                        }
+                    }
+                },
+                {
+                    $set: {
+                        'mates.$.status': Friendship.Status.ACCEPTED,
+                        'mates.$.added': Date.now()
+                    }
+                },
+                { new: true }
+            )
+            .exec()
+            .then(newData => {
+                // accept my 'pending'
                 myRequest.status = Friendship.Status.ACCEPTED;
                 myRequest.added = Date.now();
-            }
-            this.save().then(() => {
-                if (err)
-                    return cb('User deleted');
 
-                cb(null, {
-                    myRequest: myRequest,
-                    fRequest: friendUpdated.mates.find((r) => r.friend.equals(this._id))
-                });
+                return this.save().then(() => ({
+                        myRequest,
+                        fRequest: newData.mates.find(r => r.friend.equals(this._id))
+                    })
+                );
             });
-        }, cb);
-    } else {
-        //////// NEW request
-        // add myself to friend's mates
-        this.model('User').findByIdAndUpdate(uid, {
-            $push: {
-                mates: {
-                    status: Friendship.Status.PENDING,
-                    friend: this._id
-                }
-            }
-        }, { new: true }, (err, friendUpdated) => {
-            if (err)
-                return cb('User deleted');
+    }
 
-            // add new mate
+    //////// NEW request
+    // add myself to friend's mates (pending)
+    return this.model('User')
+        .findByIdAndUpdate(uid, {
+                $push: {
+                    mates: {
+                        status: Friendship.Status.PENDING,
+                        friend: this._id
+                    }
+                }
+            },
+            { new: true }
+        )
+        .exec()
+        .then(newData => {
+            // add new mate (requested)
             this.mates.push({
                 status: Friendship.Status.REQUESTED,
                 friend: uid
             });
-            this.save().then(() => {
-                cb(null, {
+
+            return this.save().then(() => ({
                     myRequest: this.mates[this.mates.length - 1],
-                    fRequest: friendUpdated.mates[friendUpdated.mates.length - 1]
-                });
-            });
-        }, cb);
-    }
+                    fRequest: newData.mates[newData.mates.length - 1]
+                })
+            );
+        });
 };
 
-UserSchema.methods.removeFriend = function (fid) {
-    return new Promise((resolve, reject) => {
-        if (fid) {
-            var friendship = this.mates.id(fid);
-            if (friendship) {
-                var uid = friendship.friend._id;
+UserSchema.methods.removeFriend = function (uid) {
+    if (!uid)
+        return Promise.reject('You can delete only your own mates');
 
-                // remove friendship from MY side
-                friendship.remove();
-                this.save().then(() => {
-                    // remove friendship from OTHER side
-                    this.model('User').findOneAndUpdate({ _id: uid }, {
-                        $pull: {
-                            mates: { friend: this._id }
-                        }
-                    }).exec().then((friendUpdated) => {
-                        resolve({
-                            myRequest: friendship,
-                            fRequest: friendUpdated.mates.find((r) => r.friend.equals(this._id))
-                        });
-                    });
-                });
-            } else {
-                reject('You can delete only your own mates');
-            }
-        } else {
-            reject('You can delete only your own mates');
-        }
-    });
+    const myRequest = this.mates.find(m => m.friend._id ? m.friend._id.equals(uid) : m.friend.equals(uid));
+
+    if (!myRequest)
+        return Promise.reject('You can delete only your own mates');
+
+    // remove friendship from MY side
+    myRequest.remove();
+
+    return this.save().then(() =>
+        // remove friendship from OTHER side
+        this.model('User')
+            .findOneAndUpdate({ _id: uid }, {
+                $pull: {
+                    mates: { friend: this._id }
+                }
+            })
+            .exec()
+            .then(friendUpdated => ({
+                    myRequest,
+                    fRequest: friendUpdated.mates.find(r => r.friend.equals(this._id))
+                })
+            )
+    );
 };
 
 module.exports = mongoose.model('User', UserSchema);

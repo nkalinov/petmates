@@ -1,5 +1,7 @@
 import { Conversation } from '../models/Conversation';
 import { AuthState } from '../pages/auth/auth.reducers';
+import { User } from '../models/User';
+import { Pet } from '../models/Pet';
 
 export interface AppState {
     auth: AuthState;
@@ -7,11 +9,12 @@ export interface AppState {
         list: Conversation[]
     };
     entities: {
-        users: { [key: string]: {} },
-        pets: { [key: string]: {} }
+        users: { [key: string]: User },
+        pets: { [key: string]: Pet }
     };
-    location: {
-        lat: number,
-        lng: number
-    };
+    // todo
+    // location: {
+    //     lat: number,
+    //     lng: number
+    // };
 }

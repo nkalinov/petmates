@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, ModalController } from 'ionic-angular';
-import { MatesService } from '../../../../providers/mates.service';
-import { MateViewPage } from '../../view/MateViewPage';
+import { MatesService } from '../../mates.service';
+import { MateViewPage } from '../../view/mate-view.page';
 import { MatesSearchPage } from '../../search/mates.search';
 
 @Component({
@@ -9,7 +9,7 @@ import { MatesSearchPage } from '../../search/mates.search';
 })
 
 export class MatesPendingPage {
-    constructor(public mates: MatesService,
+    constructor(public matesService: MatesService,
                 private modalCtrl: ModalController,
                 private nav: NavController) {
     }

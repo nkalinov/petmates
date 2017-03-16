@@ -5,7 +5,8 @@
         </button>
         <ion-title>Mates</ion-title>
         <ion-buttons end>
-            <button ion-button color="secondary" icon-only (click)="openSearchMateModal()">
+            <button ion-button color="secondary" icon-only
+                    (click)="openSearchMateModal()">
                 <ion-icon name="search"></ion-icon>
             </button>
         </ion-buttons>
@@ -13,7 +14,7 @@
 </ion-header>
 
 <ion-content>
-    <div *ngIf="mates.mates.accepted.length === 0" padding-horizontal>
+    <div *ngIf="!(matesService.accepted$ | async).length" padding-horizontal>
         <p>You have no mates.</p>
         <h6>Add your mates to:</h6>
         <ul>
@@ -22,16 +23,16 @@
         </ul>
     </div>
     <ion-list>
-        <ion-item-sliding *ngFor="let friendship of mates.mates.accepted">
-            <button ion-item (click)="viewMate(friendship.friend._id)">
+        <ion-item-sliding *ngFor="let item of (matesService.accepted$ | async)">
+            <button ion-item (click)="viewMate(item.friend._id)">
                 <ion-avatar item-left>
-                    <mate-image [image]="friendship.friend.pic"></mate-image>
+                    <mate-image [image]="item.friend.pic"></mate-image>
                 </ion-avatar>
-                <h2>{{friendship.friend.name}}</h2>
-                <p>{{friendship.friend.city}}</p>
+                <h2>{{item.friend.name}}</h2>
+                <p>{{item.friend.city}}</p>
             </button>
             <ion-item-options>
-                <button ion-button icon-left color="danger" (click)="removeMate(friendship)">
+                <button ion-button icon-left color="danger" (click)="removeMate(item)">
                     <ion-icon name="close"></ion-icon>
                     Remove
                 </button>

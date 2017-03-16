@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Config } from 'ionic-angular';
 import { Observable } from 'rxjs';
+import { Action } from '@ngrx/store';
 const io = require('socket.io-client');
 
 @Injectable()
@@ -8,7 +9,6 @@ export class SocketService {
     socket: any;
 
     constructor(private config: Config) {
-
         // todo reconnect socket to proper room on region change
         // this.store.select(state => state.auth).subscribe(auth => {
         //     if (auth.user) {
@@ -32,8 +32,6 @@ export class SocketService {
 
     connect(region, token) {
         return Observable.create(observer => {
-            this.disconnect();
-
             if (this.socket && this.socket.connected) {
                 observer.next(this.socket);
             } else {
@@ -49,12 +47,18 @@ export class SocketService {
                             })
                             .emit('authenticate', { token: token.split(' ')[1] });
                     })
-                    .on('disconnect', err => observer.complete())
+                    .on('disconnect', () => observer.complete())
                     .on('connect_error', err => observer.error(err))
-                    .on('connect_timeout', () => observer.error('Socket connect_timeout'));
+                    .on('connect_timeout', () => observer.error('Socket connection timed out'));
             }
 
             return () => this.disconnect();
         });
+    }
+
+    emit(action: Action) {
+        if (this.socket && this.socket.connected) {
+            this.socket.emit(action.type, action.payload);
+        }
     }
 }

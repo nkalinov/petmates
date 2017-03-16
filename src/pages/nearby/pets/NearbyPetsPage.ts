@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, Refresher } from 'ionic-angular';
 import { PetsService } from '../../pets/pets.service';
 import { NearbyPet } from '../../../models/NearbyPet';
-import { MateViewPage } from '../../mates/view/MateViewPage';
+import { MateViewPage } from '../../mates/view/mate-view.page';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Component({

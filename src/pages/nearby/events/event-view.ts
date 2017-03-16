@@ -4,7 +4,7 @@ import { LaunchNavigator } from 'ionic-native';
 import { Event } from '../../../models/Event';
 import { AuthService } from '../../auth/auth.service';
 import { EventEditPage } from './event-edit';
-import { MateViewPage } from '../../mates/view/MateViewPage';
+import { MateViewPage } from '../../mates/view/mate-view.page';
 import { EventsService } from '../../../providers/events.service';
 import { LocationService } from '../../../providers/location.service';
 

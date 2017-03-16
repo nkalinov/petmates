@@ -1,5 +1,4 @@
 import {
-    isDate,
     NumberWrapper,
     isBlank
 } from '@angular/core/src/facade/lang';
@@ -67,9 +66,9 @@ export class TimeAgo implements OnInit, OnDestroy {
         return n + ' ' + unit + (n !== 1 ? 's' : '') + ' ' + this.suffix;
     }
 
-    supports(obj: any): boolean {
-        return isDate(obj) || NumberWrapper.isNumeric(obj);
-    }
+    // supports(obj: any): boolean {
+    //     return isDate(obj) || NumberWrapper.isNumeric(obj);
+    // }
 
     ngOnInit() {
         if (this.timer) {
@@ -77,8 +76,8 @@ export class TimeAgo implements OnInit, OnDestroy {
         }
         if (isBlank(this.time)) {
             console.warn(`time property is required.`);
-        } else if (!this.supports(this.time)) {
-            console.error(`${this.time} isn't valid date format.`);
+            // } else if (!this.supports(this.time)) {
+            //     console.error(`${this.time} isn't valid date format.`);
         } else {
             this.transform(this.time);
         }

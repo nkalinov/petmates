@@ -1,21 +1,28 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { User } from '../../models/User';
 import { Facebook, FacebookLoginResponse } from 'ionic-native';
 import { ApiService } from '../../providers/api.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../app/state';
 
 @Injectable()
 export class AuthService {
-    user: User; // todo remove
-    token: string; // todo remove
-    regionUpdated: EventEmitter<string> = new EventEmitter<string>();
+    user: User; // todo remove ?
+    userId: string;
 
-    constructor(private http: ApiService) {
+    constructor(private http: ApiService,
+                store: Store<AppState>) {
+
+        store.select(state => state.auth.user)
+            .subscribe(userId => {
+                this.userId = userId;
+            });
     }
 
     refresh(token) {
-        // we need to provide the headers here because the token is not yet in the store
+        // we need to build the headers here because the token is not yet in the store
         let headers = new Headers();
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', token);

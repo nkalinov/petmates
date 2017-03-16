@@ -45,7 +45,6 @@
       "single"
     ],
     "radix": true,
-    "semicolon": true,
     "triple-equals": [
       true,
       "allow-null-check"

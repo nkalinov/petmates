@@ -1,21 +1,26 @@
 import { NavController, AlertController, ModalController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { MateViewPage } from '../../view/MateViewPage';
+import { MateViewPage } from '../../view/mate-view.page';
 import { IFriendship } from '../../../../models/interfaces/IFriendship';
-import { MatesService } from '../../../../providers/mates.service';
-import { AuthService } from '../../../auth/auth.service';
+import { MatesService } from '../../mates.service';
 import { MatesSearchPage } from '../../search/mates.search';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../../../app/state';
+import { MatesActions } from '../../mates.actions';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
-    templateUrl: 'mates.accepted.html'
+    templateUrl: 'mates-accepted.page.html'
 })
 
 export class MatesAcceptedPage {
-    constructor(public mates: MatesService,
-                public auth: AuthService,
+
+    constructor(public matesService: MatesService,
                 private alertCtrl: AlertController,
                 private modalCtrl: ModalController,
-                private nav: NavController) {
+                private nav: NavController,
+                private store: Store<AppState>,
+                private authService: AuthService) {
     }
 
     viewMate(id: string) {
@@ -25,7 +30,7 @@ export class MatesAcceptedPage {
     removeMate(friendship: IFriendship) {
         const alert = this.alertCtrl.create({
             title: 'Remove mate',
-            message: `Are you sure you want to remove ${friendship.friend.name} from you mates?`,
+            message: `Remove ${friendship.friend.name} from your mates?`,
             buttons: [
                 {
                     text: 'Cancel',
@@ -35,7 +40,8 @@ export class MatesAcceptedPage {
                     text: 'Remove',
                     role: 'destructive',
                     handler: () => {
-                        this.mates.remove(friendship._id).then(() => alert.dismiss());
+                        alert.dismiss();
+                        this.store.dispatch(MatesActions.remove(this.authService.userId, friendship.friend._id));
                     }
                 }
             ]

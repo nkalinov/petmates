@@ -3,6 +3,7 @@ const express = require('express'),
     User = require('../models/schema/user'),
     passport = require('passport'),
     helpers = require('../helpers'),
+    Friendship = require('../models/schema/friendship'),
     users = require('../bin/users').users
 
 // search by name
@@ -13,13 +14,10 @@ router.get('/search', passport.authenticate('jwt', { session: false }), (req, re
         return res.json({ success: true, data: [] })
 
     const findOptions = {
-        name: new RegExp(q, 'i')
-    }
-
-    if (req.user.mates) {
-        // exclude my mates (if one)
-        findOptions._id = {
-            $nin: req.user.mates.map((m) => m.friend._id).concat(req.user._id)
+        name: new RegExp(q, 'i'),
+        _id: {
+            // exclude my mates and me
+            $nin: [req.user.id].concat(req.user.mates.map(m => m.friend._id))
         }
     }
 
@@ -40,13 +38,21 @@ router.post('/:id', passport.authenticate('jwt', { session: false }), (req, res)
 
     req.user.requestFriend(id).then(
         data => {
-            res.json({ success: true, data })
+            res.json({ success: true })
 
-            if (users.has(id))
+            if (users.has(id)) {
+                let payload = {
+                    userId: id,
+                    friendId: req.user.id
+                }
+                if (data.myRequest.status === Friendship.Status.REQUESTED)
+                    payload.friendProfile = req.user.toPartial()
+
                 users.get(id).socket.emit('action', {
-                    type: 'MATES_ADD_SUCCESS',
-                    payload: { userId: id, friendId: req.user.id }
+                    type: 'SOCKET_MATES_ADD_SUCCESS',
+                    payload
                 })
+            }
         },
         err => res.json({ success: false, msg: err })
     )
@@ -57,8 +63,8 @@ router.delete('/:id', passport.authenticate('jwt', { session: false }), (req, re
     const id = req.params.id
 
     req.user.removeFriend(id).then(
-        data => {
-            res.json({ success: true, data })
+        () => {
+            res.json({ success: true })
 
             if (users.has(id))
                 users.get(id).socket.emit('action', {

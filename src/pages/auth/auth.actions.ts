@@ -25,9 +25,8 @@ export class AuthActions {
             type: AuthActions.LOGIN_SUCCESS,
             payload: {
                 token,
-                userId: user._id,
-                region: user.region,
-                data: normalize(new User(user), userEntity)
+                user,
+                data: normalize(user, userEntity)
             }
         };
     }

@@ -18,7 +18,7 @@ export class PetMatesApp {
     @ViewChild(Nav) nav: Nav;
     rootPage: any;
     pages: any[];
-    newRequests: number; // todo from store
+    newRequests: number;
 
     private defaultRootPage: any = MatesPage;
 
@@ -66,12 +66,9 @@ export class PetMatesApp {
     }
 
     private loggedIn() {
-        // this.mates.pending$.subscribe((count) => {
-        //     this.newRequests = count;
-        // });
-        // this.mates.sortMatesByStatus();
-
-        // todo get conversations list and show badge in menu on unread msgs
+        this.mates.pending$.subscribe(mates => {
+            this.newRequests = mates.length;
+        });
 
         // set logged in menu
         this.pages = getMenu(true);

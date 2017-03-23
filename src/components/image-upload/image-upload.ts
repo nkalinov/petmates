@@ -1,12 +1,12 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ApiService } from '../../providers/api.service';
 import { IResponseUpload } from '../../models/interfaces/IResponseUpload';
-import { ImagePicker } from 'ionic-native';
+import { ImagePicker } from '@ionic-native/image-picker';
 import { Platform } from 'ionic-angular';
 
 @Component({
     selector: 'image-upload',
-    template:`
+    template: `
         <div (click)="changePicture()">
             <ng-content></ng-content>
             <p class="change-text">{{placeholder}}</p>
@@ -22,12 +22,13 @@ export class ImageUpload {
     @ViewChild('fileInput') fileInput: ElementRef;
 
     constructor(private apiService: ApiService,
+                private imagePicker: ImagePicker,
                 private platform: Platform) {
     }
 
     changePicture() {
         if (this.platform.is('cordova')) {
-            ImagePicker.getPictures({
+            this.imagePicker.getPictures({
                 maximumImagesCount: 1,
                 width: 500,
                 height: 500

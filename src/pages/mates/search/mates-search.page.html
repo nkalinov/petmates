@@ -11,24 +11,22 @@
 </ion-header>
 
 <ion-content>
-    <ion-searchbar [(ngModel)]="searchQuery" (ionInput)="mates.search($event)"></ion-searchbar>
-    <div *ngIf="searchResults.length === 0 && searchQuery !== ''">
+    <ion-searchbar [(ngModel)]="query" (ionInput)="onSearchInput($event)"></ion-searchbar>
+    <div *ngIf="!(results$ | async).length && query !== ''">
         <p text-center>No results.</p>
     </div>
     <ion-list>
-        <ion-item-sliding *ngFor="let item of searchResults">
+        <ion-item-sliding *ngFor="let item of (results$ | async)">
             <button ion-item (click)="viewMate(item._id)">
                 <ion-avatar item-left>
                     <mate-image [image]="item.pic"></mate-image>
                 </ion-avatar>
                 <h2>{{item.name}}</h2>
-                <p *ngIf="item.distance">
-                    {{item.distance | distance}} away - {{item.city}}, {{item.country}}
-                </p>
+                <p>{{item.location.coordinates | distance}}, {{item.city}}</p>
             </button>
             <ion-item-options>
                 <button ion-button icon-left color="primary"
-                        (click)="addMate(item)">
+                        (click)="addMate(item._id)">
                     <ion-icon name="person-add"></ion-icon>
                     Send request
                 </button>

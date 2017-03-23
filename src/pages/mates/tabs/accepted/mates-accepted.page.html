@@ -29,10 +29,10 @@
                     <mate-image [image]="item.friend.pic"></mate-image>
                 </ion-avatar>
                 <h2>{{item.friend.name}}</h2>
-                <p>{{item.friend.city}}</p>
+                <p>{{item.friend.location.coordinates | distance}}, {{item.friend.city}}</p>
             </button>
             <ion-item-options>
-                <button ion-button icon-left color="danger" (click)="removeMate(item)">
+                <button ion-button icon-left color="danger" (click)="matesService.alertRemove(item.friend)">
                     <ion-icon name="close"></ion-icon>
                     Remove
                 </button>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Network } from 'ionic-native';
+// import { Network } from '@ionic-native';
 import { Platform } from 'ionic-angular';
 
 @Injectable()
@@ -10,19 +10,19 @@ export class ConnectivityService {
         this.onDevice = this.platform.is('cordova');
     }
 
-    isOnline(): boolean {
-        if (this.onDevice && Network.type) {
-            return Network.type !== Connection.NONE;
-        } else {
-            return navigator.onLine;
-        }
+    isOnline() {
+        // if (this.onDevice && Network.type) {
+        //     return Network.type !== Connection.NONE;
+        // } else {
+        //     return navigator.onLine;
+        // }
     }
 
-    isOffline(): boolean {
-        if (this.onDevice && Network.type) {
-            return Network.type === Connection.NONE;
-        } else {
-            return !navigator.onLine;
-        }
+    isOffline() {
+        // if (this.onDevice && Network.type) {
+        //     return Network.type === Connection.NONE;
+        // } else {
+        //     return !navigator.onLine;
+        // }
     }
 }

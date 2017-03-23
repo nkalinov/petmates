@@ -8,6 +8,7 @@ import { AuthActions } from '../auth/auth.actions';
 import { Subscription } from 'rxjs/Subscription';
 import { Observable } from 'rxjs/Observable';
 import { Pet } from '../../models/Pet';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
     selector: 'profile',
@@ -22,21 +23,17 @@ export class ProfilePage implements OnDestroy {
     constructor(private modalCtrl: ModalController,
                 private alertCtrl: AlertController,
                 private actionSheetCtrl: ActionSheetController,
-                private store: Store<AppState>) {
+                private store: Store<AppState>,
+                private authService: AuthService) {
 
-        this.user$ = Observable.combineLatest(
-            this.store.select(state => state.auth.user),
-            this.store.select(state => state.entities.users),
-            (user, users) => users[user]
-        ).subscribe(user => {
+        this.user$ = this.authService.user$.subscribe(user => {
             this.user = user;
         });
 
         this.pets$ = Observable.combineLatest(
-            this.store.select(state => state.auth.user),
-            this.store.select(state => state.entities.users),
+            this.authService.user$,
             this.store.select(state => state.entities.pets),
-            (uid, users, pets) => (uid && users[uid].pets || []).map(petId => pets[<string>petId])
+            (user, pets) => (user && user.pets || []).map(petId => pets[petId])
         );
     }
 

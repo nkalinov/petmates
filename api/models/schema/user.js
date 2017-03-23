@@ -6,7 +6,7 @@ const mongoose = require('mongoose'),
     Friendship = require('./friendship'),
     Pet = require('./pet'),
     fs = require('fs'),
-    upload = require('../../config/upload');
+    upload = require('../../config/upload')
 
 // set up a mongoose model
 const UserSchema = new Schema({
@@ -41,9 +41,9 @@ const UserSchema = new Schema({
         type: String,
         set: function (value) {
             if (this.picture && value !== this.picture) {
-                this._oldPicture = this.picture;
+                this._oldPicture = this.picture
             }
-            return value;
+            return value
         }
     },
     pets: [Pet],
@@ -55,31 +55,31 @@ const UserSchema = new Schema({
         virtuals: true,
         versionKey: false,
         transform: (doc, ret) => {
-            delete ret.id;
-            delete ret.picture;
-            delete ret.password;
-            delete ret.resetPasswordToken;
-            delete ret.resetPasswordExpires;
-            return ret;
+            delete ret.id
+            delete ret.picture
+            delete ret.password
+            delete ret.resetPasswordToken
+            delete ret.resetPasswordExpires
+            return ret
         }
     }
-});
+})
 
-UserSchema.index({ location: '2dsphere' });
+UserSchema.index({ location: '2dsphere' })
 
 UserSchema.virtual('pic').get(function () {
-    return helpers.uploadPath(this.picture);
-});
+    return helpers.uploadPath(this.picture)
+})
 
-UserSchema.plugin(autopopulate);
+UserSchema.plugin(autopopulate)
 
 UserSchema.pre('save', true, function (next, done) {
-    next(); // in parallel ^
+    next() // in parallel ^
 
     if (this.isModified('picture') || (this.isNew && this.picture)) {
         if (this._oldPicture) {
             // delete old one
-            fs.unlink(`${upload.dest}${this._oldPicture}`);
+            fs.unlink(`${upload.dest}${this._oldPicture}`)
         }
 
         // copy photo from tmp
@@ -88,66 +88,78 @@ UserSchema.pre('save', true, function (next, done) {
             `${upload.destTmp}${this.picture}`,
             `${upload.dest}${this.picture}`,
             done
-        );
+        )
     } else {
-        return done();
+        return done()
     }
-});
+})
 
 UserSchema.pre('save', function (next) {
     if (this.isModified('password') || this.isNew) {
         bcrypt.genSalt(10, (err, salt) => {
             if (err)
-                return next(err);
+                return next(err)
 
             bcrypt.hash(this.password, salt, (err, hash) => {
                 if (err)
-                    return next(err);
+                    return next(err)
 
-                this.password = hash;
-                next();
-            });
-        });
+                this.password = hash
+                next()
+            })
+        })
     } else {
-        return next();
+        return next()
     }
-});
+})
 
 // delete pictures
 UserSchema.post('remove', model => {
     if (model.picture) {
-        fs.unlink(`${upload.dest}${model.picture}`);
+        fs.unlink(`${upload.dest}${model.picture}`)
     }
 
     if (model.pets.length > 0) {
         model.pets.forEach(pet => {
             if (pet.picture) {
-                fs.unlink(`${upload.dest}${pet.picture}`);
+                fs.unlink(`${upload.dest}${pet.picture}`)
             }
-        });
+        })
     }
-});
+})
 
 UserSchema.methods.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {
         if (err) {
-            return cb(err);
+            return cb(err)
         }
-        cb(null, isMatch);
-    });
-};
+        cb(null, isMatch)
+    })
+}
+
+UserSchema.methods.toPartial = function () {
+    return {
+        _id: this._id,
+        name: this.name,
+        city: this.city,
+        region: this.region,
+        country: this.country,
+        location: this.location,
+        pic: this.pic
+    }
+}
 
 UserSchema.methods.requestFriend = function (uid) {
     if (!uid)
-        return Promise.reject('You can delete only your own mates');
+        return Promise.reject('You can delete only your own mates')
 
     // search for existing request
-    const myRequest = this.mates.find(m => m.friend._id ? m.friend._id.equals(uid) : m.friend.equals(uid));
+    const myRequest = this.mates.find(m => m.friend._id ? m.friend._id.equals(uid) : m.friend.equals(uid))
 
     if (myRequest) {
         // no action if already accepted OR requested
         if (myRequest.status === Friendship.Status.ACCEPTED || myRequest.status === Friendship.Status.REQUESTED)
-            return Promise.reject('Already added');
+            return Promise.reject('Already added')
 
         // accept other's 'requested'
         return this.model('User')
@@ -159,26 +171,20 @@ UserSchema.methods.requestFriend = function (uid) {
                         }
                     }
                 },
-                {
-                    $set: {
-                        'mates.$.status': Friendship.Status.ACCEPTED,
-                        'mates.$.added': Date.now()
-                    }
-                },
+                { $set: { 'mates.$.status': Friendship.Status.ACCEPTED } },
                 { new: true }
             )
             .exec()
             .then(newData => {
                 // accept my 'pending'
-                myRequest.status = Friendship.Status.ACCEPTED;
-                myRequest.added = Date.now();
+                myRequest.status = Friendship.Status.ACCEPTED
 
                 return this.save().then(() => ({
                         myRequest,
                         fRequest: newData.mates.find(r => r.friend.equals(this._id))
                     })
-                );
-            });
+                )
+            })
     }
 
     //////// NEW request
@@ -200,27 +206,26 @@ UserSchema.methods.requestFriend = function (uid) {
             this.mates.push({
                 status: Friendship.Status.REQUESTED,
                 friend: uid
-            });
+            })
 
             return this.save().then(() => ({
-                    myRequest: this.mates[this.mates.length - 1],
-                    fRequest: newData.mates[newData.mates.length - 1]
-                })
-            );
-        });
-};
+                myRequest: this.mates[this.mates.length - 1],
+                fRequest: newData.mates[newData.mates.length - 1]
+            }))
+        })
+}
 
 UserSchema.methods.removeFriend = function (uid) {
     if (!uid)
-        return Promise.reject('You can delete only your own mates');
+        return Promise.reject('You can delete only your own mates')
 
-    const myRequest = this.mates.find(m => m.friend._id ? m.friend._id.equals(uid) : m.friend.equals(uid));
+    const myRequest = this.mates.find(m => m.friend._id ? m.friend._id.equals(uid) : m.friend.equals(uid))
 
     if (!myRequest)
-        return Promise.reject('You can delete only your own mates');
+        return Promise.reject('You can delete only your own mates')
 
     // remove friendship from MY side
-    myRequest.remove();
+    myRequest.remove()
 
     return this.save().then(() =>
         // remove friendship from OTHER side
@@ -236,7 +241,16 @@ UserSchema.methods.removeFriend = function (uid) {
                     fRequest: friendUpdated.mates.find(r => r.friend.equals(this._id))
                 })
             )
-    );
-};
+    )
+}
 
-module.exports = mongoose.model('User', UserSchema);
+UserSchema.methods.comparePassword = function (passw, cb) {
+    bcrypt.compare(passw, this.password, function (err, isMatch) {
+        if (err) {
+            return cb(err)
+        }
+        cb(null, isMatch)
+    })
+}
+
+module.exports = mongoose.model('User', UserSchema)

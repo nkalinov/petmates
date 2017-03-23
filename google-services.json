@@ -1,0 +1,37 @@
+{
+  "project_info": {
+    "project_number": "262148140112",
+    "firebase_url": "https://petmates-1288.firebaseio.com",
+    "project_id": "petmates-1288",
+    "storage_bucket": "petmates-1288.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262148140112:android:1ca2c17e9b423065",
+        "android_client_info": {
+          "package_name": "com.petmates.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXVd32T-Y4zXOgAyRJ4bjEZEX28wmHIaE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

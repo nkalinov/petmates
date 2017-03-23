@@ -5,7 +5,7 @@ import { AuthService } from '../../auth/auth.service';
 import { Message } from '../../../models/Message';
 import { Conversation } from '../../../models/Conversation';
 import { ConversationEditPage } from '../edit/conversation.edit';
-import { ImagePicker } from 'ionic-native';
+import { ImagePicker } from '@ionic-native/image-picker';
 
 @Component({
     selector: 'conversation-page',
@@ -21,21 +21,22 @@ export class ConversationPage {
                 public chats: ChatService,
                 private nav: NavController,
                 private navParams: NavParams,
+                private imagePicker: ImagePicker,
                 private actionSheetCtrl: ActionSheetController,
                 private platform: Platform) {
         this.newMessage();
         this.conversation = this.navParams.get('conversation');
 
         // get other member's lastActivity
-        if (this.conversation.members.length === 2) {
-            const otherMemberIndex = this.conversation.members.findIndex(m => m._id !== this.auth.user._id),
-                otherMember = this.conversation.members[otherMemberIndex];
-
-            const find = this.auth.user.mates.find(m => m.friend._id === otherMember._id);
-            if (find) {
-                otherMember.lastActive = find.friend.lastActive;
-            }
-        }
+        // if (this.conversation.members.length === 2) {
+        //     const otherMemberIndex = this.conversation.members.findIndex(m => m._id !== this.auth.user._id),
+        //         otherMember = this.conversation.members[otherMemberIndex];
+        //
+        //     const find = this.auth.user.mates.find(m => m.friend._id === otherMember._id);
+        //     if (find) {
+        //         otherMember.lastActive = find.friend.lastActive;
+        //     }
+        // }
 
         // this.chats.getMessages(this.conversation).then(() => {
         //     this.scrollToBottom(0);
@@ -69,7 +70,7 @@ export class ConversationPage {
                     text: 'Choose Existing Photo',
                     handler: () => {
                         if (this.platform.is('cordova')) {
-                            ImagePicker.getPictures({
+                            this.imagePicker.getPictures({
                                 maximumImagesCount: 1,
                                 width: 500,
                                 height: 500

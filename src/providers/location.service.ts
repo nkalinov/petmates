@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@angular/core';
-import { Geolocation, Geoposition } from 'ionic-native';
+import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 import { Http } from '@angular/http';
 import { Events } from 'ionic-angular';
 import { AuthService } from '../pages/auth/auth.service';
@@ -16,6 +16,7 @@ export class LocationService {
 
     constructor(private http: Http,
                 private events: Events,
+                private geolocation: Geolocation,
                 private store: Store<AppState>) {
 
         this.coords$ = this.coords.asObservable();
@@ -35,7 +36,7 @@ export class LocationService {
             if (this.coords.getValue().length) {
                 resolve(this.coords.getValue()); // return last coords
             } else {
-                Geolocation.getCurrentPosition(Object.assign({
+                this.geolocation.getCurrentPosition(Object.assign({
                     enableHighAccuracy: true,
                     timeout: 5000
                 }, opts)).then(

@@ -27,10 +27,10 @@ import { StartWalkPage } from '../pages/map/start-walk/StartWalkPage';
 import { NearbyPage } from '../pages/nearby/nearby';
 import { MatesPage } from '../pages/mates/mates.page';
 import { MateViewPage } from '../pages/mates/view/mate-view.page';
-import { MatesSearchPage } from '../pages/mates/search/mates.search';
+import { MatesSearchPage } from '../pages/mates/search/mates-search.page';
 import { MatesAcceptedPage } from '../pages/mates/tabs/accepted/mates-accepted.page';
-import { MatesPendingPage } from '../pages/mates/tabs/pending/mates.pending';
-import { MatesRequestedPage } from '../pages/mates/tabs/requested/mates.requested';
+import { MatesPendingPage } from '../pages/mates/tabs/pending/mates-pending.page';
+import { MatesRequestedPage } from '../pages/mates/tabs/requested/mates-requested.page';
 import { NearbyEventsPage } from '../pages/nearby/events/events';
 import { EventEditPage } from '../pages/nearby/events/event-edit';
 import { EventViewPage } from '../pages/nearby/events/event-view';
@@ -61,7 +61,7 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { AuthEffects } from '../pages/auth/auth.effects';
 import { AppEffects } from './app.effects';
-import reducers from './reducers';
+import store from './store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { ApiService } from '../providers/api.service';
 import { SocketEffects } from '../effects/socket.effects';
@@ -70,6 +70,10 @@ import { ImageUpload } from '../components/image-upload/image-upload';
 import { PetsEffects } from '../pages/pets/pets.effects';
 import { IonicStorageModule } from '@ionic/storage';
 import { MatesEffects } from '../pages/mates/mates.effects';
+import { Facebook } from '@ionic-native/facebook';
+import { ImagePicker } from '@ionic-native/image-picker';
+import { Geolocation } from '@ionic-native/geolocation';
+import { LocalNotifications } from '@ionic-native/local-notifications';
 
 const pages: Array<any> = [
     PetMatesApp,
@@ -133,7 +137,7 @@ const pages: Array<any> = [
             })
         ),
         IonicStorageModule.forRoot(),
-        StoreModule.provideStore(reducers),
+        StoreModule.provideStore(store),
         StoreDevtoolsModule.instrumentOnlyWithExtension({
             maxAge: 5
         }),
@@ -164,7 +168,13 @@ const pages: Array<any> = [
         {
             provide: ErrorHandler,
             useClass: IonicErrorHandler
-        }
+        },
+
+        // plugins
+        Facebook,
+        ImagePicker,
+        Geolocation,
+        LocalNotifications
     ]
 })
 export class AppModule {

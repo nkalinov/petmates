@@ -1,6 +1,16 @@
 import { Action } from '@ngrx/store';
 
 export class SocketActions {
+    static LAST_ACTIVITIES_REQ = 'SOCKET_LAST_ACTIVITIES_REQ';
+    static LAST_ACTIVITIES_SUCCESS = 'SOCKET_LAST_ACTIVITIES_SUCCESS';
+
+    static getLastActivities(ids: string[]): Action {
+        return {
+            type: SocketActions.LAST_ACTIVITIES_REQ,
+            payload: ids
+        }
+    }
+
     static EMIT = 'SOCKET_EMIT';
 
     static emit(action: Action): Action {

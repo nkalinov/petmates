@@ -37,12 +37,11 @@ export class MateViewPage implements OnDestroy {
             this.store.select(state => state.entities.users[id]),
             this.store.select(state => state.entities.pets),
             this.matesService.mates$
-        ).subscribe(values => {
-            const [friend, pets, mates] = values,
-                mate = mates.find(mate => mate.friend._id === id);
+        ).subscribe(([friend, pets, mates]) => {
+            const mate = mates.find(mate => (<User>mate.friend)._id === id);
 
-            this.friend = friend;
-            this.pets$ = Observable.of(friend.pets.map(petId => pets[petId]));
+            this.friend = new User(friend);
+            this.pets$ = Observable.of((friend.pets || []).map(petId => pets[petId]));
             this.status = mate && mate.status;
         });
 
@@ -58,7 +57,7 @@ export class MateViewPage implements OnDestroy {
     }
 
     addMate() {
-        this.store.dispatch(MatesActions.add(this.authService.userId, this.friend._id));
+        this.store.dispatch(MatesActions.add(this.authService.user._id, this.friend._id));
     }
 
     removeMate() {

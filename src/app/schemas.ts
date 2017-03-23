@@ -8,4 +8,13 @@ export const userEntity = new schema.Entity('users', {
     mates: new schema.Array({
         friend: partialUserEntity
     })
+    // ,
+    // location: new schema.Entity('coordinates', {}, {
+    //     idAttribute: (value, parent, key) => {
+    //         return parent._id
+    //     },
+    //     processStrategy: (value, parent, key) => {
+    //         return value.coordinates
+    //     }
+    // })
 }, { idAttribute: '_id' });

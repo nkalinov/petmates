@@ -59,13 +59,10 @@
 
     <pets-list [pets]="pets$"></pets-list>
 
-    <ion-list>
+    <ion-list *ngIf="friend.mates.length > 0">
         <ion-list-header>
             Mates
         </ion-list-header>
-        <ion-item *ngIf="!friend.mates.length">
-            No mates here...
-        </ion-item>
         <button ion-item
                 *ngFor="let d of friend.mates"
                 (click)="viewMate(d.friend._id)">

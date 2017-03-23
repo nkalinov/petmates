@@ -17,5 +17,6 @@
     </button>
 </ion-list>
 <div *ngIf="!(pets | async).length">
-    <p text-center>No pets? :( You should adopt one!</p>
+    <p text-center *ngIf="canCreate">No pets? :( You should adopt one!</p>
+    <p text-center *ngIf="!canCreate">No pets here...</p>
 </div>

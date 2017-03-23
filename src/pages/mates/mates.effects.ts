@@ -11,14 +11,6 @@ export class MatesEffects {
                 private matesService: MatesService) {
     }
 
-    // @Effect({ dispatch: false })
-    // connect$ = this.actions$
-    //     .ofType(SocketActions.CONNECT_SUCCESS)
-    //     .map(toPayload)
-    //     .do(socket => {
-    //         this.matesService.registerSocketEvents(socket);
-    //     });
-
     @Effect()
     requestDetails$ = this.actions$
         .ofType(MatesActions.DETAILS_REQ)
@@ -29,6 +21,34 @@ export class MatesEffects {
                 .map(res =>
                     res.success
                         ? MatesActions.getUserDetailsSuccess(res.data)
+                        : AppActions.error(res.msg)
+                )
+                .catch(e => Observable.of(AppActions.error(e.toString())))
+        );
+
+    @Effect()
+    search$ = this.actions$
+        .ofType(MatesActions.SEARCH)
+        .map(toPayload)
+        .switchMap(query =>
+            this.matesService.search(query)
+                .map(res =>
+                    res.success
+                        ? MatesActions.searchSuccess(res.data)
+                        : AppActions.error(res.msg)
+                )
+                .catch(e => Observable.of(AppActions.error(e.toString())))
+        );
+
+    @Effect()
+    add$ = this.actions$
+        .ofType(MatesActions.ADD)
+        .map(toPayload)
+        .switchMap(({ userId, friendId }) =>
+            this.matesService.add(friendId)
+                .map(res =>
+                    res.success
+                        ? MatesActions.addSuccess(userId, friendId)
                         : AppActions.error(res.msg)
                 )
                 .catch(e => Observable.of(AppActions.error(e.toString())))

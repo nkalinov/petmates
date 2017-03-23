@@ -2,23 +2,29 @@ import { Injectable } from '@angular/core';
 import { Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { User } from '../../models/User';
-import { Facebook, FacebookLoginResponse } from 'ionic-native';
+import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook';
 import { ApiService } from '../../providers/api.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../app/state';
 
 @Injectable()
 export class AuthService {
-    user: User; // todo remove ?
-    userId: string;
+    user: User;
+    user$: Observable<User>;
 
     constructor(private http: ApiService,
+                private facebook: Facebook,
                 store: Store<AppState>) {
 
-        store.select(state => state.auth.user)
-            .subscribe(userId => {
-                this.userId = userId;
-            });
+        this.user$ = Observable.combineLatest(
+            store.select(state => state.auth.user),
+            store.select(state => state.entities.users),
+            (id, users) => id && users[id]
+        ).map(user => user && user || {});
+
+        this.user$.subscribe(user => {
+            this.user = user;
+        });
     }
 
     refresh(token) {
@@ -44,7 +50,7 @@ export class AuthService {
 
     // todo
     loginFacebook(): Promise<FacebookLoginResponse> {
-        return Facebook.login([
+        return this.facebook.login([
             'public_profile',
             'email'
         ]).then(res => {

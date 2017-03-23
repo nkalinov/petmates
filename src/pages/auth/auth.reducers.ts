@@ -19,7 +19,7 @@ export default function (state: AuthState = defaultState, action: Action) {
     switch (action.type) {
         case AuthActions.LOGIN_SUCCESS:
             return Object.assign({}, state, {
-                user: action.payload.userId,
+                user: action.payload.user._id,
                 token: action.payload.token,
                 connected: true
             });

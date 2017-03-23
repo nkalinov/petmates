@@ -4,6 +4,25 @@ import { normalize } from 'normalizr';
 import { userEntity } from '../../app/schemas';
 
 export class MatesActions {
+    static SEARCH = 'MATES_SEARCH';
+
+    static search(query: string): Action {
+        return {
+            type: MatesActions.SEARCH,
+            payload: query
+        };
+    }
+
+    static SEARCH_SUCCESS = 'MATES_SEARCH_SUCCESS';
+
+    static searchSuccess(results: User[]): Action {
+        return {
+            type: MatesActions.SEARCH_SUCCESS,
+            payload: {
+                data: normalize(results, [userEntity])
+            }
+        };
+    }
 
     static ADD = 'MATES_ADD';
 
@@ -18,6 +37,7 @@ export class MatesActions {
     }
 
     static ADD_SUCCESS = 'MATES_ADD_SUCCESS';
+    static SOCKET_ADD_SUCCESS = 'SOCKET_MATES_ADD_SUCCESS';
 
     static addSuccess(userId: string, friendId: string): Action {
         return {

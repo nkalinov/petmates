@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@angular/core';
-import { ImagePicker } from 'ionic-native';
+// import { ImagePicker } from 'ionic-native';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Events } from 'ionic-angular';
 import { Place } from '../models/place.model';
@@ -154,11 +154,11 @@ export class PlacesService {
     }
 
     uploadPicture(place: Place) {
-        ImagePicker.getPictures({
-            maximumImagesCount: 1,
-            width: 500,
-            height: 500
-        }).then(images => {
+        // ImagePicker.getPictures({
+        //     maximumImagesCount: 1,
+        //     width: 500,
+        //     height: 500
+        // }).then(images => {
                 // let options = new FileUploadOptions();
                 // options.fileKey = 'picture';
                 // let ft = new FileTransfer();
@@ -176,9 +176,9 @@ export class PlacesService {
                 //     err => {
                 //         this.events.publish('alert:error', err.body);
                 //     }, options);
-            },
-            err => {
-                this.events.publish('alert:error', err);
-            });
+            // },
+            // err => {
+            //     this.events.publish('alert:error', err);
+            // });
     }
 }

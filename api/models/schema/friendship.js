@@ -1,27 +1,22 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose')
 
-const Friendship = new Schema({
+const Schema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['accepted', 'requested', 'pending']
     },
-    added: {
-        type: Date,
-        default: Date.now
-    },
     friend: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         autopopulate: { select: '_id name picture location.coordinates city country' }
     }
-}, { _id: false });
+})
 
 module.exports = {
-    Schema: Friendship,
+    Schema,
     Status: {
         ACCEPTED: 'accepted',
         PENDING: 'pending',
         REQUESTED: 'requested'
     }
-};
+}

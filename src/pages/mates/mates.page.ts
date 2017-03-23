@@ -2,8 +2,8 @@ import { Tab } from 'ionic-angular';
 import { QueryList, ViewChildren, Component, AfterViewInit } from '@angular/core';
 import { MatesService } from './mates.service';
 import { MatesAcceptedPage } from './tabs/accepted/mates-accepted.page';
-import { MatesRequestedPage } from './tabs/requested/mates.requested';
-import { MatesPendingPage } from './tabs/pending/mates.pending';
+import { MatesRequestedPage } from './tabs/requested/mates-requested.page';
+import { MatesPendingPage } from './tabs/pending/mates-pending.page';
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({

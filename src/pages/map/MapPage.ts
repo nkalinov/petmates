@@ -1,5 +1,5 @@
 import { ModalController } from 'ionic-angular';
-import { Geolocation, Geoposition } from 'ionic-native';
+import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 import { Component } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import { WalkService } from '../../providers/walk.service';
@@ -38,6 +38,7 @@ export class MapPage {
     constructor(public walk: WalkService,
                 private places: PlacesService,
                 private modalCtrl: ModalController,
+                private geolocation: Geolocation,
                 private location: LocationService) {
     }
 
@@ -97,7 +98,7 @@ export class MapPage {
     }
 
     private watch() {
-        this.positionSubscriber = Geolocation.watchPosition({
+        this.positionSubscriber = this.geolocation.watchPosition({
             enableHighAccuracy: true
         }).subscribe(
             (data: Geoposition) => {

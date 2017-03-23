@@ -10,11 +10,9 @@ export interface AppState {
     };
     entities: {
         users: { [key: string]: User },
-        pets: { [key: string]: Pet }
+        pets: { [key: string]: Pet },
+        coordinates: { [key: string]: L.LatLngTuple }
     };
-    // todo
-    // location: {
-    //     lat: number,
-    //     lng: number
-    // };
+    lastActivities: { [key: string]: number };
+    matesSearchResults: string[];
 }

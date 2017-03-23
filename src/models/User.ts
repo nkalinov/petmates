@@ -1,8 +1,7 @@
 import { Pet } from './Pet';
 import { IFriendship } from './interfaces/IFriendship';
 import { IUserPartial } from './interfaces/IUserPartial';
-
-const deg2rad = (deg) => deg * (Math.PI / 180);
+import { deg2rad } from '../utils/common';
 
 export class User {
     readonly _id: string;

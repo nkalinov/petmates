@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavParams, LoadingController, NavController } from 'ionic-angular';
-import { LaunchNavigator } from 'ionic-native';
+// import { LaunchNavigator } from 'ionic-native';
 import { Event } from '../../../models/Event';
 import { AuthService } from '../../auth/auth.service';
 import { EventEditPage } from './event-edit';
@@ -78,9 +78,9 @@ export class EventViewPage {
     }
 
     navigate() {
-        LaunchNavigator.navigate([
-            this.event.location.coordinates[1],
-            this.event.location.coordinates[0]
-        ]);
+        // LaunchNavigator.navigate([
+        //     this.event.location.coordinates[1],
+        //     this.event.location.coordinates[0]
+        // ]);
     }
 }

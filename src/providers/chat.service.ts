@@ -6,7 +6,7 @@ import { IMessageSocket } from '../models/interfaces/IMessageSocket';
 import { User } from '../models/User';
 import { Conversation } from '../models/Conversation';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { LocalNotifications } from 'ionic-native';
+import { LocalNotifications } from '@ionic-native/local-notifications';
 import { ApiService } from './api.service';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class ChatService {
     constructor(@Inject(forwardRef(() => ApiService)) private http: ApiService,
                 private sockets: SocketService,
                 private events: Events,
-                private config: Config) {
+                private localNotifications: LocalNotifications) {
     }
 
     createOrUpdateConversation(c: Conversation) {
@@ -199,7 +199,7 @@ export class ChatService {
         socket.on('chat:msg:new', (message: IMessageSocket, cid: string) => {
             console.info('chat:msg:new', message, cid);
 
-            LocalNotifications.schedule({
+            this.localNotifications.schedule({
                 id: 1,
                 text: `${message.author.name}: ${message.msg || 'Photo message'}`
             });

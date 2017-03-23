@@ -35,6 +35,8 @@ export function localISO(dateString?: string) {
         + ':' + pad(tzo % 60);
 }
 
+export const deg2rad = (deg) => deg * (Math.PI / 180);
+
 export function getMenu(auth: boolean = false): any[] {
     const publicPages = [
         { title: 'Login / sign-up', component: AuthPage },

@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
-import { NavController, ModalController } from 'ionic-angular';
 import { MatesService } from '../../mates.service';
+import { NavController, ModalController } from 'ionic-angular';
 import { MateViewPage } from '../../view/mate-view.page';
-import { MatesSearchPage } from '../../search/mates.search';
+import { MatesSearchPage } from '../../search/mates-search.page';
 
 @Component({
-    templateUrl: 'mates.pending.html'
+    templateUrl: 'mates-requested.page.html'
 })
 
-export class MatesPendingPage {
+export class MatesRequestedPage {
     constructor(public matesService: MatesService,
                 private modalCtrl: ModalController,
                 private nav: NavController) {

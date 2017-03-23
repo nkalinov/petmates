@@ -3,25 +3,35 @@ import { Actions, Effect, toPayload } from '@ngrx/effects';
 import { AuthActions } from '../pages/auth/auth.actions';
 import { SocketActions } from '../actions/socket.actions';
 import { SocketService } from '../providers/socket.service';
-import { Action, Store } from '@ngrx/store';
-import { AppState } from '../app/state';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class SocketEffects {
     constructor(private actions$: Actions,
-                private socketService: SocketService,
-                private store: Store<AppState>) {
+                private socketService: SocketService) {
     }
 
     @Effect()
     login$ = this.actions$
         .ofType(AuthActions.LOGIN_SUCCESS)
         .map(toPayload)
-        .switchMap(({ token, region }) =>
-            this.socketService.connect(region, token)
-                .map(socket => SocketActions.connectSuccess(socket))
-                .catch(err => SocketActions.connectError(err))
+        .switchMap(({ token, user }) =>
+            this.socketService.connect(user.region, token)
+                .mergeMap(socket => Observable.of(
+                    SocketActions.connectSuccess(socket),
+                    SocketActions.emit(
+                        SocketActions.getLastActivities((user.mates || []).map(m => m.friend._id))
+                    )
+                ))
+                .catch(err => Observable.of(SocketActions.connectError(err)))
         );
+
+    // @Effect()
+    // connect$ = this.actions$
+    //     .ofType(SocketActions.CONNECT_SUCCESS)
+    //     .map(() => {
+    //         return SocketActions.getLastActive();
+    //     });
 
     @Effect()
     disconnect$ = this.actions$
@@ -29,16 +39,6 @@ export class SocketEffects {
         .map(() => {
             this.socketService.disconnect();
             return SocketActions.disconnect();
-        });
-
-    @Effect({ dispatch: false })
-    connect$ = this.actions$
-        .ofType(SocketActions.CONNECT_SUCCESS)
-        .map(toPayload)
-        .do(socket => {
-            socket.on('action', (action: Action) => {
-                this.store.dispatch(action);
-            });
         });
 
     @Effect({ dispatch: false })

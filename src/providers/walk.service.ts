@@ -4,7 +4,7 @@ import { AuthService } from '../pages/auth/auth.service';
 import { Pet } from '../models/Pet';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { SocketService } from './socket.service';
-import { LocalNotifications } from 'ionic-native';
+// import { LocalNotifications } from 'ionic-native';
 import { MatesService } from '../pages/mates/mates.service';
 import { IFriendship } from '../models/interfaces/IFriendship';
 import { userIcon, petIcon } from '../utils/icons';
@@ -96,13 +96,13 @@ export class WalkService {
             );
 
             // see if one of my mates.accepted is going out for a walk
-            let find = this.mates.mates.accepted.find((f: IFriendship) => f.friend._id === data.user._id);
-            if (find) {
-                LocalNotifications.schedule({
-                    id: 1,
-                    text: `${data.user.name} is out with ${data.pet.name}.`
-                });
-            }
+            // let find = this.mates.mates.accepted.find((f: IFriendship) => f.friend._id === data.user._id);
+            // if (find) {
+            //     LocalNotifications.schedule({
+            //         id: 1,
+            //         text: `${data.user.name} is out with ${data.pet.name}.`
+            //     });
+            // }
         });
 
         socket.on('walks:stop', (id: string) => {

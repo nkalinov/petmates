@@ -5,7 +5,8 @@
         </button>
         <ion-title>Mates</ion-title>
         <ion-buttons end>
-            <button ion-button icon-only color="secondary" (click)="openSearchMateModal()">
+            <button ion-button icon-only color="secondary"
+                    (click)="openSearchMateModal()">
                 <ion-icon name="search"></ion-icon>
             </button>
         </ion-buttons>
@@ -13,28 +14,25 @@
 </ion-header>
 
 <ion-content>
-    <div *ngIf="!(matesService.pending$ | async).length" padding-horizontal>
+    <div *ngIf="!(matesService.requested$ | async).length" padding-horizontal>
         <p text-center>
             <ion-icon name="information-circle"></ion-icon>
-            No new requests.
+            No requests without response.
         </p>
     </div>
     <ion-list>
-        <ion-item-sliding *ngFor="let item of (matesService.pending$ | async)">
+        <ion-item-sliding *ngFor="let item of (matesService.requested$ | async)">
             <button ion-item (click)="viewMate(item.friend._id)">
                 <ion-avatar item-left>
                     <mate-image [image]="item.friend.pic"></mate-image>
                 </ion-avatar>
                 <h2>{{item.friend.name}}</h2>
+                <p>{{item.friend.location.coordinates | distance}}, {{item.friend.city}}</p>
             </button>
             <ion-item-options>
-                <button ion-button icon-left color="secondary" (click)="mates.add(item.friend)">
-                    <ion-icon name="checkmark-circle"></ion-icon>
-                    Accept
-                </button>
-                <button ion-button icon-left color="danger" (click)="mates.remove(item._id)">
-                    <ion-icon name="remove-circle"></ion-icon>
-                    Remove
+                <button ion-button icon-left color="danger" (click)="matesService.alertRemove(item.friend)">
+                    <ion-icon name="close"></ion-icon>
+                    Cancel
                 </button>
             </ion-item-options>
         </ion-item-sliding>

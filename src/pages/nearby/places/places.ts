@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, Refresher, ModalController, AlertController } from 'ionic-angular';
-import { LaunchNavigator } from 'ionic-native';
+// import { LaunchNavigator } from 'ionic-native';
 import { Place } from '../../../models/place.model';
 import { PlaceEditPage } from './place-edit';
 import { ReportModalPage } from '../../../components/report-modal/report-modal';
@@ -65,13 +65,13 @@ export class NearybyPlacesPage {
     }
 
     navigate(place: Place) {
-        LaunchNavigator.navigate([
-            place.location.coordinates[1],
-            place.location.coordinates[0]
-        ]).then(
-            success => console.log('Launched navigator'),
-            error => console.log('Error launching navigator', error)
-        );
+        // LaunchNavigator.navigate([
+        //     place.location.coordinates[1],
+        //     place.location.coordinates[0]
+        // ]).then(
+        //     success => console.log('Launched navigator'),
+        //     error => console.log('Error launching navigator', error)
+        // );
     }
 
     report(place: Place) {

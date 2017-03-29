@@ -6,6 +6,9 @@ function onSocketAuthenticated(socket, uid) {
         lastActive: Date.now()
     })
 
+    // todo 1 send my friends last activities
+    // todo 2 send my last activity to my friends
+
     socket.on('SOCKET_LAST_ACTIVITIES_REQ', lastActivitiesReq)
 
     function lastActivitiesReq(ids) {

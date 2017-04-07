@@ -21,9 +21,9 @@ export class NearbyPeoplePage {
     }
 
     doRefresh(refresher: Refresher) {
-        this.nearby.getLocationThenNearbyPeople(true).then(
-            () => refresher.complete(),
-            err => refresher.complete()
-        );
+        // this.nearby.getLocationThenNearbyPeople(true).then(
+        //     () => refresher.complete(),
+        //     err => refresher.complete()
+        // );
     }
 }

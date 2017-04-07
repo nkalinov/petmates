@@ -14,13 +14,14 @@ export class MateImage {
     @Input() image: string;
     src: string;
 
+    static GROUP = 'group';
+
     ngOnChanges() {
         if (!this.image) {
             this.src = icons.user;
             return;
-        } else if (this.image === 'group') {
+        } else if (this.image === MateImage.GROUP) {
             return;
-            // this.src = this.config.get('defaultGroupChatImage');
         }
         this.src = this.image;
     }

@@ -1,7 +1,3 @@
-import {
-    NumberWrapper,
-    isBlank
-} from '@angular/core/src/facade/lang';
 import { Input, Component, OnInit, OnDestroy, LOCALE_ID } from '@angular/core';
 import { DatePipe } from '@angular/common';
 
@@ -74,13 +70,13 @@ export class TimeAgo implements OnInit, OnDestroy {
         if (this.timer) {
             clearInterval(this.timer);
         }
-        if (isBlank(this.time)) {
-            console.warn(`time property is required.`);
+        // if (isBlank(this.time)) {
+        //     console.warn(`time property is required.`);
             // } else if (!this.supports(this.time)) {
             //     console.error(`${this.time} isn't valid date format.`);
-        } else {
+        // } else {
             this.transform(this.time);
-        }
+        // }
     }
 
     ngOnDestroy() {

@@ -1,7 +1,7 @@
 import { User } from './User';
 
 export class Message {
-    author: User;
+    author: string | User;
     msg: string = '';
     added: Date;
     pic: string;

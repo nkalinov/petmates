@@ -130,9 +130,9 @@ export class AuthEffects {
     changePassword = this.actions$
         .ofType(AuthActions.FORGOT_CHANGE_PASSWORD)
         .map(toPayload)
-        .mergeMap(({ token, password }) =>
+        .switchMap(({ token, password }) =>
             this.authService.changePassword(token, password)
-                .map(res =>
+                .mergeMap(res =>
                     res.success
                         ? Observable.of(
                         AuthActions.changePasswordSuccess(),

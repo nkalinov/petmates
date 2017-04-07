@@ -33,7 +33,7 @@ export class NearybyPlacesPage {
     }
 
     doRefresh(refresher: Refresher) {
-        this.onSegmentChange(true).then(refresher.complete, refresher.complete);
+        // this.onSegmentChange(true).then(refresher.complete, refresher.complete);
     }
 
     addPlace() {

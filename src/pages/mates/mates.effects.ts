@@ -16,7 +16,6 @@ export class MatesEffects {
         .ofType(MatesActions.DETAILS_REQ)
         .map(toPayload)
         .switchMap(userId =>
-            // todo new User(res.data, this.user.location.coordinates);
             this.matesService.getUserDetails(userId)
                 .map(res =>
                     res.success

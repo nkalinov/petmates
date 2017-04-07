@@ -3,7 +3,9 @@ import { AuthActions } from '../../pages/auth/auth.actions';
 import { PetsActions } from '../../pages/pets/pets.actions';
 import { MatesActions } from '../../pages/mates/mates.actions';
 import { STATUS_ACCEPTED, STATUS_PENDING, STATUS_REQUESTED } from '../../models/interfaces/IFriendship';
+import { ChatActions } from '../../pages/chat/chat.actions';
 const dotProp = require('dot-prop-immutable');
+import { merge } from 'lodash';
 
 export default function (state = {}, action: Action) {
     let index;
@@ -13,11 +15,8 @@ export default function (state = {}, action: Action) {
         case AuthActions.UPDATE_SUCCESS:
         case MatesActions.DETAILS_REQ_SUCCESS:
         case MatesActions.SEARCH_SUCCESS:
-            const entities = action.payload.data.entities.users;
-            if (entities && Object.keys(entities).length > 0) {
-                return Object.assign({}, state, entities);
-            }
-            return state;
+        case ChatActions.LIST_REQ_SUCCESS:
+            return merge(Object.assign({}, state), action.payload.data.entities.users);
 
         case PetsActions.CREATE_SUCCESS:
             return dotProp.set(state, `${action.payload.userId}.pets`, pets => [

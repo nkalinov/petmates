@@ -1,8 +1,8 @@
 <ion-header>
     <ion-navbar>
         <ion-title>
-            {{chats.getConversationTitle(conversation)}}
-            <last-activity prefix="Active" [chat]="conversation" text-small></last-activity>
+            {{chatService.getConversationTitle(chat)}}
+            <last-activity prefix="Active" [chat]="chat" text-small></last-activity>
         </ion-title>
         <ion-buttons end>
             <button ion-button icon-only color="dark"
@@ -16,13 +16,13 @@
 <ion-content>
     <ion-list class="messages">
         <ion-item class="message"
-                  *ngFor="let m of conversation.messages"
+                  *ngFor="let m of chat.messages"
                   [ngClass]="{'me': m.author._id === auth.user._id}">
             <ion-avatar class="avatar">
                 <mate-image [image]="m.author.pic"></mate-image>
             </ion-avatar>
 
-            <span text-small *ngIf="conversation.members.length > 2 && m.author._id !== auth.user._id">
+            <span text-small *ngIf="chat.members.length > 2 && m.author._id !== auth.user._id">
                 {{m.author.name}}
             </span>
             <p *ngIf="m.msg">{{ m.msg }}</p>
@@ -31,7 +31,7 @@
             <time-ago text-small class="date" [time]="m.added"></time-ago>
         </ion-item>
     </ion-list>
-    <div class="new-messages-badge" text-center *ngIf="conversation && conversation.newMessages > 0">
+    <div class="new-messages-badge" text-center *ngIf="chat && chat.newMessages > 0">
         <button ion-button small round color="primary"
                 (click)="scrollToBottom()">
             New messages

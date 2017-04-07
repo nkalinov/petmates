@@ -17,24 +17,25 @@
         <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
     <ion-list class="conversations-list">
-        <button ion-item *ngFor="let chat of chats | async"
-                (click)="openConversation(chat)">
+        <button ion-item *ngFor="let item of chats$ | async"
+                (click)="openConversation(item)">
             <ion-avatar item-left>
-                <mate-image [image]="chats.getMembersPic(chat)"></mate-image>
+                <mate-image [image]="chatService.getMembersPic(item)"></mate-image>
             </ion-avatar>
             <h2>
-                {{chatsService.getConversationTitle(chat) | slice:0:21}}
+                {{chatService.getConversationTitle(item) | slice:0:21}}
             </h2>
-            <p *ngIf="chat.lastMessage">
-                <span *ngIf="chat.lastMessage.author._id === auth.user._id">You:</span>
-                <span *ngIf="chat.lastMessage.author._id !== auth.user._id">{{chat.lastMessage.author.name}}:</span>
-                {{chat.lastMessage.msg | slice:0:21}}
+            <p *ngIf="item.lastMessage">
+                <span *ngIf="item.lastMessage.author._id === authService.user._id">You:</span>
+                <span *ngIf="item.lastMessage.author._id !== authService.user._id">{{item.lastMessage.author.name}}:</span>
+                <span *ngIf="item.lastMessage.msg">{{item.lastMessage.msg | slice:0:21}}</span>
+                <span *ngIf="item.lastMessage.pic">Photo message</span>
             </p>
-            <ion-badge item-right *ngIf="chat.newMessages && chat.newMessages > 0">
-                {{chat.newMessages}}
+            <ion-badge item-right *ngIf="item.newMessages && item.newMessages > 0">
+                {{item.newMessages}}
             </ion-badge>
-            <span item-right *ngIf="chat.lastMessage">
-                {{chat.lastMessage.added | date:'EEE'}}
+            <span item-right *ngIf="item.lastMessage">
+                {{item.lastMessage.added | date:'EEE'}}
             </span>
         </button>
     </ion-list>

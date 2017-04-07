@@ -30,15 +30,15 @@ export class EventViewPage {
         const loader = this.loadingCtrl.create();
         loader.present();
 
-        this.events
-            .getEventDetails(this.event._id)
-            .then(data => {
-                this.event = data;
-                this.event.distance = this.event.latLng.distanceTo(
-                    L.latLng(this.location.getLastCoords()[1], this.location.getLastCoords()[0])
-                );
-                loader.dismiss();
-            }, () => this.navCtrl.pop());
+        // this.events
+        //     .getEventDetails(this.event._id)
+        //     .then(data => {
+        //         this.event = data;
+        //         this.event.distance = this.event.latLng.distanceTo(
+        //             L.latLng(this.location.getLastCoords()[1], this.location.getLastCoords()[0])
+        //         );
+        //         loader.dismiss();
+        //     }, () => this.navCtrl.pop());
     }
 
     ionViewDidEnter() {

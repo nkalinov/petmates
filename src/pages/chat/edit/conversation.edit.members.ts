@@ -18,12 +18,12 @@ export class ConversationEditMembersPage {
         this.conversation = navParams.get('conversation');
 
         // get friends not in members
-        this.friends = this.mates.mates.accepted
-            .map(f => {
-                f.friend.checked = false;
-                return f.friend;
-            })
-            .filter(u => !this.conversation.members.find(m => m._id === u._id));
+        // this.friends = this.mates.mates.accepted
+        //     .map(f => {
+        //         f.friend.checked = false;
+        //         return f.friend;
+        //     })
+        //     .filter(u => !this.conversation.members.find(m => m._id === u._id));
     }
 
     haveCheckedFriends() {

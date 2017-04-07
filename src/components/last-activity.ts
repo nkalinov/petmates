@@ -31,13 +31,13 @@ export class LastActivity implements OnDestroy {
 
     calcLastActivity() {
         if (this.chat && this.chat.members && this.chat.members.length === 2) {
-            let lastActive = this.chat.members
-                .filter(m => m._id !== this.auth.user._id)[0]
-                .lastActive;
+            // let lastActive = this.chat.members
+            //     .filter(m => m._id !== this.auth.user._id)[0]
+            //     .lastActive;
 
-            if (lastActive) {
-                this.time = getTimeAgo(lastActive);
-            }
+            // if (lastActive) {
+            //     this.time = getTimeAgo(lastActive);
+            // }
         }
     }
 

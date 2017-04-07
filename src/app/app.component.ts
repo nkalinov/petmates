@@ -4,11 +4,10 @@ import { AuthPage } from '../pages/auth/auth.page';
 import { getMenu } from '../utils/common';
 import { SocketService } from '../providers/socket.service';
 import { MatesService } from '../pages/mates/mates.service';
-import { ProfilePage } from '../pages/profile/profile.page';
 import { Store } from '@ngrx/store';
 import { AppState } from './state';
 import { AuthActions } from '../pages/auth/auth.actions';
-import { MatesPage } from '../pages/mates/mates.page';
+import { ChatsListPage } from '../pages/chat/chats-list.page';
 
 @Component({
     templateUrl: 'app.html',
@@ -17,10 +16,10 @@ import { MatesPage } from '../pages/mates/mates.page';
 export class PetMatesApp {
     @ViewChild(Nav) nav: Nav;
     rootPage: any;
-    pages: any[];
+    pages: any[] = [];
     newRequests: number;
 
-    private defaultRootPage: any = MatesPage;
+    private defaultRootPage: any = ChatsListPage;
 
     constructor(private platform: Platform,
                 private events: Events,

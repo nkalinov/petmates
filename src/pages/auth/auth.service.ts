@@ -53,29 +53,30 @@ export class AuthService {
         return this.facebook.login([
             'public_profile',
             'email'
-        ]).then(res => {
-            //         if (res.status === 'connected') {
-            //             const accessToken = res.authResponse.accessToken;
-            //
-            //             // todo
-            //             this.http.get(`${this.config.get('API')}/auth/facebook?access_token=${accessToken}`)
-            //                 .map(res => res.json())
-            //                 .subscribe(
-            //                     (res: IResponse) => this.store.dispatch(this.authActions.login(res)),
-            //                     (err: Response) => this.store.dispatch(this.appService.error(err.text()))
-            //                 );
-            //
-            //         } else if (res.status === 'not_authorized') {
-            //             // the user is logged in to Facebook,
-            //             // but has not authenticated your app
-            //             throw new Error('You must authorize PetMates app.');
-            //         } else {
-            //             // the user isn't logged in to Facebook.
-            //             throw new Error('Please login to Facebook.');
-            //         }
-            //     }).catch(err => {
-            //         this.events.publish('alert:error', err);
-        });
+        ])
+        // .then(res => {
+        //         if (res.status === 'connected') {
+        //             const accessToken = res.authResponse.accessToken;
+        //
+        //             // todo
+        //             this.http.get(`${this.config.get('API')}/auth/facebook?access_token=${accessToken}`)
+        //                 .map(res => res.json())
+        //                 .subscribe(
+        //                     (res: IResponse) => this.store.dispatch(this.authActions.login(res)),
+        //                     (err: Response) => this.store.dispatch(this.appService.error(err.text()))
+        //                 );
+        //
+        //         } else if (res.status === 'not_authorized') {
+        //             // the user is logged in to Facebook,
+        //             // but has not authenticated your app
+        //             throw new Error('You must authorize PetMates app.');
+        //         } else {
+        //             // the user isn't logged in to Facebook.
+        //             throw new Error('Please login to Facebook.');
+        //         }
+        //     }).catch(err => {
+        //         this.events.publish('alert:error', err);
+        // });
     }
 
     update({ name, email, picture, password, location, city, region, country }: User) {

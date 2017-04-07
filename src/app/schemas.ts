@@ -18,3 +18,10 @@ export const userEntity = new schema.Entity('users', {
     //     }
     // })
 }, { idAttribute: '_id' });
+
+export const chatEntity = new schema.Object({
+    lastMessage: {
+        author: partialUserEntity
+    },
+    members: [partialUserEntity]
+});

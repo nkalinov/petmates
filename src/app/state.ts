@@ -5,13 +5,12 @@ import { Pet } from '../models/Pet';
 
 export interface AppState {
     auth: AuthState;
-    chat: {
-        list: Conversation[]
-    };
+    chats: Conversation[];
     entities: {
         users: { [key: string]: User },
-        pets: { [key: string]: Pet },
-        coordinates: { [key: string]: L.LatLngTuple }
+        pets: { [key: string]: Pet }
+        // ,
+        // coordinates: { [key: string]: L.LatLngTuple }
     };
     lastActivities: { [key: string]: number };
     matesSearchResults: string[];

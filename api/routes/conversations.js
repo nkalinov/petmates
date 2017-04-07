@@ -13,7 +13,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
     }, '_id name members lastMessage').exec().then(
         data => {
             if (data && data.length) {
-                // join rooms
+                // join chat rooms
                 data.forEach(c => {
                     users.get(req.user.id).socket.join(c.id);
                 });
@@ -21,7 +21,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 
             return res.json({ success: true, data })
         },
-        (err) => res.json({ success: false, msg: err })
+        err => res.json({ success: false, msg: err })
     );
 });
 

@@ -3,7 +3,7 @@ import { MapPage } from '../pages/map/MapPage';
 import { AuthPage } from '../pages/auth/auth.page';
 import { ProfilePage } from '../pages/profile/profile.page';
 import { HelpPage } from '../pages/help/help';
-import { ConversationsListPage } from '../pages/chat/chats-list.page';
+import { ChatsListPage } from '../pages/chat/chats-list.page';
 import { NearbyPage } from '../pages/nearby/nearby';
 
 export function localISO(dateString?: string) {
@@ -45,7 +45,7 @@ export function getMenu(auth: boolean = false): any[] {
     ], loggedInPages = [
         { title: 'Map', component: MapPage },
         { title: 'Explore', component: NearbyPage },
-        { title: 'Chats', component: ConversationsListPage },
+        { title: 'Chats', component: ChatsListPage },
         { title: 'Mates', component: MatesPage, id: 'mates' },
         { title: 'My profile', component: ProfilePage },
         { title: 'Help', component: HelpPage }

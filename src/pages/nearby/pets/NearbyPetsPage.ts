@@ -26,9 +26,9 @@ export class NearbyPetsPage {
     }
 
     doRefresh(refresher: Refresher) {
-        this.pets.getLocationThenNearbyPets(true).then(
-            () => refresher.complete(),
-            err => refresher.complete()
-        );
+        // this.pets.getLocationThenNearbyPets(true).then(
+        //     () => refresher.complete(),
+        //     err => refresher.complete()
+        // );
     }
 }

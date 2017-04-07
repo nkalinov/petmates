@@ -17,8 +17,8 @@ import { NearbyService } from '../providers/nearby.service';
 import { LocationService } from '../providers/location.service';
 import { ForgotForm } from '../pages/auth/forgot/forgot.form';
 import { AuthPage } from '../pages/auth/auth.page';
-import { ConversationsListPage } from '../pages/chat/chats-list.page';
-import { ConversationPage } from '../pages/chat/view/conversation';
+import { ChatsListPage } from '../pages/chat/chats-list.page';
+import { ChatViewPage } from '../pages/chat/view/chat-view.page';
 import { ConversationEditPage } from '../pages/chat/edit/conversation.edit';
 import { ConversationEditMembersPage } from '../pages/chat/edit/conversation.edit.members';
 import { HelpPage } from '../pages/help/help';
@@ -74,6 +74,8 @@ import { Facebook } from '@ionic-native/facebook';
 import { ImagePicker } from '@ionic-native/image-picker';
 import { Geolocation } from '@ionic-native/geolocation';
 import { LocalNotifications } from '@ionic-native/local-notifications';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpModule } from '@angular/http';
 
 const pages: Array<any> = [
     PetMatesApp,
@@ -81,13 +83,13 @@ const pages: Array<any> = [
     ForgotForm,
     AuthPage,
 
-    // ConversationsListPage,
-    // ConversationPage,
-    // ConversationEditPage,
-    // ConversationEditMembersPage,
-    //
+    ChatsListPage,
+    ChatViewPage,
+    ConversationEditPage,
+    ConversationEditMembersPage,
+
     HelpPage,
-    //
+
     // MapPage,
     // StartWalkPage,
 
@@ -130,6 +132,8 @@ const pages: Array<any> = [
         ImageUpload
     ],
     imports: [
+        BrowserModule,
+        HttpModule,
         IonicModule.forRoot(
             PetMatesApp,
             Object.assign(config, {

@@ -10,12 +10,6 @@ export class DistancePipe implements PipeTransform {
     constructor(private authService: AuthService) {
     }
 
-    // transform(value: number): string {
-    //     return value < 1000
-    //         ? `${value.toFixed().toString()} m`
-    //         : `${(value / 1000).toFixed(1).toString()} km`;
-    // }
-
     transform(value: number[]) {
         if (value) {
             const lat1 = value[1];

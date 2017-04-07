@@ -1,5 +1,5 @@
-import { Events, Config } from 'ionic-angular';
-import { forwardRef, Inject, Injectable } from '@angular/core';
+import { Events } from 'ionic-angular';
+import { Injectable } from '@angular/core';
 import { SocketService } from './socket.service';
 import { Message } from '../models/Message';
 import { IMessageSocket } from '../models/interfaces/IMessageSocket';
@@ -8,6 +8,8 @@ import { Conversation } from '../models/Conversation';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { ApiService } from './api.service';
+import { AuthService } from '../pages/auth/auth.service';
+import { MateImage } from '../components/mate-image/mate-image';
 
 @Injectable()
 export class ChatService {
@@ -15,9 +17,10 @@ export class ChatService {
     conversations: Array<Conversation> = []; // cache
     mappedConversations: Object = {};
 
-    constructor(@Inject(forwardRef(() => ApiService)) private http: ApiService,
+    constructor(private http: ApiService,
                 private sockets: SocketService,
                 private events: Events,
+                private authService: AuthService,
                 private localNotifications: LocalNotifications) {
     }
 
@@ -30,8 +33,9 @@ export class ChatService {
     createConversation(c: Conversation) {
         return new Promise((resolve, reject) => {
             this.http.post(`/conversations`, {
-                name: c.name,
-                members: c.members.map(f => f._id)
+                name: c.name
+                // ,
+                // members: c.members.map(f => f._id)
             }).subscribe(
                 res => {
                     if (res.success) {
@@ -53,54 +57,54 @@ export class ChatService {
 
     updateConversation(c: Conversation) {
         return new Promise((resolve, reject) => {
-            this.http.put(`/conversations/${c._id}`, {
-                name: c.name,
-                members: c.members.map(f => f._id)
-            })
-                .subscribe(
-                    res => {
-                        if (res.success) {
-                            this.mappedConversations[c._id] = Object.assign(this.mappedConversations[c._id], {
-                                name: c.name,
-                                members: c.members
-                            });
-                            resolve();
-                        } else {
-                            this.events.publish('alert:error', res.msg);
-                            reject();
-                        }
-                    },
-                    err => {
-                        this.events.publish('alert:error', err.text());
-                        reject();
-                    }
-                );
+            // this.http.put(`/conversations/${c._id}`, {
+            //     name: c.name,
+            //     members: c.members.map(f => f._id)
+            // })
+            //     .subscribe(
+            //         res => {
+            //             if (res.success) {
+            //                 this.mappedConversations[c._id] = Object.assign(this.mappedConversations[c._id], {
+            //                     name: c.name,
+            //                     members: c.members
+            //                 });
+            //                 resolve();
+            //             } else {
+            //                 this.events.publish('alert:error', res.msg);
+            //                 reject();
+            //             }
+            //         },
+            //         err => {
+            //             this.events.publish('alert:error', err.text());
+            //             reject();
+            //         }
+            //     );
         });
     }
 
     leaveConversation(c: Conversation) {
         return new Promise((resolve, reject) => {
-            this.http.delete(`/conversations/${c._id}`)
-                .subscribe(
-                    res => {
-                        if (res.success) {
-                            let index = this.conversations.findIndex(sc => sc._id === c._id);
-                            if (index > -1) {
-                                this.conversations.splice(index, 1);
-                                delete this.mappedConversations[c._id];
-                            }
-                            // this.conversations$.next(this.conversations);
-                            resolve();
-                        } else {
-                            this.events.publish('alert:error', res.msg);
-                            reject(res.msg);
-                        }
-                    },
-                    err => {
-                        this.events.publish('alert:error', err.text());
-                        reject(err.text());
-                    }
-                );
+            // this.http.delete(`/conversations/${c._id}`)
+            //     .subscribe(
+            //         res => {
+            //             if (res.success) {
+            //                 let index = this.conversations.findIndex(sc => sc._id === c._id);
+            //                 if (index > -1) {
+            //                     this.conversations.splice(index, 1);
+            //                     delete this.mappedConversations[c._id];
+            //                 }
+            //                 // this.conversations$.next(this.conversations);
+            //                 resolve();
+            //             } else {
+            //                 this.events.publish('alert:error', res.msg);
+            //                 reject(res.msg);
+            //             }
+            //         },
+            //         err => {
+            //             this.events.publish('alert:error', err.text());
+            //             reject(err.text());
+            //         }
+            //     );
         });
     }
 
@@ -108,63 +112,45 @@ export class ChatService {
         return this.http.get('/conversations');
     }
 
-    getMessages(conversation: Conversation) {
-        return this.http.get(`/conversations/${conversation._id}`);
-        // .map(res => res.json())
+    getMessages(chatId: string) {
+        return this.http.get(`/conversations/${chatId}`);
+    }
+
+    send(message: Message, chatId: string) {
+        // add immediately
+        // message.added = new Date();
+        // conversation.messages.push(message);
+        // conversation.lastMessage = message;
+
+        return this.http.post(`/conversations/${chatId}`, message);
         // .subscribe(
         //     res => {
         //         if (res.success) {
-        //             conversation.messages = res.data.map(msg => new Message(msg));
+        //             // this.sockets.socket.emit('chat:msg:send', <IMessageSocket>{
+        //             //     author: message.author.toPartial(),
+        //             //     added: message.added,
+        //             //     msg: message.msg,
+        //             //     pic: message.pic
+        //             // }, conversation._id);
         //             resolve();
         //         } else {
-        //             this.events.publish('alert:error', res.msg);
-        //             reject(res.msg);
+        //             conversation.messages.splice(
+        //                 conversation.messages.indexOf(message),
+        //                 1
+        //             );
+        //             this.events.publish('alert:error', 'Message could not be send! Try again.');
+        //             reject();
         //         }
         //     },
         //     err => {
+        //         conversation.messages.splice(
+        //             conversation.messages.indexOf(message),
+        //             1
+        //         );
         //         this.events.publish('alert:error', err.text());
-        //         reject(err.text());
+        //         reject();
         //     }
         // );
-    }
-
-    send(message: Message, conversation: Conversation) {
-        return new Promise((resolve, reject) => {
-            // add immediately
-            message.added = new Date();
-            conversation.messages.push(message);
-            conversation.lastMessage = message;
-
-            this.http.post(`/conversations/${conversation._id}`, message)
-                .subscribe(
-                    res => {
-                        if (res.success) {
-                            this.sockets.socket.emit('chat:msg:send', <IMessageSocket>{
-                                author: message.author.toPartial(),
-                                added: message.added,
-                                msg: message.msg,
-                                pic: message.pic
-                            }, conversation._id);
-                            resolve();
-                        } else {
-                            conversation.messages.splice(
-                                conversation.messages.indexOf(message),
-                                1
-                            );
-                            this.events.publish('alert:error', 'Message could not be send! Try again.');
-                            reject();
-                        }
-                    },
-                    err => {
-                        conversation.messages.splice(
-                            conversation.messages.indexOf(message),
-                            1
-                        );
-                        this.events.publish('alert:error', err.text());
-                        reject();
-                    }
-                );
-        });
     }
 
     upload(file: any, message: Message) {
@@ -221,22 +207,25 @@ export class ChatService {
                 return c.name;
             }
             if (c.members.length === 2) {
-                // return c.members
-                //     .filter((m: User) => m._id !== this.auth.user._id)[0].name;
+                // return other's name
+                return (
+                    <User>c.members.filter((m: User) => m._id !== this.authService.user._id)[0]
+                ).name;
             }
+            // return all names concat-ed
             return c.members
-            // .filter((m: User) => m._id !== this.auth.user._id)
-                .map((m: User) => m.name)
-                .join(', ');
+                .filter((m: User) => m._id !== this.authService.user._id)
+                .map((m: User) => m.name).join(', ');
         }
         return '';
     }
 
     getMembersPic(c: Conversation) {
         if (c.members.length === 2) {
-            // return c.members
-            //     .filter((m: User) => m._id !== this.auth.user._id)[0].pic;
+            return (
+                <User>c.members.filter((m: User) => m._id !== this.authService.user._id)[0]
+            ).pic;
         }
-        return 'group';
+        return MateImage.GROUP;
     }
 }

@@ -40,7 +40,7 @@ export class ChatEffects {
         );
 
     @Effect()
-    send$ = this.actions$
+    sendReq$ = this.actions$
         .ofType(ChatActions.SEND_MSG_REQ)
         .map(toPayload)
         .switchMap(({ msg, chatId }) =>
@@ -50,8 +50,10 @@ export class ChatEffects {
                         ChatActions.sendMessageSuccess(msg, chatId),
                         SocketActions.emit(ChatActions.sendMessageSuccess(msg, chatId))
                     )
-                    : Observable.of(AppActions.error(res.msg))
+                    : Observable.of(AppActions.error(res.msg)) // todo send error action and remove msg
                 )
                 .catch(e => Observable.of(AppActions.error(e.toString())))
         );
+
+    // todo on SOCKET_SEND_MSG_REQ_SUCCESS && (not read || not on page) -> localNotifications.schedule()
 }

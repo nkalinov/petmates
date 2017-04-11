@@ -1,11 +1,11 @@
-import { Conversation } from '../models/Conversation';
+import { IChat } from '../models/interfaces/IChat';
 import { AuthState } from '../pages/auth/auth.reducers';
 import { User } from '../models/User';
 import { Pet } from '../models/Pet';
 
 export interface AppState {
     auth: AuthState;
-    chats: Conversation[];
+    chats: IChat[];
     entities: {
         users: { [key: string]: User },
         pets: { [key: string]: Pet }

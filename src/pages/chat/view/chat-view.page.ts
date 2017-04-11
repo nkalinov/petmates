@@ -1,60 +1,84 @@
 import { NavParams, NavController, Content, ActionSheetController, Platform } from 'ionic-angular';
-import { ViewChild, Component, ElementRef } from '@angular/core';
+import { ViewChild, Component, ElementRef, OnDestroy } from '@angular/core';
 import { ChatService } from '../../../providers/chat.service';
 import { AuthService } from '../../auth/auth.service';
 import { Message } from '../../../models/Message';
-import { Conversation } from '../../../models/Conversation';
+import { IChat } from '../../../models/interfaces/IChat';
 import { ConversationEditPage } from '../edit/conversation.edit';
 import { ImagePicker } from '@ionic-native/image-picker';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../app/state';
 import { ChatActions } from '../chat.actions';
+import { Subscription } from 'rxjs/Subscription';
+import { Actions } from '@ngrx/effects';
 
 @Component({
     selector: 'chat-view-page',
     templateUrl: 'chat-view.page.html'
 })
 
-export class ChatViewPage {
+export class ChatViewPage implements OnDestroy {
     @ViewChild(Content) content: Content;
     @ViewChild('fileInput') fileInput: ElementRef;
-    chat: Conversation;
+    chat: IChat;
     message: Message;
+    private subscription: Subscription;
+    private subscription2: Subscription;
 
-    constructor(public auth: AuthService,
+    constructor(public authService: AuthService,
                 public chatService: ChatService,
                 private nav: NavController,
                 private navParams: NavParams,
                 private imagePicker: ImagePicker,
                 private actionSheetCtrl: ActionSheetController,
                 private platform: Platform,
-                private store: Store<AppState>) {
-
+                private store: Store<AppState>,
+                private actions$: Actions) {
+        const chatId = this.navParams.get('chatId');
         this.newMessage();
-        this.chat = this.navParams.get('chat'); // todo get from store by id
 
-        // get other member's lastActivity
-        // if (this.chat.members.length === 2) {
-        //     const otherMemberIndex = this.conversation.members.findIndex(m => m._id !== this.auth.user._id),
-        //         otherMember = this.conversation.members[otherMemberIndex];
-        //
-        //     const find = this.auth.user.mates.find(m => m.friend._id === otherMember._id);
-        //     if (find) {
-        //         otherMember.lastActive = find.friend.lastActive;
-        //     }
-        // }
+        this.subscription = this.store.select(state => state.chats)
+            .withLatestFrom(this.store.select(state => state.entities.users))
+            .map(([chats, users]) => {
+                const chat = chats.find(chat => chat._id === chatId);
 
-        if (!this.chat.messages.length) {
+                return {
+                    ...chat,
+                    messages: (chat.messages || []).map(msg => ({
+                        ...msg,
+                        author: users[<string>msg.author]
+                    })),
+                    members: (chat.members || []).map(member => ({ ...users[<string>member] })),
+                    lastMessage: chat.lastMessage ? {
+                        ...chat.lastMessage,
+                        author: users[<string>chat.lastMessage.author]
+                    } : null
+                }
+            })
+            .subscribe(chat => {
+                this.chat = <IChat>chat;
+            });
+
+        // request messages if all of them currently are via WebSocket
+        if (!this.chat.messages.filter(m => !m.fromSocket).length) {
             this.store.dispatch(ChatActions.requestMessages(this.chat._id));
         }
 
-        // this.chats.getMessages(this.conversation).then(() => {
-        //     this.scrollToBottom(0);
-        // }, () => this.nav.pop());
+        if (this.chat.newMessages) {
+            this.scrollToBottom();
+        }
+
+        // scroll to bottom events
+        this.subscription2 = this.actions$
+            .ofType(ChatActions.MESSAGES_REQ_SUCCESS, ChatActions.SEND_MSG_REQ)
+            .subscribe(() => {
+                this.scrollToBottom();
+            });
     }
 
-    ionViewWillLeave() {
-        this.chat.newMessages = 0; // read messages
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
+        this.subscription2.unsubscribe();
     }
 
     editConversation() {
@@ -65,11 +89,9 @@ export class ChatViewPage {
 
     sendMessage() {
         if (this.message.msg.length || this.message.picture) {
+            this.message.added = new Date();
             this.store.dispatch(ChatActions.sendMessage(this.message, this.chat._id));
-            // this.chatService.send(this.message, this.chat).then(() => {
-            //     this.newMessage();
-            //     this.scrollToBottom();
-            // });
+            this.newMessage();
         }
     }
 
@@ -115,14 +137,16 @@ export class ChatViewPage {
             .then(() => this.sendMessage());
     }
 
-    scrollToBottom(duration = 300) {
-        this.chat.newMessages = 0; // read messages
+    scrollToBottom(duration = 100) {
+        // read messages
+        this.store.dispatch(ChatActions.readMessages(this.chat._id));
+
         setTimeout(() => {
             this.content.scrollToBottom(duration);
         });
     }
 
     private newMessage() {
-        this.message = new Message({ author: this.auth.user });
+        this.message = new Message({ author: this.authService.user._id });
     }
 }

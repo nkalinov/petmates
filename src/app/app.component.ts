@@ -1,13 +1,18 @@
 import { Events, Nav, Platform, AlertController } from 'ionic-angular';
 import { ViewChild, Component } from '@angular/core';
 import { AuthPage } from '../pages/auth/auth.page';
-import { getMenu } from '../utils/common';
 import { SocketService } from '../providers/socket.service';
 import { MatesService } from '../pages/mates/mates.service';
 import { Store } from '@ngrx/store';
 import { AppState } from './state';
 import { AuthActions } from '../pages/auth/auth.actions';
 import { ChatsListPage } from '../pages/chat/chats-list.page';
+import { ChatService } from '../providers/chat.service';
+import { MapPage } from '../pages/map/MapPage';
+import { NearbyPage } from '../pages/nearby/nearby';
+import { MatesPage } from '../pages/mates/mates.page';
+import { ProfilePage } from '../pages/profile/profile.page';
+import { HelpPage } from '../pages/help/help';
 
 @Component({
     templateUrl: 'app.html',
@@ -17,14 +22,16 @@ export class PetMatesApp {
     @ViewChild(Nav) nav: Nav;
     rootPage: any;
     pages: any[] = [];
-    newRequests: number;
+    newMateRequests: number;
+    unreadMessages: number;
 
     private defaultRootPage: any = ChatsListPage;
 
     constructor(private platform: Platform,
                 private events: Events,
                 private sockets: SocketService,
-                private mates: MatesService,
+                private matesService: MatesService,
+                private chatService: ChatService,
                 private alertCtrl: AlertController,
                 private store: Store<AppState>) {
         this.platform.ready().then(() => {
@@ -46,8 +53,18 @@ export class PetMatesApp {
             this.events.subscribe('alert:error', err => {
                 this.showAlert(err);
             });
+
             this.events.subscribe('alert:info', data => {
                 this.showAlert(data, 'Info');
+            });
+
+            // Badges
+            this.matesService.pending$.subscribe(mates => {
+                this.newMateRequests = mates.length;
+            });
+
+            this.chatService.chats$.subscribe(chats => {
+                this.unreadMessages = chats.reduce((acc, curr) => acc + curr.newMessages || acc, 0);
             });
         });
     }
@@ -65,12 +82,15 @@ export class PetMatesApp {
     }
 
     private loggedIn() {
-        this.mates.pending$.subscribe(mates => {
-            this.newRequests = mates.length;
-        });
-
-        // set logged in menu
-        this.pages = getMenu(true);
+        this.pages = [
+            { title: 'Map', component: MapPage },
+            { title: 'Explore', component: NearbyPage },
+            { title: 'Chat', component: ChatsListPage },
+            { title: 'Mates', component: MatesPage },
+            { title: 'My profile', component: ProfilePage },
+            { title: 'Help', component: HelpPage }
+            // {title: 'Donate', component: DonatePage} // todo
+        ];
 
         // open default logged in page
         this.openPage(

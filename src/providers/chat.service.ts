@@ -1,61 +1,70 @@
 import { Events } from 'ionic-angular';
 import { Injectable } from '@angular/core';
-import { SocketService } from './socket.service';
 import { Message } from '../models/Message';
-import { IMessageSocket } from '../models/interfaces/IMessageSocket';
 import { User } from '../models/User';
-import { Conversation } from '../models/Conversation';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { LocalNotifications } from '@ionic-native/local-notifications';
+import { IChat } from '../models/interfaces/IChat';
 import { ApiService } from './api.service';
 import { AuthService } from '../pages/auth/auth.service';
 import { MateImage } from '../components/mate-image/mate-image';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app/state';
+import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class ChatService {
-    conversations$ = new BehaviorSubject([]);
-    conversations: Array<Conversation> = []; // cache
-    mappedConversations: Object = {};
+    chats$: Observable<IChat[]>;
 
     constructor(private http: ApiService,
-                private sockets: SocketService,
+                private store: Store<AppState>,
                 private events: Events,
-                private authService: AuthService,
-                private localNotifications: LocalNotifications) {
+                private authService: AuthService) {
+
+        this.chats$ = this.store.select(state => state.chats)
+            .withLatestFrom(this.store.select(state => state.entities.users))
+            .map(([chats, users]) => chats.map(chat =>
+                ({
+                    ...chat,
+                    members: (chat.members || []).map(member => users[<string>member]),
+                    lastMessage: chat.lastMessage ? {
+                        ...chat.lastMessage,
+                        author: users[<string>chat.lastMessage.author]
+                    } : null
+                })
+            ));
     }
 
-    createOrUpdateConversation(c: Conversation) {
+    createOrUpdateConversation(c: IChat) {
         return !c._id ?
             this.createConversation(c) :
             this.updateConversation(c);
     }
 
-    createConversation(c: Conversation) {
+    createConversation(c: IChat) {
         return new Promise((resolve, reject) => {
-            this.http.post(`/conversations`, {
-                name: c.name
-                // ,
-                // members: c.members.map(f => f._id)
-            }).subscribe(
-                res => {
-                    if (res.success) {
-                        this.conversations.unshift(new Conversation(res.data));
-                        this.conversations$.next(this.conversations);
-                        resolve(this.conversations[0]);
-                    } else {
-                        this.events.publish('alert:error', res.msg);
-                        reject(res.msg);
-                    }
-                },
-                err => {
-                    this.events.publish('alert:error', err.text());
-                    reject(err);
-                }
-            );
+            // this.http.post(`/conversations`, {
+            //     name: c.name
+            //     // ,
+            //     // members: c.members.map(f => f._id)
+            // }).subscribe(
+            //     res => {
+            //         if (res.success) {
+            //             this.conversations.unshift(new Conversation(res.data));
+            //             this.conversations$.next(this.conversations);
+            //             resolve(this.conversations[0]);
+            //         } else {
+            //             this.events.publish('alert:error', res.msg);
+            //             reject(res.msg);
+            //         }
+            //     },
+            //     err => {
+            //         this.events.publish('alert:error', err.text());
+            //         reject(err);
+            //     }
+            // );
         });
     }
 
-    updateConversation(c: Conversation) {
+    updateConversation(c: IChat) {
         return new Promise((resolve, reject) => {
             // this.http.put(`/conversations/${c._id}`, {
             //     name: c.name,
@@ -82,7 +91,7 @@ export class ChatService {
         });
     }
 
-    leaveConversation(c: Conversation) {
+    leaveConversation(c: IChat) {
         return new Promise((resolve, reject) => {
             // this.http.delete(`/conversations/${c._id}`)
             //     .subscribe(
@@ -174,34 +183,7 @@ export class ChatService {
         });
     }
 
-    registerSocketEvents(socket) {
-        // update conversations
-        socket.on('chat:conversations:update', () => {
-            console.info('chat:conversations:update');
-            // this.getConversations();
-        });
-
-        // new message in conversation
-        socket.on('chat:msg:new', (message: IMessageSocket, cid: string) => {
-            console.info('chat:msg:new', message, cid);
-
-            this.localNotifications.schedule({
-                id: 1,
-                text: `${message.author.name}: ${message.msg || 'Photo message'}`
-            });
-
-            const c = this.mappedConversations[cid];
-            if (c) {
-                // add to conversation
-                message.added = new Date(message.added);
-                c.messages.push(message);
-                c.lastMessage = message;
-                c.newMessages += 1;
-            }
-        });
-    }
-
-    getConversationTitle(c: Conversation) {
+    getConversationTitle(c: IChat) {
         if (c) {
             if (c.name) {
                 return c.name;
@@ -220,7 +202,7 @@ export class ChatService {
         return '';
     }
 
-    getMembersPic(c: Conversation) {
+    getMembersPic(c: IChat) {
         if (c.members.length === 2) {
             return (
                 <User>c.members.filter((m: User) => m._id !== this.authService.user._id)[0]

@@ -6,7 +6,7 @@ const express = require('express'),
     fs = require('fs'),
     upload = require('../config/upload');
 
-// get conversations in which I'm in the members
+// get my chats
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
     Conversation.find({
         members: req.user._id
@@ -23,6 +23,19 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
         },
         err => res.json({ success: false, msg: err })
     );
+});
+
+// get messages for a chat id
+router.get('/:cid', passport.authenticate('jwt', { session: false }), (req, res) => {
+    Conversation.findOne({
+        _id: req.params.cid,
+        members: req.user._id
+    }, 'messages', (err, c) => {
+        if (err)
+            return res.json({ success: false, msg: 'Cannot see others conversations!' });
+
+        return res.json({ success: true, data: c.messages || [] });
+    });
 });
 
 // create new conversation
@@ -143,19 +156,6 @@ router.post('/:cid', passport.authenticate('jwt', { session: false }), (req, res
         if (picture) {
             fs.unlink(`${upload.destTmp}${picture}`)
         }
-    });
-});
-
-// get messages from conversation id
-router.get('/:cid', passport.authenticate('jwt', { session: false }), (req, res) => {
-    Conversation.findOne({
-        _id: req.params.cid,
-        members: req.user._id
-    }, 'messages', (err, c) => {
-        if (err)
-            return res.json({ success: false, msg: 'Cannot see others conversations!' });
-
-        return res.json({ success: true, data: c.messages || [] });
     });
 });
 

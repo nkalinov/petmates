@@ -1,11 +1,20 @@
 const users = require('./users').users;
 
 function onSocketAuthenticated(socket, uid) {
-    socket.on('chat:msg:send', onChatSend);
+    socket.on('CHAT_SEND_MSG_REQ_SUCCESS', onMsgSend);
 
-    function onChatSend(message, cid) {
+    function onMsgSend({ msg, chatId }) {
         users.get(uid).lastActive = Date.now();
-        socket.broadcast.to(cid).emit('chat:msg:new', message, cid);
+
+        socket
+            .to(chatId)
+            .emit('action', {
+                type: 'SOCKET_CHAT_SEND_MSG_REQ_SUCCESS',
+                payload: {
+                    msg,
+                    chatId
+                }
+            });
     }
 }
 

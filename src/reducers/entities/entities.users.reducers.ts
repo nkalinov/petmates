@@ -16,7 +16,14 @@ export default function (state = {}, action: Action) {
         case MatesActions.DETAILS_REQ_SUCCESS:
         case MatesActions.SEARCH_SUCCESS:
         case ChatActions.LIST_REQ_SUCCESS:
-            return merge(Object.assign({}, state), action.payload.data.entities.users);
+        case ChatActions.MESSAGES_REQ_SUCCESS:
+            if (action.payload.data.entities && action.payload.data.entities.users) {
+                return merge(
+                    { ...state },
+                    action.payload.data.entities.users
+                );
+            }
+            return state;
 
         case PetsActions.CREATE_SUCCESS:
             return dotProp.set(state, `${action.payload.userId}.pets`, pets => [

@@ -1,6 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { AuthService } from '../pages/auth/auth.service';
-import { deg2rad } from '../utils/common';
 
 @Pipe({
     name: 'distance'
@@ -34,4 +33,8 @@ export class DistancePipe implements PipeTransform {
         }
         return '';
     }
+}
+
+function deg2rad(deg) {
+    return deg * (Math.PI / 180);
 }

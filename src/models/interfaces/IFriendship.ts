@@ -8,6 +8,4 @@ export interface IFriendship {
     _id: string;
     status: string;
     friend: string | User;
-
-    newMessages?: number; // contain new msgs count for badge
 }

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { AppActions } from '../../app/app.actions';
 import { MatesService } from './mates.service';
 import { MatesActions } from './mates.actions';
+import { SocketActions } from '../../actions/socket.actions';
 
 @Injectable()
 export class MatesEffects {
@@ -51,6 +52,20 @@ export class MatesEffects {
                         : AppActions.error(res.msg)
                 )
                 .catch(e => Observable.of(AppActions.error(e.toString())))
+        );
+
+    // get new friend's last activity
+    @Effect()
+    addSuccess$ = this.actions$
+        .ofType(
+            MatesActions.ADD_SUCCESS,
+            MatesActions.SOCKET_ADD_SUCCESS
+        )
+        .map(toPayload)
+        .map(({ userId, friendId }) =>
+            SocketActions.emit(
+                SocketActions.getLastActivities([friendId])
+            )
         );
 
     @Effect()

@@ -17,8 +17,8 @@
         <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
     <ion-list class="conversations-list">
-        <button ion-item *ngFor="let item of chats$ | async"
-                (click)="openConversation(item)">
+        <button ion-item *ngFor="let item of chatService.chats$ | async"
+                (click)="openConversation(item._id)">
             <ion-avatar item-left>
                 <mate-image [image]="chatService.getMembersPic(item)"></mate-image>
             </ion-avatar>

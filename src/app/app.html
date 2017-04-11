@@ -10,8 +10,11 @@
                     [ngClass]="{active: p.active}">
                 <ion-label>{{p.title}}</ion-label>
 
-                <ion-badge primary item-right *ngIf="p.id === 'mates' && newRequests">
-                    {{newRequests}}
+                <ion-badge primary item-right *ngIf="p.title === 'Mates' && newMateRequests">
+                    {{newMateRequests}}
+                </ion-badge>
+                <ion-badge primary item-right *ngIf="p.title === 'Chat' && unreadMessages">
+                    {{unreadMessages}}
                 </ion-badge>
             </button>
         </ion-list>

@@ -2,7 +2,7 @@ import { NavParams, ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { User } from '../../../models/User';
 import { MatesService } from '../../../pages/mates/mates.service';
-import { Conversation } from '../../../models/Conversation';
+import { IChat } from '../../../models/interfaces/IChat';
 
 @Component({
     templateUrl: 'conversation.edit.members.html'
@@ -10,7 +10,7 @@ import { Conversation } from '../../../models/Conversation';
 
 export class ConversationEditMembersPage {
     friends: Array<User> = [];
-    conversation: Conversation;
+    conversation: IChat;
 
     constructor(public viewCtrl: ViewController,
                 navParams: NavParams,

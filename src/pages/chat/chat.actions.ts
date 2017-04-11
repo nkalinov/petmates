@@ -1,7 +1,7 @@
 import { Action } from '@ngrx/store';
-import { Conversation } from '../../models/Conversation';
+import { IChat } from '../../models/interfaces/IChat';
 import { normalize } from 'normalizr';
-import { chatEntity } from '../../app/schemas';
+import { chatObject, messageObject } from '../../app/schemas';
 import { Message } from '../../models/Message';
 
 export class ChatActions {
@@ -15,11 +15,11 @@ export class ChatActions {
 
     static LIST_REQ_SUCCESS = 'CHAT_LIST_REQ_SUCCESS';
 
-    static requestListSuccess(data: Conversation[]): Action {
+    static requestListSuccess(data: IChat[]): Action {
         return {
             type: ChatActions.LIST_REQ_SUCCESS,
             payload: {
-                data: normalize(data, [chatEntity])
+                data: normalize(data, [chatObject])
             }
         };
     }
@@ -42,7 +42,7 @@ export class ChatActions {
             type: ChatActions.MESSAGES_REQ_SUCCESS,
             payload: {
                 chatId,
-                messages
+                data: normalize(messages, [messageObject])
             }
         };
     }
@@ -60,12 +60,23 @@ export class ChatActions {
     }
 
     static SEND_MSG_REQ_SUCCESS = 'CHAT_SEND_MSG_REQ_SUCCESS';
+    static SOCKET_SEND_MSG_REQ_SUCCESS = 'SOCKET_CHAT_SEND_MSG_REQ_SUCCESS';
 
     static sendMessageSuccess(msg: Message, chatId: string): Action {
         return {
             type: ChatActions.SEND_MSG_REQ_SUCCESS,
             payload: {
                 msg,
+                chatId
+            }
+        };
+    }
+    static READ_MSG = 'CHAT_MSG_READ';
+
+    static readMessages(chatId: string): Action {
+        return {
+            type: ChatActions.READ_MSG,
+            payload: {
                 chatId
             }
         };

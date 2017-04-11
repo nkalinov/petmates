@@ -8,8 +8,10 @@ function onSocketAuthenticated(socket, uid) {
 
     // todo 1 send my friends last activities
     // todo 2 send my last activity to my friends
+    // todo 3 get last activities in a setTimeout
 
     socket.on('SOCKET_LAST_ACTIVITIES_REQ', lastActivitiesReq)
+    socket.on('disconnect', onDisconnect)
 
     function lastActivitiesReq(ids) {
         const payload = Object.create(null)
@@ -26,6 +28,10 @@ function onSocketAuthenticated(socket, uid) {
                 type: 'SOCKET_LAST_ACTIVITIES_SUCCESS',
                 payload
             })
+    }
+
+    function onDisconnect() {
+        // todo clear timer
     }
 }
 

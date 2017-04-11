@@ -1,6 +1,6 @@
 import { ViewController, NavParams, ModalController, AlertController, NavController } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { Conversation } from '../../../models/Conversation';
+import { IChat } from '../../../models/interfaces/IChat';
 import { ChatService } from '../../../providers/chat.service';
 import { ConversationEditMembersPage } from './conversation.edit.members';
 import { MateViewPage } from '../../mates/view/mate-view.page';
@@ -10,7 +10,7 @@ import { MateViewPage } from '../../mates/view/mate-view.page';
 })
 
 export class ConversationEditPage {
-    conversation: Conversation;
+    conversation: IChat;
 
     constructor(public viewCtrl: ViewController,
                 private chat: ChatService,
@@ -18,7 +18,7 @@ export class ConversationEditPage {
                 private alertCtrl: AlertController,
                 private nav: NavController,
                 navParams: NavParams) {
-        this.conversation = new Conversation(navParams.get('conversation'));
+        // this.conversation = new Conversation(navParams.get('conversation'));
     }
 
     saveConversation() {

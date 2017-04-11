@@ -59,22 +59,4 @@ chat-view-page {
     bottom: 47px;
     width: 100%;
   }
-
-  .message-footer {
-    .message-textarea {
-      textarea {
-        margin: 0;
-        padding: 3px;
-      }
-    }
-
-    button {
-      margin: 0;
-    }
-
-    ion-col {
-      margin: 0;
-      padding: 0;
-    }
-  }
 }

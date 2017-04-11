@@ -1,11 +1,3 @@
-import { MatesPage } from '../pages/mates/mates.page';
-import { MapPage } from '../pages/map/MapPage';
-import { AuthPage } from '../pages/auth/auth.page';
-import { ProfilePage } from '../pages/profile/profile.page';
-import { HelpPage } from '../pages/help/help';
-import { ChatsListPage } from '../pages/chat/chats-list.page';
-import { NearbyPage } from '../pages/nearby/nearby';
-
 export function localISO(dateString?: string) {
     let date;
 
@@ -33,25 +25,6 @@ export function localISO(dateString?: string) {
         + ':' + pad(date.getSeconds())
         + dif + pad(tzo / 60)
         + ':' + pad(tzo % 60);
-}
-
-export const deg2rad = (deg) => deg * (Math.PI / 180);
-
-export function getMenu(auth: boolean = false): any[] {
-    const publicPages = [
-        { title: 'Login / sign-up', component: AuthPage },
-        { title: 'Help', component: HelpPage }
-        // {title: 'Donate', component: DonatePage} // todo
-    ], loggedInPages = [
-        { title: 'Map', component: MapPage },
-        { title: 'Explore', component: NearbyPage },
-        { title: 'Chats', component: ChatsListPage },
-        { title: 'Mates', component: MatesPage, id: 'mates' },
-        { title: 'My profile', component: ProfilePage },
-        { title: 'Help', component: HelpPage }
-        // {title: 'Donate', component: DonatePage} // todo
-    ];
-    return auth ? loggedInPages : publicPages;
 }
 
 export function getTimeAgo(date) {

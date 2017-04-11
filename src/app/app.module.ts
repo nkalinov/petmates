@@ -76,6 +76,7 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
+import { ExcludeMePipe } from '../pipes/excludeMe';
 
 const pages: Array<any> = [
     PetMatesApp,
@@ -126,6 +127,7 @@ const pages: Array<any> = [
         AgeInfo,
         GenderInfo,
         LastActivity,
+        ExcludeMePipe,
         PlaceIcon,
         TimeAgo,
         DistancePipe,

@@ -1,57 +1,64 @@
 import { Component, Input, OnDestroy } from '@angular/core';
-import { Conversation } from '../models/Conversation';
-import { AuthService } from '../pages/auth/auth.service';
 import { getTimeAgo } from '../utils/common';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app/state';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     selector: 'last-activity',
     template: `
-    <span *ngIf="time">
+        <span *ngIf="time">
         {{prefix}} {{time}}
     </span>`
 })
 
 export class LastActivity implements OnDestroy {
-    @Input() chat: Conversation;
-    @Input() prefix: string;
+    @Input() userId: string;
+    @Input() prefix: string = 'Active';
     time: string;
-    private interval;
+    timestamp: number;
 
-    constructor(private auth: AuthService) {
+    private interval;
+    private subscription: Subscription;
+
+    constructor(private store: Store<AppState>) {
     }
 
     ngOnChanges() {
-        this.calcLastActivity();
-        this.startInterval();
+        if (this.userId) {
+            this.start();
+        }
     }
 
     ngOnDestroy() {
-        this.clearInterval();
+        this.dispose();
     }
 
-    calcLastActivity() {
-        if (this.chat && this.chat.members && this.chat.members.length === 2) {
-            // let lastActive = this.chat.members
-            //     .filter(m => m._id !== this.auth.user._id)[0]
-            //     .lastActive;
-
-            // if (lastActive) {
-            //     this.time = getTimeAgo(lastActive);
-            // }
-        }
+    calc() {
+        this.time = getTimeAgo(this.timestamp);
     }
 
-    private startInterval() {
-        this.clearInterval();
+    private start() {
+        this.dispose();
+
+        this.subscription = this.store.select(state => state.lastActivities[this.userId])
+            .subscribe(timestamp => {
+                this.timestamp = timestamp;
+                this.calc();
+            });
 
         this.interval = setInterval(() => {
-            this.calcLastActivity();
+            this.calc();
         }, 60 * 1000);
     }
 
-    private clearInterval() {
+    private dispose() {
         if (this.interval) {
             clearInterval(this.interval);
         }
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
     }
 }
+

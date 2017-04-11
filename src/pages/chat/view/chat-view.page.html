@@ -2,7 +2,9 @@
     <ion-navbar>
         <ion-title>
             {{chatService.getConversationTitle(chat)}}
-            <last-activity prefix="Active" [chat]="chat" text-small></last-activity>
+            <last-activity *ngIf="chat.members.length === 2"
+                           [userId]="(chat.members | excludeMe:true)._id"
+                           text-small></last-activity>
         </ion-title>
         <ion-buttons end>
             <button ion-button icon-only color="dark"
@@ -13,22 +15,22 @@
     </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content [scrollDownOnLoad]="true">
     <ion-list class="messages">
         <ion-item class="message"
-                  *ngFor="let m of chat.messages"
-                  [ngClass]="{'me': m.author._id === auth.user._id}">
+                  *ngFor="let item of chat.messages"
+                  [ngClass]="{'me': item.author._id === authService.user._id}">
             <ion-avatar class="avatar">
-                <mate-image [image]="m.author.pic"></mate-image>
+                <mate-image [image]="item.author.pic"></mate-image>
             </ion-avatar>
 
-            <span text-small *ngIf="chat.members.length > 2 && m.author._id !== auth.user._id">
-                {{m.author.name}}
+            <span text-small *ngIf="chat.members.length > 2 && item.author._id !== authService.user._id">
+                {{item.author.name}}
             </span>
-            <p *ngIf="m.msg">{{ m.msg }}</p>
-            <img *ngIf="m.picture && m.pic" [attr.src]="m.pic" imageViewer/>
-            <img *ngIf="!m.picture && m.pic" [attr.src]="'data:image/png;base64,' + m.pic" imageViewer/>
-            <time-ago text-small class="date" [time]="m.added"></time-ago>
+            <p *ngIf="item.msg">{{ item.msg }}</p>
+            <img *ngIf="item.picture && item.pic" [attr.src]="item.pic" imageViewer/>
+            <img *ngIf="!item.picture && item.pic" [attr.src]="'data:image/png;base64,' + item.pic" imageViewer/>
+            <time-ago text-small class="date" [time]="item.added"></time-ago>
         </ion-item>
     </ion-list>
     <div class="new-messages-badge" text-center *ngIf="chat && chat.newMessages > 0">
@@ -42,26 +44,28 @@
 <ion-footer class="message-footer">
     <input class="fileInput" type="file" #fileInput (change)="fileChangeEvent($event)"/>
     <ion-toolbar>
-        <ion-row>
-            <ion-col width-10>
-                <button ion-button small clear color="dark" icon-only (click)="sendPhoto()">
-                    <ion-icon name="image"></ion-icon>
-                </button>
-            </ion-col>
-            <ion-col width-80>
-                <ion-textarea no-margin placeholder="Message..."
-                              class="message-textarea"
-                              [(ngModel)]="message.msg"
-                              (keydown.enter)="sendMessage()"></ion-textarea>
-            </ion-col>
-            <ion-col width-10>
-                <button ion-button small icon-only
-                        [disabled]="message.msg === ''"
-                        (click)="sendMessage()">
-                    <ion-icon name="send"></ion-icon>
-                </button>
-            </ion-col>
-        </ion-row>
+        <ion-grid no-padding>
+            <ion-row>
+                <ion-col col-1>
+                    <button ion-button small clear color="dark" icon-only (click)="sendPhoto()">
+                        <ion-icon name="image"></ion-icon>
+                    </button>
+                </ion-col>
+                <ion-col col-10>
+                    <ion-textarea no-margin placeholder="Message..."
+                                  class="message-textarea"
+                                  [(ngModel)]="message.msg"
+                                  (keydown.enter)="sendMessage()"></ion-textarea>
+                </ion-col>
+                <ion-col col-1>
+                    <button ion-button small icon-only
+                            [disabled]="message.msg === ''"
+                            (click)="sendMessage()">
+                        <ion-icon name="send"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
     </ion-toolbar>
 </ion-footer>
 

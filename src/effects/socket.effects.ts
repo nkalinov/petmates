@@ -26,13 +26,6 @@ export class SocketEffects {
                 .catch(err => Observable.of(SocketActions.connectError(err)))
         );
 
-    // @Effect()
-    // connect$ = this.actions$
-    //     .ofType(SocketActions.CONNECT_SUCCESS)
-    //     .map(() => {
-    //         return SocketActions.getLastActive();
-    //     });
-
     @Effect()
     disconnect$ = this.actions$
         .ofType(AuthActions.LOGOUT)

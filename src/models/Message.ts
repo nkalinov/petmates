@@ -9,7 +9,7 @@ export class Message {
     mimetype: string;
     fromSocket: boolean;
 
-    constructor(data?: any, fromSocket: boolean = false) {
+    constructor(data?: any, fromSocket?: boolean) {
         if (data) {
             Object.assign(this, data);
 
@@ -17,7 +17,9 @@ export class Message {
                 this.added = new Date(data.added);
             }
 
-            this.fromSocket = fromSocket;
+            if (fromSocket) {
+                this.fromSocket = fromSocket;
+            }
         }
     }
 }

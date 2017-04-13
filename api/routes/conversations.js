@@ -137,25 +137,24 @@ router.post('/:cid', passport.authenticate('jwt', { session: false }), (req, res
         }
     }
 
+    users.get(req.user.id).lastActive = Date.now();
+
     Conversation.findOneAndUpdate({
         _id: req.params.cid,
         members: me
     }, {
         $push: { messages: message },
-        lastMessage: picture ? {
+        lastMessage: picture
+            ? {
                 author: message.author,
-                added: Date.now(),
                 msg: 'Photo message'
-            } : message
+            }
+            : message
     }, (err) => {
         if (err)
             return res.json({ success: false });
 
-        res.json({ success: true });
-
-        if (picture) {
-            fs.unlink(`${upload.destTmp}${picture}`)
-        }
+        return res.json({ success: true });
     });
 });
 

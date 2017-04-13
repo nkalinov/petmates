@@ -18,7 +18,7 @@ export default function chatListReducer(state = [], action: Action) {
             return setInArrayById(state, action.payload.chatId, 'messages', action.payload.data.result);
 
         case ChatActions.SEND_MSG_REQ: // add immediately
-            return addMessage(state, action.payload.msg, action.payload.chatId, false);
+            return addMessage(state, action.payload.msg, action.payload.chatId);
 
         case ChatActions.SOCKET_SEND_MSG_REQ_SUCCESS: // msg received
             return addMessage(state, action.payload.msg, action.payload.chatId, true);
@@ -31,7 +31,7 @@ export default function chatListReducer(state = [], action: Action) {
     }
 }
 
-function addMessage(state = [], data: Message, chatId: string, fromSocket: boolean) {
+function addMessage(state = [], data: Message, chatId: string, fromSocket?: boolean) {
     let index = state.findIndex(chat => chat._id === chatId),
         message = new Message(data, fromSocket);
 

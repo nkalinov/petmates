@@ -16,4 +16,3 @@ export class ExcludeMePipe implements PipeTransform {
         return returnFirst && filtered[0] || filtered;
     }
 }
-

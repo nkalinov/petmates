@@ -126,61 +126,7 @@ export class ChatService {
     }
 
     send(message: Message, chatId: string) {
-        // add immediately
-        // message.added = new Date();
-        // conversation.messages.push(message);
-        // conversation.lastMessage = message;
-
         return this.http.post(`/conversations/${chatId}`, message);
-        // .subscribe(
-        //     res => {
-        //         if (res.success) {
-        //             // this.sockets.socket.emit('chat:msg:send', <IMessageSocket>{
-        //             //     author: message.author.toPartial(),
-        //             //     added: message.added,
-        //             //     msg: message.msg,
-        //             //     pic: message.pic
-        //             // }, conversation._id);
-        //             resolve();
-        //         } else {
-        //             conversation.messages.splice(
-        //                 conversation.messages.indexOf(message),
-        //                 1
-        //             );
-        //             this.events.publish('alert:error', 'Message could not be send! Try again.');
-        //             reject();
-        //         }
-        //     },
-        //     err => {
-        //         conversation.messages.splice(
-        //             conversation.messages.indexOf(message),
-        //             1
-        //         );
-        //         this.events.publish('alert:error', err.text());
-        //         reject();
-        //     }
-        // );
-    }
-
-    upload(file: any, message: Message) {
-        return new Promise((resolve, reject) => {
-            const onSuccess = res => {
-                if (res.response.success) {
-                    message.pic = res.response.data.url;
-                    message.picture = res.response.data.filename;
-                    message.mimetype = res.response.data.mimetype;
-                    resolve();
-                } else {
-                    this.events.publish('alert:error', res.response.msg);
-                    throw res.response.msg;
-                }
-            };
-            const onError = err => {
-                this.events.publish('alert:error', err);
-                reject();
-            };
-            // this.http.upload(file, onSuccess, onError);
-        });
     }
 
     getConversationTitle(c: IChat) {

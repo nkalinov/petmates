@@ -27,13 +27,12 @@ export function localISO(dateString?: string) {
         + ':' + pad(tzo % 60);
 }
 
-export function getTimeAgo(date) {
-    let result: string;
-    // current time
-    let now = new Date().getTime();
+export function getTimeAgo(timestamp: number) {
+    let result: string,
+        now = Date.now();
 
     // time since message was sent in seconds
-    let delta = (now - date) / 1000;
+    let delta = (now - timestamp) / 1000;
 
     // format string
     if (delta < 10) {

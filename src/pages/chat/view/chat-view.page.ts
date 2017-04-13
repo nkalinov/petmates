@@ -1,16 +1,16 @@
-import { NavParams, NavController, Content, ActionSheetController, Platform } from 'ionic-angular';
-import { ViewChild, Component, ElementRef, OnDestroy } from '@angular/core';
+import { NavParams, NavController, Content } from 'ionic-angular';
+import { ViewChild, Component, OnDestroy } from '@angular/core';
 import { ChatService } from '../../../providers/chat.service';
 import { AuthService } from '../../auth/auth.service';
 import { Message } from '../../../models/Message';
 import { IChat } from '../../../models/interfaces/IChat';
 import { ConversationEditPage } from '../edit/conversation.edit';
-import { ImagePicker } from '@ionic-native/image-picker';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../app/state';
 import { ChatActions } from '../chat.actions';
 import { Subscription } from 'rxjs/Subscription';
 import { Actions } from '@ngrx/effects';
+import { IResponseUpload } from '../../../models/interfaces/IResponseUpload';
 
 @Component({
     selector: 'chat-view-page',
@@ -19,7 +19,6 @@ import { Actions } from '@ngrx/effects';
 
 export class ChatViewPage implements OnDestroy {
     @ViewChild(Content) content: Content;
-    @ViewChild('fileInput') fileInput: ElementRef;
     chat: IChat;
     message: Message;
     private subscription: Subscription;
@@ -29,9 +28,6 @@ export class ChatViewPage implements OnDestroy {
                 public chatService: ChatService,
                 private nav: NavController,
                 private navParams: NavParams,
-                private imagePicker: ImagePicker,
-                private actionSheetCtrl: ActionSheetController,
-                private platform: Platform,
                 private store: Store<AppState>,
                 private actions$: Actions) {
         const chatId = this.navParams.get('chatId');
@@ -95,46 +91,11 @@ export class ChatViewPage implements OnDestroy {
         }
     }
 
-    sendPhoto() {
-        const actionSheet = this.actionSheetCtrl.create({
-            title: 'Send Photo',
-            buttons: [
-                {
-                    text: 'Choose Existing Photo',
-                    handler: () => {
-                        if (this.platform.is('cordova')) {
-                            this.imagePicker.getPictures({
-                                maximumImagesCount: 1,
-                                width: 500,
-                                height: 500
-                            })
-                                .then(images => this.chatService.upload(images[0], this.message))
-                                .then(() => this.sendMessage());
-                        } else {
-                            // web
-                            this.fileInput.nativeElement.click();
-                        }
-                    }
-                },
-                {
-                    text: 'Take Photo',
-                    handler: () => {
-
-                    }
-                },
-                {
-                    text: 'Cancel',
-                    role: 'cancel'
-                }
-            ]
-        });
-        actionSheet.present();
-    }
-
-    fileChangeEvent(fileInput: any) {
-        this.chatService
-            .upload(fileInput.target.files[0], this.message)
-            .then(() => this.sendMessage());
+    onUploadSuccess(res: IResponseUpload) {
+        this.message.pic = res.data.url;
+        this.message.picture = res.data.filename;
+        this.message.mimetype = res.data.mimetype;
+        this.sendMessage();
     }
 
     scrollToBottom(duration = 100) {

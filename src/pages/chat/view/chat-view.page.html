@@ -42,14 +42,15 @@
 </ion-content>
 
 <ion-footer class="message-footer">
-    <input class="fileInput" type="file" #fileInput (change)="fileChangeEvent($event)"/>
     <ion-toolbar>
         <ion-grid no-padding>
             <ion-row>
                 <ion-col col-1>
-                    <button ion-button small clear color="dark" icon-only (click)="sendPhoto()">
-                        <ion-icon name="image"></ion-icon>
-                    </button>
+                    <image-upload [placeholder]="false" (uploadSuccess)="onUploadSuccess($event)">
+                        <button ion-button small clear color="dark" icon-only>
+                            <ion-icon name="image"></ion-icon>
+                        </button>
+                    </image-upload>
                 </ion-col>
                 <ion-col col-10>
                     <ion-textarea no-margin placeholder="Message..."

@@ -9,7 +9,7 @@ import { Platform } from 'ionic-angular';
     template: `
         <div (click)="changePicture()">
             <ng-content></ng-content>
-            <p class="change-text">{{placeholder}}</p>
+            <p *ngIf="placeholder" class="change-text">{{placeholder}}</p>
             <input #fileInput class="fileInput" type="file" (change)="fileChangeEvent($event)"/>
         </div>
     `
